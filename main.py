@@ -1,42 +1,26 @@
 """
 Aircraft Noise Tracker — Backend API
-Receives session uploads from the iOS app and serves aggregated data to the dashboard.
-Deploy on Render (free tier) as a Python web service.
 """
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
-from typing import Optional
 from typing import Optional
 import csv
 import io
-import json
 import sqlite3
 import os
 from datetime import datetime, timezone
-from pathlib import Path
 
 app = FastAPI(title="Aircraft Noise Tracker API", version="1.0.0")
 
-# ---------------------------------------------------------------------------
-# CORS — allow the dashboard frontend to call this API
-# Update origins when you have a real domain
-# ---------------------------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # tighten this once domain is set
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---------------------------------------------------------------------------
-# Database setup — SQLite for simplicity on Render free tier
-# Render free tier has ephemeral disk; for persistence use Render's free
-# PostgreSQL or upgrade. SQLite is fine for development and MVP.
-# ---------------------------------------------------------------------------
 DB_PATH = os.environ.get("DB_PATH", "noise_tracker.db")
 
 def get_db():
@@ -50,8 +34,6 @@ def get_db():
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-
-    # One row per observation (track or entry)
     c.execute("""
         CREATE TABLE IF NOT EXISTS observations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -90,8 +72,6 @@ def init_db():
             uploaded_at TEXT
         )
     """)
-
-    # One row per session with pre-computed summary stats from the app
     c.execute("""
         CREATE TABLE IF NOT EXISTS sessions (
             session_id TEXT PRIMARY KEY,
@@ -109,28 +89,16 @@ def init_db():
             peak_dba REAL,
             peak_loudness_sone REAL,
             peak_annoyance REAL,
-            -- WHO benchmark fields (populated when app sends them)
             who_daily_average_dba REAL,
             who_exceedance_pct REAL,
             uploaded_at TEXT
         )
     """)
-
     conn.commit()
     conn.close()
 
 init_db()
 
-# ---------------------------------------------------------------------------
-# Pydantic models
-# ---------------------------------------------------------------------------
-
-
-
-
-# ---------------------------------------------------------------------------
-# Routes
-# ---------------------------------------------------------------------------
 
 @app.get("/")
 def root():
@@ -147,30 +115,17 @@ async def upload_session(
     file: UploadFile = File(...),
     db: sqlite3.Connection = Depends(get_db)
 ):
-    """
-    Main endpoint the iOS app POSTs to at session end.
-    Accepts a CSV file (the same format the app already exports).
-    
-    The app should POST as multipart/form-data:
-        POST /api/v1/upload-session
-        Content-Type: multipart/form-data
-        Body: file=<csv_file_bytes>
-    
-    Optional: include session summary fields as additional form fields,
-    or let the backend compute them from the CSV rows.
-    """
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files accepted")
 
     content = await file.read()
-    text = content.decode("utf-8-sig")  # handle BOM if present
+    text = content.decode("utf-8-sig")
     reader = csv.DictReader(io.StringIO(text), delimiter="\t")
 
     rows = list(reader)
     if not rows:
         raise HTTPException(status_code=400, detail="CSV is empty")
 
-    # Generate a session ID from first row timestamp + observer location
     first_row = rows[0]
     session_id = (
         first_row.get("Timestamp", "").replace(" ", "_").replace(":", "-")
@@ -179,9 +134,6 @@ async def upload_session(
     )
     uploaded_at = datetime.now(timezone.utc).isoformat()
 
-    # -----------------------------------------------------------------------
-    # Insert observations
-    # -----------------------------------------------------------------------
     cursor = db.cursor()
     inserted = 0
     dba_values = []
@@ -253,18 +205,14 @@ async def upload_session(
                 uploaded_at,
             ))
             inserted += 1
-        except Exception as e:
-            continue  # skip malformed rows, don't abort upload
+        except Exception:
+            continue
 
-    # -----------------------------------------------------------------------
-    # Compute session summary from the CSV data
-    # -----------------------------------------------------------------------
     timestamps = [r.get("Timestamp", "") for r in rows if r.get("Timestamp")]
     session_start = min(timestamps) if timestamps else ""
     session_end = max(timestamps) if timestamps else ""
 
-    # N65/N70/N80 — peak dBA per aircraft
-    aircraft_peaks: dict[str, float] = {}
+    aircraft_peaks: dict = {}
     for row in rows:
         cs = row.get("Callsign", "").strip()
         dba = _float(row.get("dBA Level"))
@@ -275,7 +223,6 @@ async def upload_session(
     n70 = sum(1 for v in aircraft_peaks.values() if v >= 70)
     n80 = sum(1 for v in aircraft_peaks.values() if v >= 80)
 
-    # Recovery deficit — inter-event gaps < 15 min between entry events
     entry_times = sorted([
         r.get("Timestamp", "") for r in rows
         if r.get("Type") == "entry" and r.get("Timestamp")
@@ -285,13 +232,11 @@ async def upload_session(
         try:
             t1 = datetime.fromisoformat(entry_times[i-1])
             t2 = datetime.fromisoformat(entry_times[i])
-            gap_min = (t2 - t1).total_seconds() / 60
-            if gap_min < 15:
+            if (t2 - t1).total_seconds() / 60 < 15:
                 recovery_deficit += 1
         except Exception:
             pass
 
-    # Event density (events per hour)
     try:
         t_start = datetime.fromisoformat(session_start)
         t_end = datetime.fromisoformat(session_end)
@@ -338,12 +283,8 @@ async def upload_session(
 
 @app.get("/api/v1/dashboard-summary")
 def dashboard_summary(db: sqlite3.Connection = Depends(get_db)):
-    """
-    Aggregated stats across ALL sessions — powers the Layer 1 dashboard.
-    """
     cursor = db.cursor()
 
-    # Totals
     cursor.execute("""
         SELECT
             COUNT(*) as total_sessions,
@@ -360,7 +301,6 @@ def dashboard_summary(db: sqlite3.Connection = Depends(get_db)):
     """)
     totals = dict(cursor.fetchone() or {})
 
-    # Most recent 30 sessions for trend sparkline
     cursor.execute("""
         SELECT session_start, n70, recovery_deficit, peak_dba, event_density
         FROM sessions
@@ -369,7 +309,6 @@ def dashboard_summary(db: sqlite3.Connection = Depends(get_db)):
     """)
     recent = [dict(r) for r in cursor.fetchall()]
 
-    # Aircraft type breakdown (top offenders by avg peak dBA)
     cursor.execute("""
         SELECT type_code, type_name, operator,
                COUNT(DISTINCT callsign) as events,
@@ -385,7 +324,6 @@ def dashboard_summary(db: sqlite3.Connection = Depends(get_db)):
     """)
     aircraft_breakdown = [dict(r) for r in cursor.fetchall()]
 
-    # Time-of-day distribution (hour buckets)
     cursor.execute("""
         SELECT
             CAST(substr(timestamp, 12, 2) AS INTEGER) as hour,
@@ -431,9 +369,6 @@ def session_observations(session_id: str, db: sqlite3.Connection = Depends(get_d
     return [dict(r) for r in rows]
 
 
-# ---------------------------------------------------------------------------
-# Helper
-# ---------------------------------------------------------------------------
 def _float(val) -> Optional[float]:
     try:
         return float(val)
