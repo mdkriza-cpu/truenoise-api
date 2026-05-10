@@ -1,7 +1,8 @@
-services:
+ervices:
   - type: web
-    name: noise-tracker-api
+    name: aircraft-noise-tracker-api
     runtime: python
+    pythonVersion: "3.11.9"
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
