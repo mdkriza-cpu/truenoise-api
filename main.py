@@ -125,6 +125,8 @@ async def upload_session(
     rows = list(reader)
     if not rows:
         raise HTTPException(status_code=400, detail="CSV is empty")
+    if rows:
+        print(f"DEBUG columns: {list(rows[0].keys())}", flush=True)
 
     first_row = rows[0]
     session_id = (
