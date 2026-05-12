@@ -11,6 +11,7 @@ import csv
 import io
 import os
 import psycopg
+from psycopg.rows import dict_row
 from datetime import datetime, timezone
 
 app = FastAPI(title="TrueNoise API", version="1.0.0")
@@ -26,7 +27,7 @@ app.add_middleware(
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db():
-    conn = psycopg.connect(DATABASE_URL)
+    conn = psycopg.connect(DATABASE_URL, row_factory=dict_row)
     try:
         yield conn
     finally:
@@ -296,7 +297,7 @@ async def upload_session(
 
 @app.get("/api/v1/dashboard-summary")
 def dashboard_summary(db = Depends(get_db)):
-    cursor = db.cursor(row_factory=psycopg.rows.dict_row)
+    cursor = db.cursor(row_factory=dict_row)
 
     cursor.execute("""
         SELECT
@@ -359,7 +360,7 @@ def dashboard_summary(db = Depends(get_db)):
 
 @app.get("/api/v1/sessions")
 def list_sessions(limit: int = 50, db = Depends(get_db)):
-    cursor = db.cursor(row_factory=psycopg.rows.dict_row)
+    cursor = db.cursor(row_factory=dict_row)
     cursor.execute("""
         SELECT * FROM sessions
         ORDER BY session_start DESC
@@ -370,7 +371,7 @@ def list_sessions(limit: int = 50, db = Depends(get_db)):
 
 @app.get("/api/v1/sessions/{session_id}/observations")
 def session_observations(session_id: str, db = Depends(get_db)):
-    cursor = db.cursor(row_factory=psycopg.rows.dict_row)
+    cursor = db.cursor(row_factory=dict_row)
     cursor.execute("""
         SELECT * FROM observations
         WHERE session_id = %s
