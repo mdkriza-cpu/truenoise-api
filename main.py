@@ -10,8 +10,7 @@ from typing import Optional
 import csv
 import io
 import os
-import psycopg2
-import psycopg2.extras
+import psycopg
 from datetime import datetime, timezone
 
 app = FastAPI(title="TrueNoise API", version="1.0.0")
