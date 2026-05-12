@@ -296,7 +296,7 @@ async def upload_session(
 
 @app.get("/api/v1/dashboard-summary")
 def dashboard_summary(db = Depends(get_db)):
-    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = db.cursor(row_factory=psycopg.rows.dict_row)
 
     cursor.execute("""
         SELECT
@@ -359,7 +359,7 @@ def dashboard_summary(db = Depends(get_db)):
 
 @app.get("/api/v1/sessions")
 def list_sessions(limit: int = 50, db = Depends(get_db)):
-    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = db.cursor(row_factory=psycopg.rows.dict_row)
     cursor.execute("""
         SELECT * FROM sessions
         ORDER BY session_start DESC
@@ -370,7 +370,7 @@ def list_sessions(limit: int = 50, db = Depends(get_db)):
 
 @app.get("/api/v1/sessions/{session_id}/observations")
 def session_observations(session_id: str, db = Depends(get_db)):
-    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = db.cursor(row_factory=psycopg.rows.dict_row)
     cursor.execute("""
         SELECT * FROM observations
         WHERE session_id = %s
