@@ -27,14 +27,14 @@ app.add_middleware(
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db():
-    conn = psycopg.connect(DATABASE_URL, row_factory=dict_row)
+    conn = psycopg.connect(DATABASE_URL + "?sslmode=require", row_factory=dict_row)
     try:
         yield conn
     finally:
         conn.close()
 
 def init_db():
-    conn = psycopg.connect(DATABASE_URL)
+    conn = psycopg.connect(DATABASE_URL + "?sslmode=require")
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS observations (
