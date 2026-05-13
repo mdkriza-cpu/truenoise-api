@@ -207,7 +207,7 @@ async def upload_session(
                 _float(row.get("Observer Lon")),
                 uploaded_at,
             ))
-            inserted += 1
+            inserted += cursor.rowcount
         except Exception:
             continue
 
