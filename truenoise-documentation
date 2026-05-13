@@ -1,0 +1,386 @@
+TRUENOISE — SYSTEM DOCUMENTATION
+=================================
+Generated May 2026
+For: Marty Krizan, truenoise.org
+
+This document describes every system, service, and file that makes up the
+TrueNoise platform. It is written for someone who understands the project
+but may not remember every technical detail six months from now.
+
+═══════════════════════════════════════════════════════════════════════════
+PART 1: THE SEVEN SYSTEMS
+═══════════════════════════════════════════════════════════════════════════
+
+1. CLAUDE (claude.ai)
+─────────────────────
+Role: Design, development, and documentation partner.
+
+Claude was used to design and build the entire TrueNoise backend and website
+from scratch — the FastAPI backend, the Supabase database schema, all four
+website pages (index, about, methodology, data), the contact form integration,
+and this documentation. Claude also produced the DEPLOY.md handoff document
+for Xcode Claude and the WAV_PROCESSING_BRIEF.md for future development.
+
+Claude is not a running service — it does not host anything or run any code.
+It is a tool used during development. You return to Claude when you need to
+build new features, fix bugs, update pages, or generate new documentation.
+
+Current model: Claude Sonnet 4.6 (claude.ai)
+Xcode integration: Claude Code (separate instance, used inside Xcode for
+iOS app development)
+
+
+2. GITHUB (github.com)
+──────────────────────
+Account: mdkriza-cpu
+Repository: truenoise-api
+Role: Version control and static website hosting.
+
+GitHub stores all of the TrueNoise code — the backend Python files, the
+frontend HTML pages, and all configuration files. Every change to any file
+is committed here first, and all other services pull from GitHub.
+
+GitHub Pages (a free feature) serves the public-facing website at
+truenoise.org. When you commit a change to any HTML file, GitHub Pages
+automatically redeploys the site within a minute or two. No manual
+deployment step is needed for frontend changes.
+
+The custom domain truenoise.org is connected to GitHub Pages via four A
+records in GoDaddy's DNS settings pointing to GitHub's servers.
+
+URL: https://github.com/mdkriza-cpu/truenoise-api
+Pages URL: https://mdkriza-cpu.github.io/truenoise-api/
+Live site: https://truenoise.org
+
+
+3. RENDER (render.com)
+──────────────────────
+Role: Backend API server — the engine that receives data from the iOS app
+and serves aggregated data to the dashboard.
+
+Render runs the Python FastAPI application (main.py) as a live web service.
+When the iOS app uploads a CSV session file, it POSTs to Render. When the
+dashboard loads, it calls Render's API endpoints to fetch the data displayed
+on screen. When a visitor clicks "Download CSV" on the data page, their
+browser fetches the data from Render.
+
+Render is on the free tier, which means it spins down after 15 minutes of
+inactivity. UptimeRobot pings it every 5 minutes to prevent this.
+
+Render connects to GitHub — when you push a change to main.py or
+requirements.txt on GitHub, you trigger a new deployment on Render from
+the Render dashboard (Manual Deploy → Deploy latest commit).
+
+Service name: aircraft-noise-tracker-api (legacy name, functions correctly)
+Live API URL: https://aircraft-noise-tracker-api.onrender.com
+Key endpoints:
+  GET  /health                              — confirms the service is running
+  POST /api/v1/upload-session               — receives CSV from iOS app
+  GET  /api/v1/dashboard-summary            — powers the dashboard
+  GET  /api/v1/sessions                     — lists all sessions
+  GET  /api/v1/sessions/{id}/observations   — observations for one session
+Plan: Free tier
+Database connection: Supabase (via DATABASE_URL environment variable)
+
+
+4. SUPABASE (supabase.com)
+──────────────────────────
+Project: truenoise
+Role: Permanent PostgreSQL database — stores all observation data.
+
+Supabase is where all the noise measurement data lives permanently.
+Unlike Render's free tier (which has ephemeral local storage), Supabase
+data persists indefinitely — through Render restarts, redeployments, and
+sleep cycles.
+
+The database has two tables:
+  observations — one row per measurement (entry or track event). Every
+    column from the app CSV is stored here, including psychoacoustic
+    metrics, aircraft identifiers, GPS coordinates, and health impact labels.
+  sessions — one row per uploaded session with pre-computed summary
+    statistics (N65, N70, N80, recovery deficit, event density, peak values).
+
+Render connects to Supabase using the DATABASE_URL environment variable
+(set in Render's Environment settings). This is the Supabase Transaction
+Pooler URL on port 6543 — required because Render's async server needs
+connection pooling.
+
+The database has a unique index on (session_id, timestamp, callsign) in
+the observations table, which prevents duplicate rows if the same CSV is
+uploaded more than once.
+
+Account: Google account (marty's Gmail)
+Dashboard: https://supabase.com/dashboard/project/wpxmrlbkifawlfrmbnmf
+Plan: Free tier (no expiry)
+Connection string: stored in Render environment variables (do not share)
+
+
+5. GODADDY (godaddy.com)
+────────────────────────
+Role: Domain name registrar — owns and manages the truenoise.org domain.
+
+GoDaddy is where truenoise.org was purchased. Its only ongoing job is DNS
+management — translating "truenoise.org" into the right IP addresses so
+browsers know where to go.
+
+The DNS configuration points truenoise.org to GitHub Pages using four A
+records:
+  185.199.108.153
+  185.199.109.153
+  185.199.110.153
+  185.199.111.153
+
+The www CNAME record points to mdkriza-cpu.github.io (GitHub Pages).
+
+GoDaddy does not host the website or store any data. It is purely the
+address book entry. Domain renewal is annual — set a reminder.
+
+Domain: truenoise.org
+Also registered: stopsevernnoise.org (advocacy site, not yet built)
+Plan: Annual domain registration (~$12-15/year)
+
+
+6. FORMSPREE (formspree.io)
+────────────────────────────
+Role: Contact form email relay — forwards About page form submissions
+to Marty's email.
+
+The contact form on about.html POSTs to Formspree when someone submits it.
+Formspree forwards the submission as an email. The sender's email address
+is never exposed in the website code — only Formspree knows it.
+
+Formspree requires no server-side code. The form submits directly from
+the visitor's browser to Formspree's servers, which handle the email.
+
+Form ID: maqvkvjk
+Endpoint: https://formspree.io/f/maqvkvjk
+Plan: Free tier (50 submissions/month)
+Forwards to: Marty's email address on file with Formspree account
+
+
+7. UPTIMEROBOT (uptimerobot.com)
+─────────────────────────────────
+Role: Uptime monitor — pings the Render API every 5 minutes to prevent
+it from sleeping.
+
+Render's free tier spins down web services after 15 minutes of inactivity.
+The first request after a spin-down takes up to 50 seconds. UptimeRobot
+solves this by sending a GET request to the /health endpoint every 5 minutes,
+keeping Render awake continuously.
+
+UptimeRobot also serves as an alert system — if the Render service goes
+down unexpectedly, UptimeRobot will send an email notification.
+
+Monitor URL: https://aircraft-noise-tracker-api.onrender.com/health
+Check interval: every 5 minutes
+Plan: Free tier
+
+
+═══════════════════════════════════════════════════════════════════════════
+PART 2: GITHUB REPOSITORY FILES
+═══════════════════════════════════════════════════════════════════════════
+
+Repository: https://github.com/mdkriza-cpu/truenoise-api
+All files are in the main branch root unless noted.
+
+──────────────────────────────────────────────────────────────────────────
+CNAME
+──────────────────────────────────────────────────────────────────────────
+A single-line file containing "truenoise.org". GitHub Pages reads this file
+to know which custom domain to serve the site on. Without it, the site would
+only be accessible at the github.io URL. Do not edit or delete this file.
+
+──────────────────────────────────────────────────────────────────────────
+DEPLOY.md
+──────────────────────────────────────────────────────────────────────────
+The technical handoff document for Xcode Claude. Contains the current live
+API URL, the exact CSV column format the backend expects, a complete Swift
+URLSession code example for POSTing a CSV from the iOS app, a retry strategy
+using UserDefaults for failed uploads, all API endpoint descriptions, and the
+database schema summary. This is the primary reference document for anyone
+building the iOS upload feature. Updated May 2026.
+
+──────────────────────────────────────────────────────────────────────────
+WAV_PROCESSING_BRIEF.md
+──────────────────────────────────────────────────────────────────────────
+Technical specification for a planned future feature: offline WAV file
+analysis. Describes how to process pre-recorded audio files through the
+existing psychoacoustic pipeline to generate session CSVs identical in
+format to live monitoring sessions. Written for Xcode Claude. Covers the
+AVAudioFile reading approach, chunk processing, timestamp handling, ADS-B
+correlation limitations, calibration considerations, and a list of new
+UI components required. No backend changes are needed for this feature.
+
+──────────────────────────────────────────────────────────────────────────
+about.html
+──────────────────────────────────────────────────────────────────────────
+The About page at truenoise.org/about.html. Tells the story of how and why
+TrueNoise was founded (Marty Krizan, Ashbrook, Severn, MD), describes the
+five founding principles (rigorous methodology, published evidence, open data,
+independence, collaboration over confrontation), and hosts the contact form
+that forwards submissions to Marty's email via Formspree. Includes full
+responsive navigation consistent with the rest of the site.
+
+──────────────────────────────────────────────────────────────────────────
+data.html
+──────────────────────────────────────────────────────────────────────────
+The data download page at truenoise.org/data.html. Shows live observation
+counts pulled from the Render API, displays an early-stage dataset notice,
+and provides a Download CSV button that fetches all observations from the
+database and generates a properly formatted CSV file in the visitor's browser.
+Includes a full column definitions table and an attribution block with a
+ready-to-cite reference format. Operator names and aircraft identifiers are
+included in the download (full dataset for researchers), even though they
+are omitted from the public dashboard view.
+
+──────────────────────────────────────────────────────────────────────────
+index.html
+──────────────────────────────────────────────────────────────────────────
+The homepage and health impact dashboard at truenoise.org. Pulls live data
+from the Render API on page load and displays: N70 event count, recovery
+deficit count, peak loudness in sone, peak dBA, three health research
+citation blocks (HYENA, RANCH, WHO), a recovery deficit dot visualization,
+noise event summary cards, an aircraft breakdown table grouped by type and
+flight phase (no operator names shown), and an hourly event distribution
+bar chart. Falls back to sample data if the API is unreachable. Fully
+responsive with hamburger navigation on mobile.
+
+──────────────────────────────────────────────────────────────────────────
+main.py
+──────────────────────────────────────────────────────────────────────────
+The FastAPI Python backend application that runs on Render. Handles all
+server-side logic: receiving CSV uploads from the iOS app, parsing the
+tab- or comma-separated data, inserting observations into Supabase with
+duplicate prevention, computing session summary statistics (N65/N70/N80,
+recovery deficit, event density), and serving the dashboard API endpoints.
+Uses psycopg (version 3) for PostgreSQL connectivity. This is the file
+you edit when changing API behavior, adding new endpoints, or modifying
+how data is stored or aggregated. After editing, commit to GitHub and
+trigger a Manual Deploy on Render.
+
+──────────────────────────────────────────────────────────────────────────
+methodology.html
+──────────────────────────────────────────────────────────────────────────
+The methodology page at truenoise.org/methodology.html. A technically
+rigorous nine-section document covering: hardware specifications (PoP Voice
+lavalier microphone, iPhone A-series silicon), iOS audio capture in
+.measurement mode, the IEC 61672 A-weighting filter implementation with
+exact pole frequencies, FFT and 1/3-octave band analysis using Apple's
+vDSP framework, psychoacoustic metrics (Zwicker loudness, sharpness,
+annoyance), per-device calibration approach, validation results against
+the TA657A Type 2 reference meter (1.4 dB agreement on live A320 overflight),
+and an honest six-point limitations section. Written to withstand technical
+scrutiny. Includes a right-side section navigation on desktop.
+
+──────────────────────────────────────────────────────────────────────────
+render.yaml
+──────────────────────────────────────────────────────────────────────────
+Render deployment configuration file. Specifies the service type (web),
+runtime (Python), build command (pip install -r requirements.txt), and
+start command (uvicorn main:app). Render reads this file when deploying.
+The disk configuration in this file is no longer used (Supabase replaced
+the local SQLite approach), but the file remains for reference. Environment
+variables (DATABASE_URL) are set directly in the Render dashboard, not here.
+
+──────────────────────────────────────────────────────────────────────────
+requirements.txt
+──────────────────────────────────────────────────────────────────────────
+Python package dependencies for the backend. Lists the four libraries Render
+installs when deploying: fastapi (the web framework), uvicorn (the ASGI
+server that runs FastAPI), python-multipart (required for CSV file uploads),
+and psycopg[binary] (PostgreSQL database driver for Supabase connectivity).
+When adding new Python functionality to main.py that requires a new library,
+add it here and redeploy.
+
+──────────────────────────────────────────────────────────────────────────
+runtime.txt
+──────────────────────────────────────────────────────────────────────────
+Specifies the Python version for Render to use. Contains "python-3.11.9".
+This file was created to prevent Render from defaulting to Python 3.14,
+which was incompatible with several dependencies during initial deployment.
+If Render continues to ignore this file (as it did during setup), the
+Python version can also be set in Render's dashboard settings.
+
+──────────────────────────────────────────────────────────────────────────
+upload-test.html
+──────────────────────────────────────────────────────────────────────────
+A simple developer utility page used to manually test CSV uploads to the
+Render API without needing the iOS app. Presents a file picker and an
+"Upload to API" button. Used during development to confirm the upload
+endpoint was working correctly and to seed the database with real session
+data. Not linked from the public website but remains accessible at
+truenoise.org/upload-test.html. Can be used anytime you want to manually
+upload a session CSV.
+
+
+═══════════════════════════════════════════════════════════════════════════
+PART 3: DATA FLOW SUMMARY
+═══════════════════════════════════════════════════════════════════════════
+
+HOW DATA GETS IN:
+  iOS app (Aircraft Noise Tracker)
+    → POST CSV to Render API (/api/v1/upload-session)
+    → Render parses CSV, computes summaries, stores in Supabase
+    → Supabase persists data permanently
+
+HOW DATA GETS OUT (dashboard):
+  Visitor loads truenoise.org (served by GitHub Pages)
+    → Browser calls Render API (/api/v1/dashboard-summary)
+    → Render queries Supabase, returns aggregated JSON
+    → Browser renders data into the dashboard
+
+HOW DATA GETS OUT (download):
+  Visitor clicks Download CSV on data.html
+    → Browser calls Render API (/api/v1/sessions then /observations)
+    → Render queries Supabase, returns all rows
+    → Browser assembles CSV and triggers file download
+
+HOW CONTACT FORMS WORK:
+  Visitor submits About page form
+    → Browser POSTs directly to Formspree
+    → Formspree emails Marty
+    → No Render or Supabase involvement
+
+
+═══════════════════════════════════════════════════════════════════════════
+PART 4: THINGS TO REMEMBER
+═══════════════════════════════════════════════════════════════════════════
+
+CREDENTIALS AND ACCOUNTS:
+  All service accounts use either Marty's Google account or GitHub account
+  for login. The Supabase database password and connection string are stored
+  only in Render's Environment settings — do not store them anywhere else.
+
+DOMAIN RENEWAL:
+  truenoise.org and stopsevernnoise.org renew annually through GoDaddy.
+  Set a calendar reminder — if a domain lapses, the site goes down.
+
+SUPABASE FREE TIER:
+  Supabase's free tier has no expiry date for the database itself, but the
+  project may be paused after 90 days of inactivity (no API calls). As long
+  as UptimeRobot is running and the dashboard is receiving occasional visits,
+  this will not be an issue.
+
+RENDER FREE TIER:
+  Render's free tier is sufficient for current traffic. If the dashboard
+  gains significant public attention and response times become an issue,
+  consider upgrading to Render Starter ($7/month) for always-on service.
+
+WHEN YOU MAKE CHANGES:
+  Frontend (HTML files): edit on GitHub → auto-deploys to truenoise.org
+  Backend (main.py, requirements.txt): edit on GitHub → Manual Deploy on Render
+  Database schema: edit via Supabase SQL Editor → no redeployment needed
+
+NEXT DEVELOPMENT PRIORITIES:
+  1. iOS app upload function (Xcode Claude + DEPLOY.md)
+  2. WAV file processing feature (Xcode Claude + WAV_PROCESSING_BRIEF.md)
+  3. stopsevernnoise.org advocacy site (Claude, new project)
+  4. Security hardening: API key authentication, rate limiting
+  5. Expanded validation dataset (more TA657A comparison measurements)
+
+
+═══════════════════════════════════════════════════════════════════════════
+END OF DOCUMENTATION
+Generated by Claude Sonnet 4.6 in collaboration with Marty Krizan
+truenoise.org · May 2026
+═══════════════════════════════════════════════════════════════════════════
