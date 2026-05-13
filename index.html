@@ -3,771 +3,1001 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aircraft Noise Health Impact — Community Dashboard</title>
+<title>TrueNoise — Environmental Noise Health Impact Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --bg: #0a0f1a;
-    --bg2: #111827;
-    --bg3: #1a2236;
-    --border: rgba(255,255,255,0.07);
-    --text: #f0f4ff;
-    --muted: #8899bb;
-    --dim: #4a5a7a;
-
-    --red:    #ff4d4d;
-    --amber:  #f59e0b;
-    --yellow: #fbbf24;
-    --green:  #34d399;
-    --teal:   #22d3ee;
-    --blue:   #60a5fa;
-
-    --risk-negligible: #34d399;
-    --risk-low:        #fbbf24;
-    --risk-moderate:   #f59e0b;
-    --risk-high:       #ef4444;
-    --risk-severe:     #dc2626;
+    --teal:       #1D9E75;
+    --teal-light: #E1F5EE;
+    --teal-mid:   #9FE1CB;
+    --teal-dark:  #0F6E56;
+    --blue:       #378ADD;
+    --blue-light: #E6F1FB;
+    --red:        #E24B4A;
+    --red-light:  #FCEBEB;
+    --amber:      #BA7517;
+    --amber-light:#FAEEDA;
+    --green:      #3B6D11;
+    --green-light:#EAF3DE;
+    --gray-50:    #F8F7F4;
+    --gray-100:   #F1EFE8;
+    --gray-200:   #D3D1C7;
+    --gray-400:   #888780;
+    --gray-600:   #5F5E5A;
+    --gray-800:   #2C2C2A;
+    --text:       #1a1a18;
+    --text-muted: #5F5E5A;
+    --text-dim:   #888780;
+    --border:     rgba(0,0,0,0.09);
+    --border-mid: rgba(0,0,0,0.14);
   }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
 
   body {
     font-family: 'Inter', sans-serif;
-    background: var(--bg);
+    background: #fff;
     color: var(--text);
     line-height: 1.6;
     min-height: 100vh;
   }
 
-  /* ---------- NAV ---------- */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 2rem;
-    height: 60px;
-    background: rgba(10,15,26,0.92);
-    backdrop-filter: blur(12px);
+  a { color: var(--teal); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ─── LAYOUT ─── */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: #fff;
+  }
+
+  .logo {
+    padding: 24px 20px 20px;
     border-bottom: 1px solid var(--border);
   }
-  .nav-brand {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--teal);
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .logo-wave svg { width: 30px; height: 22px; }
+  .logo-name {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: var(--text);
+  }
+  .logo-name span { color: var(--teal); }
+  .logo-tagline {
+    font-size: 10px;
+    color: var(--text-dim);
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    margin-top: 2px;
   }
-  .nav-links { display: flex; gap: 2rem; }
-  .nav-links a {
-    font-size: 13px; color: var(--muted); text-decoration: none;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); }
-  .nav-links a.active { color: var(--text); }
 
-  /* ---------- HERO ---------- */
-  .hero {
-    padding: 5rem 2rem 3rem;
-    max-width: 900px;
-    margin: 0 auto;
+  .nav { padding: 16px 12px; flex: 1; }
+  .nav-group { margin-bottom: 20px; }
+  .nav-group-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
   }
-  .hero-label {
-    font-family: 'DM Mono', monospace;
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--gray-100); color: var(--text); text-decoration: none; }
+  .nav-item.active { background: var(--teal-light); color: var(--teal-dark); font-weight: 500; }
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .sidebar-footer a { color: var(--text-dim); }
+  .sidebar-footer a:hover { color: var(--teal); }
+
+  /* ─── MAIN ─── */
+  .main { flex: 1; min-width: 0; }
+
+  /* ─── TOP BAR ─── */
+  .topbar {
+    padding: 14px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .topbar-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .topbar-sub { font-size: 12px; color: var(--text-dim); margin-top: 1px; }
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--teal-dark);
+    background: var(--teal-light);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 40px 40px 32px;
+    border-bottom: 1px solid var(--border);
+    max-width: 760px;
+  }
+  .hero-eyebrow {
     font-size: 11px;
     color: var(--teal);
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 1.25rem;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 12px;
   }
   .hero h1 {
     font-family: 'DM Serif Display', serif;
-    font-size: clamp(2.4rem, 5vw, 4rem);
-    line-height: 1.1;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 400;
+    line-height: 1.2;
     color: var(--text);
-    margin-bottom: 1.5rem;
+    margin-bottom: 14px;
   }
-  .hero h1 em {
-    font-style: italic;
-    color: var(--red);
-  }
-  .hero-sub {
-    font-size: 1.1rem;
-    color: var(--muted);
-    max-width: 620px;
+  .hero h1 em { font-style: italic; color: var(--teal); }
+  .hero-desc {
+    font-size: 15px;
+    color: var(--text-muted);
     line-height: 1.7;
+    max-width: 620px;
+    margin-bottom: 20px;
   }
+  .hero-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .hero-link {
+    font-size: 13px;
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .hero-link:hover { text-decoration: underline; }
 
-  /* ---------- MAIN METRICS STRIP ---------- */
-  .metrics-strip {
+  /* ─── METRICS STRIP ─── */
+  .metrics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border-top: 1px solid var(--border);
+    grid-template-columns: repeat(4, 1fr);
     border-bottom: 1px solid var(--border);
-    margin: 2rem 0;
   }
-  .metric-cell {
-    background: var(--bg);
-    padding: 2rem;
-    position: relative;
+  .metric {
+    padding: 24px 28px;
+    border-right: 1px solid var(--border);
   }
+  .metric:last-child { border-right: none; }
   .metric-label {
-    font-family: 'DM Mono', monospace;
     font-size: 10px;
-    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.5rem;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 6px;
   }
   .metric-value {
     font-family: 'DM Serif Display', serif;
-    font-size: 3rem;
+    font-size: 2.4rem;
     line-height: 1;
     color: var(--text);
-    margin-bottom: 0.5rem;
+    margin-bottom: 4px;
   }
   .metric-value.danger { color: var(--red); }
   .metric-value.warning { color: var(--amber); }
-  .metric-value.ok { color: var(--green); }
-  .metric-context {
-    font-size: 12px;
-    color: var(--muted);
+  .metric-value.ok { color: var(--teal-dark); }
+  .metric-unit { font-size: 1rem; font-family: 'Inter', sans-serif; }
+  .metric-note {
+    font-size: 11px;
+    color: var(--text-dim);
     line-height: 1.4;
   }
   .metric-who {
-    font-size: 11px;
-    color: var(--dim);
-    margin-top: 0.4rem;
+    font-size: 10px;
+    color: var(--text-dim);
     font-style: italic;
+    margin-top: 3px;
   }
 
-  /* ---------- SECTION LAYOUT ---------- */
-  .section {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-  }
-  .section-heading {
-    font-family: 'DM Mono', monospace;
+  /* ─── CONTENT ─── */
+  .content { padding: 36px 40px; max-width: 960px; }
+
+  .section { margin-bottom: 40px; }
+  .section-label {
     font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
     color: var(--teal);
-    margin-bottom: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 6px;
   }
   .section-title {
     font-family: 'DM Serif Display', serif;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
+    font-weight: 400;
     color: var(--text);
-    margin-bottom: 0.75rem;
+    margin-bottom: 6px;
   }
   .section-desc {
-    font-size: 0.95rem;
-    color: var(--muted);
-    max-width: 680px;
-    margin-bottom: 2rem;
-    line-height: 1.7;
-  }
-
-  /* ---------- HEALTH RISK CARDS ---------- */
-  .risk-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-bottom: 3rem;
-  }
-  .risk-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .risk-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--accent);
-  }
-  .risk-card-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.75rem;
-  }
-  .risk-card-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.3rem;
-  }
-  .risk-card-value {
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-  }
-  .risk-card-desc {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
-  /* ---------- RECOVERY DEFICIT VISUAL ---------- */
-  .recovery-row {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    margin: 1rem 0;
-  }
-  .recovery-dot {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    transition: background 0.3s;
-  }
-  .recovery-dot.event { background: var(--amber); border-color: var(--amber); }
-  .recovery-dot.no-recovery { background: var(--red); border-color: var(--red); }
-
-  /* ---------- AIRCRAFT TABLE ---------- */
-  .aircraft-table {
-    width: 100%;
-    border-collapse: collapse;
     font-size: 13px;
-  }
-  .aircraft-table th {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--dim);
-    text-align: left;
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .aircraft-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--border);
-    vertical-align: middle;
-  }
-  .aircraft-table tr:hover td { background: var(--bg2); }
-  .type-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    padding: 2px 8px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--teal);
+    color: var(--text-muted);
+    max-width: 620px;
+    margin-bottom: 20px;
+    line-height: 1.65;
   }
 
-  /* ---------- RISK METER ---------- */
-  .risk-meter {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  /* ─── HEALTH STATEMENTS ─── */
+  .health-block {
+    border-left: 2px solid var(--red);
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border-radius: 0 6px 6px 0;
+    background: var(--red-light);
   }
-  .risk-pip {
-    width: 8px; height: 8px;
-    border-radius: 2px;
-    background: var(--bg3);
-  }
-  .risk-pip.filled { background: var(--pip-color, var(--amber)); }
-
-  /* ---------- HOURLY BAR CHART ---------- */
-  .hour-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 80px;
-    margin: 1rem 0;
-  }
-  .hour-bar-wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    height: 100%;
-  }
-  .hour-bar {
-    width: 100%;
-    background: var(--teal);
-    opacity: 0.5;
-    border-radius: 2px 2px 0 0;
-    transition: opacity 0.2s;
-    min-height: 2px;
-  }
-  .hour-bar:hover { opacity: 1; }
-  .hour-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    color: var(--dim);
-  }
-
-  /* ---------- STATEMENT BLOCK ---------- */
-  .health-statement {
-    background: var(--bg2);
-    border-left: 3px solid var(--red);
-    padding: 1.25rem 1.5rem;
-    border-radius: 0 8px 8px 0;
-    margin: 1rem 0;
-  }
-  .health-statement p {
-    font-size: 0.95rem;
+  .health-block p {
+    font-size: 14px;
     color: var(--text);
     line-height: 1.6;
   }
-  .health-statement cite {
+  .health-block cite {
     display: block;
-    margin-top: 0.5rem;
+    margin-top: 6px;
     font-size: 11px;
-    color: var(--dim);
+    color: var(--text-dim);
     font-style: normal;
     font-family: 'DM Mono', monospace;
   }
 
-  /* ---------- FOOTER ---------- */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 2rem;
-    text-align: center;
-  }
-  footer p {
-    font-size: 12px;
-    color: var(--dim);
-    line-height: 1.8;
-  }
-  footer a { color: var(--muted); }
-
-  /* ---------- LOADING STATE ---------- */
-  .loading {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--teal);
-    animation: pulse 1.2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
-  }
-
-  /* ---------- STATUS BAR ---------- */
-  .status-bar {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 0.5rem 2rem;
+  /* ─── RECOVERY DEFICIT ─── */
+  .recovery-grid {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 12px 0;
+  }
+  .recovery-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--gray-100);
+    border: 1px solid var(--border);
+  }
+  .recovery-dot.recovered { background: var(--teal-mid); border-color: var(--teal); }
+  .recovery-dot.deficit { background: var(--red); border-color: #c03030; }
+  .recovery-legend {
+    display: flex;
+    gap: 16px;
     font-size: 12px;
-    color: var(--muted);
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .recovery-legend span { display: flex; align-items: center; gap: 6px; }
+  .dot-sample {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
   }
 
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 0 2rem;
+  /* ─── AIRCRAFT TABLE ─── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th {
+    text-align: left;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 400;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-mid);
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .data-table tr:hover td { background: var(--gray-50); }
+  .phase-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .phase-takeoff { background: var(--amber-light); color: var(--amber); }
+  .phase-approach { background: var(--blue-light); color: #185FA5; }
+  .phase-climb { background: var(--green-light); color: var(--green); }
+  .phase-cruise { background: var(--gray-100); color: var(--gray-600); }
+  .risk-bar {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+  .risk-pip {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    background: var(--gray-200);
+  }
+  .risk-pip.filled-high { background: var(--red); }
+  .risk-pip.filled-mod  { background: var(--amber); }
+  .risk-pip.filled-low  { background: var(--teal); }
+
+  /* ─── HOUR CHART ─── */
+  .hour-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 80px;
+    margin: 12px 0 6px;
+  }
+  .hour-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 3px;
+  }
+  .hour-bar {
+    width: 100%;
+    border-radius: 2px 2px 0 0;
+    min-height: 2px;
+    transition: opacity 0.2s;
+  }
+  .hour-bar:hover { opacity: 0.7; }
+  .hour-bar.night { background: #E24B4A; opacity: 0.7; }
+  .hour-bar.day { background: var(--teal); opacity: 0.6; }
+  .hour-tick {
+    font-size: 9px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+  }
+  .hour-axis {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* ─── CARDS GRID ─── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .card {
+    background: var(--gray-50);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .card-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 6px;
+  }
+  .card-value {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .card-desc { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+
+  /* ─── LOADING ─── */
+  .loading-bar {
+    height: 2px;
+    background: linear-gradient(90deg, var(--teal-light), var(--teal), var(--teal-light));
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* ─── MOBILE NAV ─── */
+  .mobile-nav {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .mobile-logo {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .mobile-logo span { color: var(--teal); }
+  .hamburger {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--text-muted);
+  }
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+  }
+  .mobile-menu.open { display: block; }
+  .mobile-menu-panel {
+    background: #fff;
+    width: 260px;
+    height: 100%;
+    padding: 20px 16px;
+    overflow-y: auto;
+  }
+  .mobile-menu-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .app { flex-direction: column; }
+    .sidebar { display: none; }
+    .mobile-nav { display: flex; }
+    .topbar { padding: 12px 16px; }
+    .hero { padding: 24px 16px 20px; }
+    .metrics {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .metric { padding: 16px; }
+    .metric:nth-child(2) { border-right: none; }
+    .content { padding: 24px 16px; }
+    .data-table { font-size: 12px; }
+    .data-table th, .data-table td { padding: 8px 6px; }
+  }
+  @media (max-width: 480px) {
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 1.6rem; }
   }
 </style>
 </head>
 <body>
 
-<!-- STATUS BAR -->
-<div class="status-bar">
-  <span class="loading"></span>
-  <span id="status-text">Loading community data...</span>
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <div class="mobile-logo">True<span>Noise</span></div>
+  <button class="hamburger" onclick="openMenu()" aria-label="Open navigation">☰</button>
 </div>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-brand">✈ Aircraft Noise Tracker</div>
-  <div class="nav-links">
-    <a href="#dashboard" class="active">Health impact</a>
-    <a href="#aircraft">Aircraft</a>
-    <a href="#time">By hour</a>
-    <a href="methodology.html">Methodology</a>
-    <a href="data.html">Download data</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-label">Community monitoring · BWI departure corridor</div>
-  <h1>Your neighborhood's air<br>is <em>not</em> recovering.</h1>
-  <p class="hero-sub">
-    This dashboard presents real measurements of aircraft noise from community monitors
-    near BWI Airport. Every metric is mapped to peer-reviewed health research —
-    because noise isn't just annoying. It's a public health issue.
-  </p>
-</div>
-
-<!-- MAIN METRICS STRIP -->
-<div class="metrics-strip" id="dashboard">
-  <div class="metric-cell">
-    <div class="metric-label">Aircraft events today (N70)</div>
-    <div class="metric-value danger" id="n70-val">—</div>
-    <div class="metric-context">Aircraft exceeding 70 dBA peak</div>
-    <div class="metric-who">WHO: no safe threshold for nighttime events</div>
-  </div>
-  <div class="metric-cell">
-    <div class="metric-label">Recovery deficit</div>
-    <div class="metric-value danger" id="recovery-val">—</div>
-    <div class="metric-context">Gaps &lt;15 min between events</div>
-    <div class="metric-who">Cortisol cannot return to baseline in &lt;15 min</div>
-  </div>
-  <div class="metric-cell">
-    <div class="metric-label">Peak loudness recorded</div>
-    <div class="metric-value warning" id="peak-sone-val">— <span style="font-size:1.2rem">sone</span></div>
-    <div class="metric-context" id="peak-sone-label">—</div>
-    <div class="metric-who">Zwicker & Fastl ISO 532 scale</div>
-  </div>
-  <div class="metric-cell">
-    <div class="metric-label">Total sessions monitored</div>
-    <div class="metric-value ok" id="sessions-val">—</div>
-    <div class="metric-context" id="sessions-context">Community contributors</div>
-    <div class="metric-who">Independent citizen science</div>
+<!-- MOBILE MENU OVERLAY -->
+<div class="mobile-menu" id="mobileMenu" onclick="closeMenuOutside(event)">
+  <div class="mobile-menu-panel">
+    <button class="mobile-menu-close" onclick="closeMenu()">✕</button>
+    <div style="font-size:16px; font-weight:600; color:var(--text); margin-bottom:20px;">True<span style="color:var(--teal)">Noise</span></div>
+    <div style="font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Data</div>
+    <a href="#dashboard" class="nav-item active" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Health dashboard</a>
+    <a href="#aircraft" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Aircraft analysis</a>
+    <a href="#time" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Time patterns</a>
+    <div style="font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin:16px 0 8px;">Research</div>
+    <a href="methodology.html" class="nav-item" style="display:flex; margin-bottom:2px;">Methodology</a>
+    <a href="data.html" class="nav-item" style="display:flex; margin-bottom:2px;">Download data</a>
+    <a href="about.html" class="nav-item" style="display:flex;">About</a>
   </div>
 </div>
 
-<!-- HEALTH IMPACT SECTION -->
-<div class="section">
-  <div class="section-heading">What this means for your health</div>
-  <div class="section-title">Research links this exposure to real outcomes</div>
-  <div class="section-desc">
-    These are not predictions — they are findings from peer-reviewed epidemiological
-    studies conducted near airports across Europe and North America.
-  </div>
-
-  <div class="health-statement">
-    <p>Residents in areas with frequent aircraft noise above 65 dBA show a
-    <strong>34% increased risk of hypertension</strong> compared to quieter neighborhoods.
-    The effect persists after controlling for socioeconomic factors.</p>
-    <cite>HYENA Study — Jarup et al. (2008), Environmental Health Perspectives 116(3)</cite>
-  </div>
-
-  <div class="health-statement">
-    <p>Children attending schools near major airports score significantly lower on
-    <strong>reading comprehension and memory tests</strong>. The effect scales with
-    noise exposure level and is not explained by traffic noise or socioeconomic status.</p>
-    <cite>RANCH Study — Stansfeld et al. (2005), The Lancet 365(9475)</cite>
-  </div>
-
-  <div class="health-statement">
-    <p>WHO recommends aircraft noise levels below <strong>45 dBA at night</strong>
-    to prevent sleep disturbance. Exposures above this level are associated with
-    measurable increases in cardiovascular mortality.</p>
-    <cite>WHO Environmental Noise Guidelines for the European Region (2018)</cite>
-  </div>
-
-  <!-- RECOVERY DEFICIT VISUAL -->
-  <div style="margin-top: 2.5rem;">
-    <div class="section-heading">Recovery deficit — visualized</div>
-    <p style="font-size:0.9rem; color: var(--muted); margin-bottom: 1rem; max-width: 600px;">
-      Each dot below represents one inter-event interval from the most recent session.
-      <span style="color: var(--amber)">●</span> recovered &nbsp;
-      <span style="color: var(--red)">●</span> no recovery (&lt;15 min gap)
-    </p>
-    <div class="recovery-row" id="recovery-dots"></div>
-  </div>
-
-  <!-- RISK INDICATOR CARDS -->
-  <div class="risk-cards" style="margin-top: 2.5rem;">
-    <div class="risk-card" style="--accent: var(--red)">
-      <div class="risk-card-label">Loudness (sone)</div>
-      <div class="risk-card-value" id="rc-loudness">—</div>
-      <div class="risk-card-desc" id="rc-loudness-desc">Perceived loudness (Zwicker ISO 532). Doubling sone value = doubling perceived loudness.</div>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <div class="logo-wave">
+          <svg viewBox="0 0 30 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 11 Q5.5 4 9 11 Q12.5 18 16 11 Q19.5 4 23 11 Q26.5 18 30 11" stroke="#1D9E75" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-name">True<span>Noise</span></div>
+        </div>
+      </div>
+      <div class="logo-tagline">Environmental noise research</div>
     </div>
-    <div class="risk-card" style="--accent: var(--amber)">
-      <div class="risk-card-label">Psychoacoustic annoyance</div>
-      <div class="risk-card-value" id="rc-annoyance">—</div>
-      <div class="risk-card-desc" id="rc-annoyance-desc">Composite of loudness + sharpness. &gt;20 = significant health risk threshold.</div>
+
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Data</div>
+        <a href="#dashboard" class="nav-item active">
+          <span class="nav-icon">📊</span> Health dashboard
+        </a>
+        <a href="#aircraft" class="nav-item">
+          <span class="nav-icon">✈</span> Aircraft analysis
+        </a>
+        <a href="#time" class="nav-item">
+          <span class="nav-icon">🕐</span> Time patterns
+        </a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Research</div>
+        <a href="methodology.html" class="nav-item">
+          <span class="nav-icon">🔬</span> Methodology
+        </a>
+        <a href="data.html" class="nav-item">
+          <span class="nav-icon">⬇</span> Download data
+        </a>
+        <a href="about.html" class="nav-item">
+          <span class="nav-icon">ℹ</span> About
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      Independent community monitoring.<br>
+      Not affiliated with any airport,<br>airline, or government agency.<br><br>
+      <a href="methodology.html">Methodology</a> ·
+      <a href="data.html">Data</a>
     </div>
-    <div class="risk-card" style="--accent: var(--teal)">
-      <div class="risk-card-label">Peak dBA recorded</div>
-      <div class="risk-card-value" id="rc-dba">—</div>
-      <div class="risk-card-desc">A-weighted sound pressure level. Street traffic = ~70 dBA. Hearing risk begins at 85 dBA sustained.</div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="loading-bar" id="loadingBar"></div>
+
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Health impact dashboard</div>
+        <div class="topbar-sub" id="topbar-sub">Loading community data...</div>
+      </div>
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <span id="session-count">—</span> session<span id="session-plural"></span>
+      </div>
     </div>
-    <div class="risk-card" style="--accent: var(--blue)">
-      <div class="risk-card-label">Event density</div>
-      <div class="risk-card-value" id="rc-density">—</div>
-      <div class="risk-card-desc">Aircraft events per hour averaged across all monitored sessions.</div>
+
+    <!-- HERO -->
+    <div class="hero" id="dashboard">
+      <div class="hero-eyebrow">Community monitoring · BWI departure corridor</div>
+      <h1>Noise isn't just annoying.<br><em>It's a health issue.</em></h1>
+      <p class="hero-desc">
+        Independent measurements of aircraft noise near BWI Airport, mapped to
+        peer-reviewed health research. Every metric on this page is grounded in
+        published epidemiology — not opinion.
+      </p>
+      <div class="hero-links">
+        <a href="methodology.html" class="hero-link">→ Read the methodology</a>
+        <a href="data.html" class="hero-link">→ Download raw data</a>
+        <a href="about.html" class="hero-link">→ About this project</a>
+      </div>
     </div>
-  </div>
-</div>
 
-<div class="divider"></div>
+    <!-- METRICS STRIP -->
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">N70 events</div>
+        <div class="metric-value danger" id="m-n70">—</div>
+        <div class="metric-note">Aircraft exceeding 70 dBA peak</div>
+        <div class="metric-who">WHO: no safe threshold for nighttime events</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Recovery deficit</div>
+        <div class="metric-value danger" id="m-recovery">—</div>
+        <div class="metric-note">Gaps &lt;15 min between noise events</div>
+        <div class="metric-who">Cortisol cannot return to baseline in under 15 min</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Peak loudness</div>
+        <div class="metric-value warning" id="m-loudness">—</div>
+        <div class="metric-note" id="m-loudness-label">Zwicker loudness (ISO 532)</div>
+        <div class="metric-who">High risk threshold: 16 sone</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Peak dBA recorded</div>
+        <div class="metric-value warning" id="m-dba">—</div>
+        <div class="metric-note">A-weighted sound pressure level</div>
+        <div class="metric-who">Street traffic ≈ 70 dBA · Hearing risk at 85 dBA</div>
+      </div>
+    </div>
 
-<!-- AIRCRAFT BREAKDOWN -->
-<div class="section" id="aircraft">
-  <div class="section-heading">Aircraft analysis</div>
-  <div class="section-title">Which aircraft cause the most harm?</div>
-  <div class="section-desc">
-    Not all aircraft are equal. Type, flight phase, and approach angle all affect
-    the psychoacoustic profile — and the health impact. Ranked by peak noise level.
-  </div>
+    <!-- CONTENT -->
+    <div class="content">
 
-  <table class="aircraft-table" id="aircraft-table">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Operator</th>
-        <th>Events</th>
-        <th>Peak dBA</th>
-        <th>Avg loudness</th>
-        <th>Avg annoyance</th>
-        <th>Risk</th>
-      </tr>
-    </thead>
-    <tbody id="aircraft-tbody">
-      <tr><td colspan="7" style="color: var(--dim); padding: 1.5rem 0.75rem;">Loading aircraft data...</td></tr>
-    </tbody>
-  </table>
-</div>
+      <!-- HEALTH EVIDENCE -->
+      <div class="section">
+        <div class="section-label">What this means for your health</div>
+        <div class="section-title">Research links this exposure to real outcomes</div>
+        <p class="section-desc">
+          These findings come from peer-reviewed epidemiological studies conducted
+          near airports across Europe and North America — not models or projections.
+        </p>
 
-<div class="divider"></div>
+        <div class="health-block">
+          <p>Residents in areas with frequent aircraft noise above 65 dBA show a
+          <strong>34% increased risk of hypertension</strong> compared to quieter
+          neighborhoods. The effect persists after controlling for socioeconomic factors.</p>
+          <cite>HYENA Study — Jarup et al. (2008), Environmental Health Perspectives 116(3):329–333</cite>
+        </div>
 
-<!-- TIME OF DAY -->
-<div class="section" id="time">
-  <div class="section-heading">Temporal pattern</div>
-  <div class="section-title">When does your neighborhood get no peace?</div>
-  <div class="section-desc">
-    Aircraft events by hour of day across all monitored sessions.
-    Night hours (10pm–6am) face stricter WHO guidelines — any events here
-    are of particular concern.
-  </div>
+        <div class="health-block">
+          <p>Children attending schools near major airports score significantly lower on
+          <strong>reading comprehension and memory tests</strong>. The effect scales with
+          noise level and is not explained by traffic noise or socioeconomic status.</p>
+          <cite>RANCH Study — Stansfeld et al. (2005), The Lancet 365(9475):1942–1949</cite>
+        </div>
 
-  <div class="hour-bars" id="hour-bars" aria-label="Aircraft events by hour of day"></div>
-  <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
-    <span style="font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace;">12am</span>
-    <span style="font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace;">6am</span>
-    <span style="font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace;">Noon</span>
-    <span style="font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace;">6pm</span>
-    <span style="font-size: 11px; color: var(--dim); font-family: 'DM Mono', monospace;">Midnight</span>
-  </div>
-</div>
+        <div class="health-block">
+          <p>WHO recommends aircraft noise below <strong>45 dBA Lnight</strong> to prevent
+          sleep disturbance. Exposures above this level are associated with measurable
+          increases in cardiovascular mortality.</p>
+          <cite>WHO Environmental Noise Guidelines for the European Region (2018)</cite>
+        </div>
+      </div>
 
-<div class="divider"></div>
+      <!-- RECOVERY DEFICIT VISUAL -->
+      <div class="section">
+        <div class="section-label">Recovery deficit — visualized</div>
+        <div class="section-title">How often does the body get time to recover?</div>
+        <p class="section-desc">
+          Each dot represents one inter-event interval from the most recent session.
+          Cortisol — the primary stress hormone — requires at least 15 minutes to return
+          to baseline after a noise event above 65 dBA.
+        </p>
+        <div class="recovery-legend">
+          <span><span class="dot-sample" style="background:var(--teal-mid);"></span> Recovery gap ≥ 15 min</span>
+          <span><span class="dot-sample" style="background:var(--red);"></span> No recovery (gap &lt; 15 min)</span>
+        </div>
+        <div class="recovery-grid" id="recovery-dots"></div>
+      </div>
 
-<!-- FOOTER -->
-<footer>
-  <p>
-    Data collected by independent community monitors using calibrated iOS devices.<br>
-    Sound measurements validated within 1.4 dB of TA657A Type 2 reference meter.<br>
-    Psychoacoustic analysis per ISO 532-1:2017 (Zwicker loudness) and DIN 45692:2009 (sharpness).<br><br>
-    <a href="methodology.html">Full methodology</a> · <a href="data.html">Download raw data</a> · 
-    Not affiliated with BWI Airport, the FAA, or any airline.<br>
-    This is independent community public health monitoring.
-  </p>
-</footer>
+      <!-- SECONDARY METRICS -->
+      <div class="section">
+        <div class="section-label">Session indicators</div>
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-label">Avg event density</div>
+            <div class="card-value" id="c-density">—</div>
+            <div class="card-desc">Aircraft events per hour</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Total aircraft tracked</div>
+            <div class="card-value" id="c-aircraft">—</div>
+            <div class="card-desc">Unique aircraft observed</div>
+          </div>
+          <div class="card">
+            <div class="card-label">N65 events</div>
+            <div class="card-value" id="c-n65">—</div>
+            <div class="card-desc">Aircraft exceeding 65 dBA peak</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Sessions monitored</div>
+            <div class="card-value" id="c-sessions">—</div>
+            <div class="card-desc">Independent community sessions</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AIRCRAFT TABLE -->
+      <div class="section" id="aircraft">
+        <div class="section-label">Aircraft analysis</div>
+        <div class="section-title">Which aircraft types produce the most noise impact?</div>
+        <p class="section-desc">
+          Grouped by aircraft type and flight phase. Operator information is excluded
+          from this view and is available in the <a href="data.html">full data download</a>.
+          Sharpness reflects high-frequency spectral content — higher values indicate
+          more piercing, anxiety-inducing noise (DIN 45692).
+        </p>
+        <div style="overflow-x: auto;">
+          <table class="data-table" id="aircraft-table">
+            <thead>
+              <tr>
+                <th>Aircraft type</th>
+                <th>Phase</th>
+                <th>Avg alt (ft)</th>
+                <th>Peak dBA</th>
+                <th>Avg loudness</th>
+                <th>Avg sharpness</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody id="aircraft-tbody">
+              <tr><td colspan="7" style="color:var(--text-dim); padding:1.5rem 0.5rem;">Loading aircraft data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TIME OF DAY -->
+      <div class="section" id="time">
+        <div class="section-label">Temporal pattern</div>
+        <div class="section-title">When does the neighborhood get no peace?</div>
+        <p class="section-desc">
+          Aircraft events by hour of day across all monitored sessions.
+          <span style="color:var(--red);">Red bars</span> indicate night hours (10pm–6am),
+          where WHO guidelines are strictest and health impacts of sleep disruption are most severe.
+        </p>
+        <div class="hour-chart" id="hour-chart"></div>
+        <div class="hour-axis">
+          <span>12am</span><span>6am</span><span>Noon</span><span>6pm</span><span>Midnight</span>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+
+    <!-- FOOTER -->
+    <footer style="border-top:1px solid var(--border); padding:24px 40px; background:var(--gray-50);">
+      <p style="font-size:12px; color:var(--text-dim); line-height:1.8; max-width:700px;">
+        Data collected by independent community monitors using calibrated iOS devices.
+        Sound measurements validated within 1.4 dB of a TA657A Type 2 reference sound level meter
+        during live A320 overflights. Psychoacoustic analysis per ISO 532-1:2017 (Zwicker loudness)
+        and DIN 45692:2009 (sharpness).<br><br>
+        <a href="methodology.html">Full methodology</a> ·
+        <a href="data.html">Download raw data</a> ·
+        <a href="about.html">About TrueNoise</a><br><br>
+        Not affiliated with BWI Airport, the FAA, or any airline or operator.
+        This is independent community public health monitoring.
+      </p>
+    </footer>
+
+  </main>
+</div><!-- /app -->
 
 <script>
-  // -----------------------------------------------------------------------
-  // CONFIG — update API_BASE once deployed to Render
-  // -----------------------------------------------------------------------
- const API_BASE = 'https://aircraft-noise-tracker-api.onrender.com';
+const API_BASE = 'https://aircraft-noise-tracker-api.onrender.com';
 
-  // -----------------------------------------------------------------------
-  // Health risk helpers
-  // -----------------------------------------------------------------------
-  function loudnessLabel(sone) {
-    if (sone < 1)  return { label: 'Negligible', color: 'var(--green)' };
-    if (sone < 4)  return { label: 'Low risk', color: 'var(--green)' };
-    if (sone < 16) return { label: 'Moderate — stress response', color: 'var(--amber)' };
-    if (sone < 64) return { label: 'High — cardiovascular stress', color: 'var(--red)' };
-    return          { label: 'Severe — hearing damage risk', color: 'var(--red)' };
+function cleanTypeName(name) {
+  if (!name) return '—';
+  return name
+    .replace('737MAX', '737 MAX')
+    .replace('737NG', '737')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function phaseClass(phase) {
+  if (!phase) return 'phase-cruise';
+  const p = phase.toLowerCase();
+  if (p.includes('tak') || p.includes('off')) return 'phase-takeoff';
+  if (p.includes('approach')) return 'phase-approach';
+  if (p.includes('climb')) return 'phase-climb';
+  return 'phase-cruise';
+}
+
+function riskPips(dba) {
+  const level = dba >= 75 ? 5 : dba >= 70 ? 4 : dba >= 65 ? 3 : dba >= 55 ? 2 : 1;
+  const cls = dba >= 70 ? 'filled-high' : dba >= 65 ? 'filled-mod' : 'filled-low';
+  let html = '<div class="risk-bar">';
+  for (let i = 0; i < 5; i++) {
+    html += `<div class="risk-pip ${i < level ? cls : ''}"></div>`;
   }
+  html += '</div>';
+  return html;
+}
 
-  function annoyanceLabel(a) {
-    if (a < 5)  return { label: 'Minimal', color: 'var(--green)' };
-    if (a < 10) return { label: 'Mild stress', color: 'var(--yellow)' };
-    if (a < 20) return { label: 'Health impact likely', color: 'var(--amber)' };
-    if (a < 40) return { label: 'Significant risk', color: 'var(--red)' };
-    return        { label: 'Severe risk', color: 'var(--red)' };
-  }
+function loudnessLabel(sone) {
+  if (sone < 1)  return 'Negligible';
+  if (sone < 4)  return 'Low risk';
+  if (sone < 16) return 'Moderate — stress response';
+  if (sone < 64) return 'High — cardiovascular stress';
+  return 'Severe — hearing damage risk';
+}
 
-  function riskPips(peak_dba) {
-    const level = peak_dba >= 80 ? 5 : peak_dba >= 70 ? 4 : peak_dba >= 65 ? 3 : peak_dba >= 55 ? 2 : 1;
-    const color = peak_dba >= 70 ? 'var(--red)' : peak_dba >= 65 ? 'var(--amber)' : 'var(--green)';
-    let html = '<div class="risk-meter">';
-    for (let i = 0; i < 5; i++) {
-      html += `<div class="risk-pip ${i < level ? 'filled' : ''}" style="--pip-color: ${color}"></div>`;
+async function loadDashboard() {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/dashboard-summary`);
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+
+    document.getElementById('loadingBar').style.display = 'none';
+
+    const t = data.totals;
+    const sessions = t.total_sessions ?? 0;
+
+    document.getElementById('topbar-sub').textContent =
+      `${sessions} session${sessions !== 1 ? 's' : ''} · BWI departure corridor`;
+    document.getElementById('session-count').textContent = sessions;
+    document.getElementById('session-plural').textContent = sessions !== 1 ? 's' : '';
+
+    document.getElementById('m-n70').textContent = t.total_n70 ?? '—';
+    document.getElementById('m-recovery').textContent = t.total_recovery_deficit ?? '—';
+
+    const sone = t.all_time_peak_sone;
+    if (sone != null) {
+      document.getElementById('m-loudness').innerHTML =
+        `${sone.toFixed(1)} <span class="metric-unit">sone</span>`;
+      document.getElementById('m-loudness-label').textContent = loudnessLabel(sone);
     }
-    html += '</div>';
-    return html;
-  }
 
-  // -----------------------------------------------------------------------
-  // Fetch and render dashboard
-  // -----------------------------------------------------------------------
-  async function loadDashboard() {
-    try {
-      const res = await fetch(`${API_BASE}/api/v1/dashboard-summary`);
-      if (!res.ok) throw new Error('API error');
-      const data = await res.json();
+    const dba = t.all_time_peak_dba;
+    if (dba != null) {
+      document.getElementById('m-dba').innerHTML =
+        `${dba.toFixed(1)} <span class="metric-unit">dBA</span>`;
+    }
 
-      // Status bar
-      document.getElementById('status-text').textContent =
-        `Data from ${data.totals.total_sessions ?? 0} monitoring session(s) · Last updated just now`;
+    document.getElementById('c-density').textContent =
+      t.avg_event_density ? t.avg_event_density.toFixed(1) + '/hr' : '—';
+    document.getElementById('c-aircraft').textContent = t.total_aircraft ?? '—';
+    document.getElementById('c-n65').textContent = t.total_n65 ?? '—';
+    document.getElementById('c-sessions').textContent = sessions;
 
-      // Main metrics
-      const t = data.totals;
-      document.getElementById('n70-val').textContent = t.total_n70 ?? '—';
-      document.getElementById('recovery-val').textContent = t.total_recovery_deficit ?? '—';
-
-      const sone = t.all_time_peak_sone;
-      if (sone != null) {
-        document.getElementById('peak-sone-val').innerHTML =
-          `${sone.toFixed(1)} <span style="font-size:1.2rem">sone</span>`;
-        const ll = loudnessLabel(sone);
-        document.getElementById('peak-sone-label').textContent = ll.label;
-        document.getElementById('peak-sone-label').style.color = ll.color;
+    // Recovery dots
+    if (data.recent_sessions && data.recent_sessions.length > 0) {
+      const recent = data.recent_sessions[0];
+      const deficit = recent.recovery_deficit || 0;
+      const recovered = Math.max((recent.n70 || 0) + 3, 5);
+      const total = deficit + recovered;
+      let dots = '';
+      for (let i = 0; i < total; i++) {
+        dots += `<div class="recovery-dot ${i < deficit ? 'deficit' : 'recovered'}"
+          title="${i < deficit ? 'No recovery time between events' : 'Recovery gap ≥ 15 min'}"></div>`;
       }
+      document.getElementById('recovery-dots').innerHTML = dots;
+    }
 
-      document.getElementById('sessions-val').textContent = t.total_sessions ?? '—';
-
-      // Risk cards
-      if (sone != null) {
-        const ll = loudnessLabel(sone);
-        document.getElementById('rc-loudness').textContent = sone.toFixed(1);
-        document.getElementById('rc-loudness').style.color = ll.color;
-      }
-
-      const annoyance = t.all_time_peak_sone; // use peak sone as proxy until annoyance col added
-      const peakDba = t.all_time_peak_dba;
-      if (peakDba != null) {
-        document.getElementById('rc-dba').textContent = peakDba.toFixed(1) + ' dBA';
-      }
-      if (t.avg_event_density != null) {
-        document.getElementById('rc-density').textContent =
-          t.avg_event_density.toFixed(1) + '/hr';
-      }
-
-      // Recovery dots — use most recent session data
-      if (data.recent_sessions && data.recent_sessions.length > 0) {
-        const recent = data.recent_sessions[0];
-        const totalEvents = Math.min(recent.n70 + recent.recovery_deficit + 5, 40);
-        const deficit = recent.recovery_deficit || 0;
-        let dots = '';
-        for (let i = 0; i < totalEvents; i++) {
-          const noRecovery = i < deficit;
-          dots += `<div class="recovery-dot ${noRecovery ? 'no-recovery' : 'event'}"
-            title="${noRecovery ? 'No recovery time' : 'Recovery gap ≥15 min'}"></div>`;
-        }
-        document.getElementById('recovery-dots').innerHTML = dots;
-      }
-
-      // Aircraft table
-      const tbody = document.getElementById('aircraft-tbody');
-      if (data.aircraft_breakdown && data.aircraft_breakdown.length > 0) {
-        tbody.innerHTML = data.aircraft_breakdown.map(a => `
-          <tr>
-            <td><span class="type-badge">${a.type_code || '—'}</span></td>
-            <td style="color: var(--muted)">${a.operator || '—'}</td>
-            <td>${a.events}</td>
-            <td style="color: ${a.peak_dba >= 70 ? 'var(--red)' : 'var(--amber)'}">${a.peak_dba.toFixed(1)}</td>
-            <td>${a.avg_loudness ? a.avg_loudness.toFixed(1) + ' sone' : '—'}</td>
-            <td>${a.avg_annoyance ? a.avg_annoyance.toFixed(1) : '—'}</td>
-            <td>${riskPips(a.peak_dba)}</td>
-          </tr>
-        `).join('');
-      } else {
-        tbody.innerHTML = '<tr><td colspan="7" style="color: var(--dim); padding: 1rem 0.75rem;">No aircraft data yet</td></tr>';
-      }
-
-      // Hourly chart
-      const hourBars = document.getElementById('hour-bars');
-      const hourly = Array(24).fill(0);
-      if (data.hourly_distribution) {
-        data.hourly_distribution.forEach(h => {
-          if (h.hour != null) hourly[h.hour] = h.events;
-        });
-      }
-      const maxEvents = Math.max(...hourly, 1);
-      hourBars.innerHTML = hourly.map((count, h) => {
-        const heightPct = Math.max((count / maxEvents) * 100, 2);
-        const isNight = h < 6 || h >= 22;
-        const color = isNight ? 'var(--red)' : 'var(--teal)';
-        return `<div class="hour-bar-wrap">
-          <div class="hour-bar" style="height: ${heightPct}%; background: ${color};"
-            title="${h}:00 — ${count} events"></div>
-        </div>`;
+    // Aircraft table
+    const tbody = document.getElementById('aircraft-tbody');
+    if (data.aircraft_breakdown && data.aircraft_breakdown.length > 0) {
+      tbody.innerHTML = data.aircraft_breakdown.map(a => {
+        const name = cleanTypeName(a.type_name);
+        const alt = a.avg_altitude_ft ? Math.round(a.avg_altitude_ft).toLocaleString() : '—';
+        const loudness = a.avg_loudness ? a.avg_loudness.toFixed(1) + ' sone' : '—';
+        const sharpness = a.avg_sharpness ? a.avg_sharpness.toFixed(2) + ' acum' : '—';
+        const pc = phaseClass(a.flight_phase);
+        return `<tr>
+          <td style="font-weight:500">${name}</td>
+          <td><span class="phase-pill ${pc}">${a.flight_phase || '—'}</span></td>
+          <td style="font-family:'DM Mono',monospace; font-size:12px">${alt}</td>
+          <td style="font-weight:500; color:${a.peak_dba >= 70 ? 'var(--red)' : a.peak_dba >= 65 ? 'var(--amber)' : 'var(--text)'}">${a.peak_dba ? a.peak_dba.toFixed(1) : '—'}</td>
+          <td style="font-family:'DM Mono',monospace; font-size:12px">${loudness}</td>
+          <td style="font-family:'DM Mono',monospace; font-size:12px">${sharpness}</td>
+          <td>${riskPips(a.peak_dba || 0)}</td>
+        </tr>`;
       }).join('');
-
-    } catch (err) {
-      document.getElementById('status-text').textContent =
-        'Unable to reach data server — showing layout preview';
-      loadFallbackData();
+    } else {
+      tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-dim); padding:1rem 0.5rem;">No aircraft data yet</td></tr>';
     }
-  }
 
-  // -----------------------------------------------------------------------
-  // Fallback: show what the dashboard looks like with sample data
-  // (Used during development before the backend is connected)
-  // -----------------------------------------------------------------------
-  function loadFallbackData() {
-    document.getElementById('n70-val').textContent = '24';
-    document.getElementById('recovery-val').textContent = '18';
-    document.getElementById('peak-sone-val').innerHTML = '27.4 <span style="font-size:1.2rem">sone</span>';
-    document.getElementById('peak-sone-label').textContent = 'High risk — cardiovascular stress';
-    document.getElementById('peak-sone-label').style.color = 'var(--red)';
-    document.getElementById('sessions-val').textContent = '1';
-
-    document.getElementById('rc-loudness').textContent = '27.4';
-    document.getElementById('rc-loudness').style.color = 'var(--red)';
-    document.getElementById('rc-dba').textContent = '72.9 dBA';
-    document.getElementById('rc-density').textContent = '5.2/hr';
-    document.getElementById('rc-annoyance').textContent = '27.4';
-    document.getElementById('rc-annoyance').style.color = 'var(--red)';
-
-    // Recovery dots — sample 30 events, 18 with no recovery
-    let dots = '';
-    for (let i = 0; i < 30; i++) {
-      dots += `<div class="recovery-dot ${i < 18 ? 'no-recovery' : 'event'}"></div>`;
+    // Hour chart
+    const hourly = Array(24).fill(0);
+    if (data.hourly_distribution) {
+      data.hourly_distribution.forEach(h => {
+        if (h.hour != null) hourly[h.hour] = h.events;
+      });
     }
-    document.getElementById('recovery-dots').innerHTML = dots;
-
-    // Sample aircraft
-    const sampleAircraft = [
-      { type_code: 'B38M', operator: 'Southwest Airlines', events: 12, peak_dba: 72.9, avg_loudness: 22.5, avg_annoyance: 22.5 },
-      { type_code: 'B738', operator: 'Southwest Airlines', events: 8,  peak_dba: 72.2, avg_loudness: 20.1, avg_annoyance: 20.1 },
-      { type_code: 'A21N', operator: 'Frontier / Aer Lingus', events: 3, peak_dba: 72.1, avg_loudness: 21.3, avg_annoyance: 21.3 },
-      { type_code: 'A320', operator: 'Allegiant Air', events: 2, peak_dba: 69.8, avg_loudness: 17.3, avg_annoyance: 17.3 },
-      { type_code: 'E75L', operator: 'American Eagle', events: 2, peak_dba: 69.7, avg_loudness: 11.9, avg_annoyance: 11.9 },
-      { type_code: 'B763', operator: 'Prime Air', events: 1, peak_dba: 42.7, avg_loudness: 3.3, avg_annoyance: 3.3 },
-    ];
-    document.getElementById('aircraft-tbody').innerHTML = sampleAircraft.map(a => `
-      <tr>
-        <td><span class="type-badge">${a.type_code}</span></td>
-        <td style="color: var(--muted)">${a.operator}</td>
-        <td>${a.events}</td>
-        <td style="color: ${a.peak_dba >= 70 ? 'var(--red)' : 'var(--amber)'}">${a.peak_dba.toFixed(1)}</td>
-        <td>${a.avg_loudness.toFixed(1)} sone</td>
-        <td>${a.avg_annoyance.toFixed(1)}</td>
-        <td>${riskPips(a.peak_dba)}</td>
-      </tr>
-    `).join('');
-
-    // Sample hourly distribution — realistic BWI departure pattern
-    const sampleHours = [0,0,0,0,0,1,2,4,6,8,10,9,8,7,8,9,10,12,14,11,8,5,2,1];
-    const maxH = Math.max(...sampleHours);
-    document.getElementById('hour-bars').innerHTML = sampleHours.map((count, h) => {
+    const maxH = Math.max(...hourly, 1);
+    const chartEl = document.getElementById('hour-chart');
+    chartEl.innerHTML = hourly.map((count, h) => {
       const heightPct = Math.max((count / maxH) * 100, 2);
       const isNight = h < 6 || h >= 22;
-      return `<div class="hour-bar-wrap">
-        <div class="hour-bar" style="height: ${heightPct}%; background: ${isNight ? 'var(--red)' : 'var(--teal)'};"
-          title="${h}:00 — ${count} events"></div>
+      return `<div class="hour-col">
+        <div class="hour-bar ${isNight ? 'night' : 'day'}"
+          style="height:${heightPct}%"
+          title="${h}:00 — ${count} event${count !== 1 ? 's' : ''}"></div>
       </div>`;
     }).join('');
-  }
 
-  // Load on DOM ready
-  loadDashboard();
+  } catch (err) {
+    document.getElementById('loadingBar').style.display = 'none';
+    document.getElementById('topbar-sub').textContent = 'Unable to reach data server';
+    loadFallback();
+  }
+}
+
+function loadFallback() {
+  document.getElementById('m-n70').textContent = '6';
+  document.getElementById('m-recovery').textContent = '25';
+  document.getElementById('m-loudness').innerHTML = '27.4 <span class="metric-unit">sone</span>';
+  document.getElementById('m-loudness-label').textContent = 'High — cardiovascular stress';
+  document.getElementById('m-dba').innerHTML = '72.9 <span class="metric-unit">dBA</span>';
+  document.getElementById('c-density').textContent = '6.0/hr';
+  document.getElementById('c-aircraft').textContent = '29';
+  document.getElementById('c-n65').textContent = '24';
+  document.getElementById('c-sessions').textContent = '1';
+  document.getElementById('session-count').textContent = '1';
+
+  let dots = '';
+  for (let i = 0; i < 30; i++) {
+    dots += `<div class="recovery-dot ${i < 25 ? 'deficit' : 'recovered'}"></div>`;
+  }
+  document.getElementById('recovery-dots').innerHTML = dots;
+
+  const sample = [
+    ['Boeing 737 MAX 8','Taking Off','2,574','72.9','13.7 sone','0.69 acum', 70],
+    ['Boeing 737-800W','Taking Off','2,867','72.2','16.1 sone','0.64 acum', 70],
+    ['Airbus A321neo','Taking Off','2,100','72.1','17.7 sone','0.78 acum', 70],
+    ['Airbus A320','Taking Off','2,050','69.8','12.9 sone','0.64 acum', 65],
+    ['Boeing 737-800W','On Approach','711','69.7','14.5 sone','0.76 acum', 65],
+  ];
+  document.getElementById('aircraft-tbody').innerHTML = sample.map(r => `
+    <tr>
+      <td style="font-weight:500">${r[0]}</td>
+      <td><span class="phase-pill ${phaseClass(r[1])}">${r[1]}</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${r[2]}</td>
+      <td style="font-weight:500;color:${r[6]>=70?'var(--red)':'var(--amber)'}">${r[3]}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${r[4]}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${r[5]}</td>
+      <td>${riskPips(r[6])}</td>
+    </tr>`).join('');
+
+  const sampleH = [0,0,0,0,0,1,2,4,6,8,10,9,8,7,8,9,10,12,14,11,8,5,2,1];
+  const maxH = Math.max(...sampleH);
+  document.getElementById('hour-chart').innerHTML = sampleH.map((count, h) => {
+    const isNight = h < 6 || h >= 22;
+    return `<div class="hour-col">
+      <div class="hour-bar ${isNight ? 'night' : 'day'}"
+        style="height:${Math.max((count/maxH)*100,2)}%"
+        title="${h}:00 — ${count} events"></div>
+    </div>`;
+  }).join('');
+}
+
+function openMenu() { document.getElementById('mobileMenu').classList.add('open'); }
+function closeMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
+function closeMenuOutside(e) { if (e.target === document.getElementById('mobileMenu')) closeMenu(); }
+
+loadDashboard();
 </script>
 </body>
 </html>
