@@ -758,6 +758,7 @@
                 <th>Aircraft type</th>
                 <th>Phase</th>
                 <th>Avg alt (ft)</th>
+                <th>Avg slant (mi)</th>
                 <th>Peak dBA</th>
                 <th>Avg loudness</th>
                 <th>Avg sharpness</th>
@@ -911,6 +912,7 @@ async function loadDashboard() {
       tbody.innerHTML = data.aircraft_breakdown.map(a => {
         const name = cleanTypeName(a.type_name);
         const alt = a.avg_altitude_ft ? Math.round(a.avg_altitude_ft).toLocaleString() : '—';
+        const slant = a.avg_slant_range_mi ? a.avg_slant_range_mi.toFixed(2) + ' mi' : '—';
         const loudness = a.avg_loudness ? a.avg_loudness.toFixed(1) + ' sone' : '—';
         const sharpness = a.avg_sharpness ? a.avg_sharpness.toFixed(2) + ' acum' : '—';
         const pc = phaseClass(a.flight_phase);
@@ -918,6 +920,7 @@ async function loadDashboard() {
           <td style="font-weight:500">${name}</td>
           <td><span class="phase-pill ${pc}">${a.flight_phase || '—'}</span></td>
           <td style="font-family:'DM Mono',monospace; font-size:12px">${alt}</td>
+          <td style="font-family:'DM Mono',monospace; font-size:12px">${slant}</td>
           <td style="font-weight:500; color:${a.peak_dba >= 70 ? 'var(--red)' : a.peak_dba >= 65 ? 'var(--amber)' : 'var(--text)'}">${a.peak_dba ? a.peak_dba.toFixed(1) : '—'}</td>
           <td style="font-family:'DM Mono',monospace; font-size:12px">${loudness}</td>
           <td style="font-family:'DM Mono',monospace; font-size:12px">${sharpness}</td>
