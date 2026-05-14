@@ -335,7 +335,7 @@ def dashboard_summary(db = Depends(get_db)):
         FROM sessions
         ORDER BY uploaded_at DESC
         LIMIT 30
-    """))
+    """)
     recent = [dict(r) for r in cursor.fetchall()]
 
     cursor.execute("""
