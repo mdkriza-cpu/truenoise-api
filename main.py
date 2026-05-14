@@ -4,15 +4,28 @@ Receives session uploads from the iOS app and serves aggregated data to the dash
 Deploy on Render, database on Supabase (PostgreSQL).
 """
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, Depends
+from fastapi import FastAPI, HTTPException, UploadFile, File, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import csv
 import io
 import os
-import psycopg
-from psycopg.rows import dict_row
+import secrets
+import psycopg2
+import psycopg2.extras
 from datetime import datetime, timezone
+
+# ---------------------------------------------------------------------------
+# API key authentication — upload endpoint only
+# ---------------------------------------------------------------------------
+API_KEY = os.environ.get("TRUENOISE_API_KEY")
+
+def verify_api_key(x_api_key: str = Header(None)):
+    if not API_KEY:
+        raise HTTPException(status_code=500, detail="API key not configured on server")
+    if not x_api_key or not secrets.compare_digest(x_api_key, API_KEY):
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+    return x_api_key
 
 app = FastAPI(title="TrueNoise API", version="1.0.0")
 
@@ -27,14 +40,14 @@ app.add_middleware(
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db():
-    conn = psycopg.connect(DATABASE_URL + "?sslmode=require", row_factory=dict_row)
+    conn = psycopg2.connect(DATABASE_URL)
     try:
         yield conn
     finally:
         conn.close()
 
 def init_db():
-    conn = psycopg.connect(DATABASE_URL + "?sslmode=require")
+    conn = psycopg2.connect(DATABASE_URL)
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS observations (
@@ -115,7 +128,8 @@ def health():
 @app.post("/api/v1/upload-session")
 async def upload_session(
     file: UploadFile = File(...),
-    db = Depends(get_db)
+    db = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
 ):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files accepted")
@@ -157,22 +171,21 @@ async def upload_session(
                 aircraft_seen.add(callsign)
 
             cursor.execute("""
-    INSERT INTO observations (
-        session_id, timestamp, type, dba_level,
-        loudness_sone, loudness_health_impact,
-        loudness_level_phon, loudness_context,
-        sharpness_acum, sharpness_health_impact,
-        annoyance, annoyance_health_impact,
-        onset_rate, onset_health_impact,
-        callsign, icao24, type_code, type_name,
-        registration, operator, flight_phase,
-        ground_distance_mi, slant_range_mi, altitude_ft,
-        bearing, bearing_compass, elevation_angle,
-        speed_kts, climb_rate_fpm, approaching,
-        observer_lat, observer_lon, uploaded_at
-    ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    ON CONFLICT (session_id, timestamp, callsign) DO NOTHING
-""", (
+                INSERT INTO observations (
+                    session_id, timestamp, type, dba_level,
+                    loudness_sone, loudness_health_impact,
+                    loudness_level_phon, loudness_context,
+                    sharpness_acum, sharpness_health_impact,
+                    annoyance, annoyance_health_impact,
+                    onset_rate, onset_health_impact,
+                    callsign, icao24, type_code, type_name,
+                    registration, operator, flight_phase,
+                    ground_distance_mi, slant_range_mi, altitude_ft,
+                    bearing, bearing_compass, elevation_angle,
+                    speed_kts, climb_rate_fpm, approaching,
+                    observer_lat, observer_lon, uploaded_at
+                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (
                 session_id,
                 row.get("Timestamp"),
                 row.get("Type"),
@@ -207,7 +220,7 @@ async def upload_session(
                 _float(row.get("Observer Lon")),
                 uploaded_at,
             ))
-            inserted += cursor.rowcount
+            inserted += 1
         except Exception:
             continue
 
@@ -217,7 +230,7 @@ async def upload_session(
 
     aircraft_peaks: dict = {}
     for row in rows:
-        cs = (row.get("Callsign") or "").strip()
+        cs = row.get("Callsign", "").strip()
         dba = _float(row.get("dBA Level"))
         if cs and dba is not None:
             aircraft_peaks[cs] = max(aircraft_peaks.get(cs, 0), dba)
@@ -298,7 +311,7 @@ async def upload_session(
 
 @app.get("/api/v1/dashboard-summary")
 def dashboard_summary(db = Depends(get_db)):
-    cursor = db.cursor(row_factory=dict_row)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -325,20 +338,17 @@ def dashboard_summary(db = Depends(get_db)):
     recent = [dict(r) for r in cursor.fetchall()]
 
     cursor.execute("""
-      SELECT type_name,
-       flight_phase,
-       COUNT(DISTINCT session_id) as events,
-       MAX(dba_level) as peak_dba,
-       AVG(loudness_sone) as avg_loudness,
-       AVG(sharpness_acum) as avg_sharpness,
-       AVG(annoyance) as avg_annoyance,
-       AVG(altitude_ft) as avg_altitude_ft
-FROM observations
-WHERE type_name IS NOT NULL AND type_name != ''
-AND flight_phase IS NOT NULL AND flight_phase != ''
-GROUP BY type_name, flight_phase
-ORDER BY peak_dba DESC
-LIMIT 20
+        SELECT type_code, type_name, operator,
+               COUNT(DISTINCT callsign) as events,
+               MAX(dba_level) as peak_dba,
+               AVG(loudness_sone) as avg_loudness,
+               AVG(sharpness_acum) as avg_sharpness,
+               AVG(annoyance) as avg_annoyance
+        FROM observations
+        WHERE type_code IS NOT NULL AND type_code != ''
+        GROUP BY type_code, type_name, operator
+        ORDER BY peak_dba DESC
+        LIMIT 10
     """)
     aircraft_breakdown = [dict(r) for r in cursor.fetchall()]
 
@@ -364,7 +374,7 @@ LIMIT 20
 
 @app.get("/api/v1/sessions")
 def list_sessions(limit: int = 50, db = Depends(get_db)):
-    cursor = db.cursor(row_factory=dict_row)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
         SELECT * FROM sessions
         ORDER BY session_start DESC
@@ -375,7 +385,7 @@ def list_sessions(limit: int = 50, db = Depends(get_db)):
 
 @app.get("/api/v1/sessions/{session_id}/observations")
 def session_observations(session_id: str, db = Depends(get_db)):
-    cursor = db.cursor(row_factory=dict_row)
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     cursor.execute("""
         SELECT * FROM observations
         WHERE session_id = %s
