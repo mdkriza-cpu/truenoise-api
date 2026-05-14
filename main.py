@@ -11,8 +11,8 @@ import csv
 import io
 import os
 import secrets
-import psycopg2
-import psycopg2.extras
+import psycopg
+from psycopg.rows import dict_row
 from datetime import datetime, timezone
 
 # ---------------------------------------------------------------------------
@@ -40,14 +40,14 @@ app.add_middleware(
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = psycopg.connect(DATABASE_URL + "?sslmode=require", row_factory=dict_row)
     try:
         yield conn
     finally:
         conn.close()
 
 def init_db():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = psycopg.connect(DATABASE_URL + "?sslmode=require")
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS observations (
@@ -162,7 +162,7 @@ async def upload_session(
             dba = float(row.get("dBA Level") or 0)
             loudness = float(row.get("Loudness (sone)") or 0)
             annoyance = float(row.get("Annoyance") or 0)
-            callsign = row.get("Callsign", "").strip()
+            callsign = (row.get("Callsign") or "").strip()
 
             dba_values.append(dba)
             loudness_values.append(loudness)
@@ -185,6 +185,7 @@ async def upload_session(
                     speed_kts, climb_rate_fpm, approaching,
                     observer_lat, observer_lon, uploaded_at
                 ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (session_id, timestamp, callsign) DO NOTHING
             """, (
                 session_id,
                 row.get("Timestamp"),
@@ -220,7 +221,7 @@ async def upload_session(
                 _float(row.get("Observer Lon")),
                 uploaded_at,
             ))
-            inserted += 1
+            inserted += cursor.rowcount
         except Exception:
             continue
 
@@ -230,7 +231,7 @@ async def upload_session(
 
     aircraft_peaks: dict = {}
     for row in rows:
-        cs = row.get("Callsign", "").strip()
+        cs = (row.get("Callsign") or "").strip()
         dba = _float(row.get("dBA Level"))
         if cs and dba is not None:
             aircraft_peaks[cs] = max(aircraft_peaks.get(cs, 0), dba)
@@ -311,7 +312,7 @@ async def upload_session(
 
 @app.get("/api/v1/dashboard-summary")
 def dashboard_summary(db = Depends(get_db)):
-    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = db.cursor()
 
     cursor.execute("""
         SELECT
@@ -338,17 +339,20 @@ def dashboard_summary(db = Depends(get_db)):
     recent = [dict(r) for r in cursor.fetchall()]
 
     cursor.execute("""
-        SELECT type_code, type_name, operator,
-               COUNT(DISTINCT callsign) as events,
+        SELECT type_name,
+               flight_phase,
+               COUNT(DISTINCT session_id) as events,
                MAX(dba_level) as peak_dba,
                AVG(loudness_sone) as avg_loudness,
                AVG(sharpness_acum) as avg_sharpness,
-               AVG(annoyance) as avg_annoyance
+               AVG(annoyance) as avg_annoyance,
+               AVG(altitude_ft) as avg_altitude_ft
         FROM observations
-        WHERE type_code IS NOT NULL AND type_code != ''
-        GROUP BY type_code, type_name, operator
+        WHERE type_name IS NOT NULL AND type_name != ''
+        AND flight_phase IS NOT NULL AND flight_phase != ''
+        GROUP BY type_name, flight_phase
         ORDER BY peak_dba DESC
-        LIMIT 10
+        LIMIT 20
     """)
     aircraft_breakdown = [dict(r) for r in cursor.fetchall()]
 
@@ -374,7 +378,7 @@ def dashboard_summary(db = Depends(get_db)):
 
 @app.get("/api/v1/sessions")
 def list_sessions(limit: int = 50, db = Depends(get_db)):
-    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = db.cursor()
     cursor.execute("""
         SELECT * FROM sessions
         ORDER BY session_start DESC
@@ -385,7 +389,7 @@ def list_sessions(limit: int = 50, db = Depends(get_db)):
 
 @app.get("/api/v1/sessions/{session_id}/observations")
 def session_observations(session_id: str, db = Depends(get_db)):
-    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor = db.cursor()
     cursor.execute("""
         SELECT * FROM observations
         WHERE session_id = %s
