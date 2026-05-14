@@ -363,7 +363,8 @@ def dashboard_summary(db = Depends(get_db)):
                AVG(loudness_sone) as avg_loudness,
                AVG(sharpness_acum) as avg_sharpness,
                AVG(annoyance) as avg_annoyance,
-               AVG(altitude_ft) as avg_altitude_ft
+               AVG(altitude_ft) as avg_altitude_ft,
+               AVG(slant_range_mi) as avg_slant_range_mi
         FROM observations
         WHERE type_name IS NOT NULL AND type_name != ''
         AND flight_phase IS NOT NULL AND flight_phase != ''
