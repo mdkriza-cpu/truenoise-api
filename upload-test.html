@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h2>Upload Session CSV</h2>
-<form id="f">
-  <input type="file" id="csv" accept=".csv"><br><br>
-  <button type="button" onclick="upload()">Upload to API</button>
-</form>
+<h2>Upload Session CSV — TrueNoise Dev Tool</h2>
+<input type="file" id="csv" accept=".csv"><br><br>
+<button type="button" onclick="upload()">Upload to API</button>
 <pre id="result">Response will appear here...</pre>
 <script>
 async function upload() {
@@ -15,7 +13,11 @@ async function upload() {
   fd.append('file', file);
   document.getElementById('result').textContent = 'Uploading...';
   try {
-    const r = await fetch('https://aircraft-noise-tracker-api.onrender.com/api/v1/upload-session', {method:'POST', body:fd});
+    const r = await fetch('https://aircraft-noise-tracker-api.onrender.com/api/v1/upload-session', {
+      method: 'POST',
+      headers: { 'X-Api-Key': 'imDQ5QWAD0mWvmltaUV-0Wcup8nR3xwSrx_gEDgmegw' },
+      body: fd
+    });
     const j = await r.json();
     document.getElementById('result').textContent = JSON.stringify(j, null, 2);
   } catch(e) {
