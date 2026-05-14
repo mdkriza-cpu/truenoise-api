@@ -614,7 +614,7 @@
       </div>
       <div class="status-pill">
         <div class="status-dot"></div>
-        BWI data
+        <span id="last-updated">BWI data</span>
       </div>
     </div>
 
@@ -854,6 +854,17 @@ async function loadDashboard() {
 
     const t = data.totals;
 
+    // Format most recent session timestamp for status pill
+    if (data.recent_sessions && data.recent_sessions.length > 0) {
+      const latest = data.recent_sessions[0].session_start;
+      if (latest) {
+        const d = new Date(latest);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        document.getElementById('last-updated').textContent = `Last updated ${dateStr} · ${timeStr}`;
+      }
+    }
+
     document.getElementById('topbar-sub').textContent = 'BWI departure corridor · community monitoring';
 
     document.getElementById('m-n70').textContent = t.total_n70 ?? '—';
@@ -936,7 +947,7 @@ async function loadDashboard() {
 
   } catch (err) {
     document.getElementById('loadingBar').style.display = 'none';
-    document.getElementById('topbar-sub').textContent = 'Unable to reach data server';
+    document.getElementById('last-updated').textContent = 'BWI data';
     loadFallback();
   }
 }
