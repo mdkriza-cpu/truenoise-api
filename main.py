@@ -121,6 +121,8 @@ def init_db():
             peak_annoyance REAL,
             who_daily_average_dba REAL,
             who_exceedance_pct REAL,
+            windshield_config TEXT,
+            windshield_correction_dba REAL,
             uploaded_at TEXT
         )
     """)
@@ -287,8 +289,10 @@ async def upload_session(
             n65, n70, n80,
             event_density, recovery_deficit,
             peak_dba, peak_loudness_sone, peak_annoyance,
+            windshield_config,
+            windshield_correction_dba,
             uploaded_at
-        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         ON CONFLICT (session_id) DO UPDATE SET
             total_observations = EXCLUDED.total_observations,
             unique_aircraft = EXCLUDED.unique_aircraft,
@@ -300,6 +304,8 @@ async def upload_session(
             peak_dba = EXCLUDED.peak_dba,
             peak_loudness_sone = EXCLUDED.peak_loudness_sone,
             peak_annoyance = EXCLUDED.peak_annoyance,
+            windshield_config = EXCLUDED.windshield_config,
+            windshield_correction_dba = EXCLUDED.windshield_correction_dba,
             uploaded_at = EXCLUDED.uploaded_at
     """, (
         session_id,
@@ -312,6 +318,8 @@ async def upload_session(
         max(dba_values) if dba_values else 0,
         max(loudness_values) if loudness_values else 0,
         max(annoyance_values) if annoyance_values else 0,
+        first_row.get("Windshield Config") or None,
+        _float(first_row.get("Windshield Correction (dBA)")),
         uploaded_at,
     ))
 
