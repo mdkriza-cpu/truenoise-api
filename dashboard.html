@@ -541,9 +541,9 @@
     <button class="mobile-menu-close" onclick="closeMenu()">✕</button>
     <div style="font-size:16px; font-weight:600; color:var(--text); margin-bottom:20px;">True<span style="color:var(--teal)">Noise</span></div>
     <div style="font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Data</div>
-    <a href="#dashboard" class="nav-item active" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Health dashboard</a>
-    <a href="#aircraft" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Aircraft analysis</a>
-    <a href="#time" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Time patterns</a>
+    <a href="#dashboard" class="nav-item" id="mobile-nav-dashboard" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Health dashboard</a>
+    <a href="#aircraft" class="nav-item" id="mobile-nav-aircraft" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Aircraft analysis</a>
+    <a href="#time" class="nav-item" id="mobile-nav-time" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Time patterns</a>
     <div style="font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin:16px 0 8px;">Research</div>
     <a href="methodology.html" class="nav-item" style="display:flex; margin-bottom:2px;">Methodology</a>
     <a href="data.html" class="nav-item" style="display:flex; margin-bottom:2px;">Download data</a>
@@ -573,13 +573,13 @@
     <nav class="nav">
       <div class="nav-group">
         <div class="nav-group-label">Data</div>
-        <a href="#dashboard" class="nav-item active">
+        <a href="#dashboard" class="nav-item" id="sidebar-nav-dashboard">
           <span class="nav-icon">📊</span> Health dashboard
         </a>
-        <a href="#aircraft" class="nav-item">
+        <a href="#aircraft" class="nav-item" id="sidebar-nav-aircraft">
           <span class="nav-icon">✈</span> Aircraft analysis
         </a>
-        <a href="#time" class="nav-item">
+        <a href="#time" class="nav-item" id="sidebar-nav-time">
           <span class="nav-icon">🕐</span> Time patterns
         </a>
       </div>
@@ -1015,6 +1015,37 @@ function closeMenu() { document.getElementById('mobileMenu').classList.remove('o
 function closeMenuOutside(e) { if (e.target === document.getElementById('mobileMenu')) closeMenu(); }
 
 loadDashboard();
+
+// ── IN-PAGE NAV ACTIVE STATE ──────────────────────────────────────────────────
+function updateNavActive() {
+  const sections = [
+    { id: 'dashboard', sidebar: 'sidebar-nav-dashboard', mobile: 'mobile-nav-dashboard' },
+    { id: 'aircraft',  sidebar: 'sidebar-nav-aircraft',  mobile: 'mobile-nav-aircraft'  },
+    { id: 'time',      sidebar: 'sidebar-nav-time',      mobile: 'mobile-nav-time'      },
+  ];
+
+  // Find which section is currently most visible
+  let current = 'dashboard';
+  for (const s of sections) {
+    const el = document.getElementById(s.id);
+    if (!el) continue;
+    const rect = el.getBoundingClientRect();
+    if (rect.top <= 120) current = s.id;
+  }
+
+  // Update active class on all nav items
+  for (const s of sections) {
+    const sidebar = document.getElementById(s.sidebar);
+    const mobile  = document.getElementById(s.mobile);
+    const isActive = s.id === current;
+    if (sidebar) sidebar.classList.toggle('active', isActive);
+    if (mobile)  mobile.classList.toggle('active', isActive);
+  }
+}
+
+window.addEventListener('scroll', updateNavActive, { passive: true });
+updateNavActive(); // set initial state
+
 </script>
 </body>
 </html>
