@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRGHT Altitude Sensitivity — TrueNoise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --teal:#1D9E75; --teal-light:#E1F5EE; --teal-dark:#0F6E56;
+    --red:#E24B4A; --red-light:#FCEBEB;
+    --amber:#BA7517; --amber-light:#FAEEDA;
+    --gray-50:#F8F7F4; --gray-100:#F1EFE8;
+    --text:#1a1a18; --text-muted:#5F5E5A; --text-dim:#888780;
+    --border:rgba(0,0,0,0.09); --border-mid:rgba(0,0,0,0.14);
+  }
+  body { font-family:'Inter',sans-serif; background:#fff; color:var(--text);
+         line-height:1.6; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+
+  /* TOPBAR */
+  .topbar { padding:10px 20px; border-bottom:1px solid var(--border); background:#fff;
+            display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+  .topbar-left { display:flex; align-items:center; gap:16px; }
+  .logo-link { display:flex; align-items:center; gap:8px; text-decoration:none; }
+  .logo-name { font-size:16px; font-weight:600; color:var(--text); }
+  .logo-name span { color:var(--teal); }
+  .topbar-title { font-size:13px; font-weight:500; color:var(--text); }
+  .topbar-sub { font-size:11px; color:var(--text-dim); }
+  .topbar-nav { display:flex; gap:16px; align-items:center; }
+  .topbar-nav a { font-size:12px; color:var(--text-muted); text-decoration:none; }
+  .topbar-nav a:hover { color:var(--teal); }
+  .topbar-nav a.active { color:var(--teal); font-weight:500; }
+  .badge { font-size:10px; background:var(--amber-light); color:var(--amber);
+           border:1px solid var(--amber); padding:2px 7px; border-radius:4px;
+           font-family:'DM Mono',monospace; }
+
+  /* INTRO STRIP */
+  .intro-strip { padding:12px 20px; background:var(--gray-50);
+                 border-bottom:1px solid var(--border); flex-shrink:0; }
+  .intro-strip p { font-size:13px; color:var(--text-muted); line-height:1.65;
+                   max-width:900px; }
+  .intro-strip strong { color:var(--text); font-weight:500; }
+  .intro-strip a { color:var(--teal); }
+
+  /* INSTRUCTIONS */
+  .instr { display:flex; gap:20px; flex-wrap:wrap; padding:10px 20px;
+           border-bottom:1px solid var(--border); background:#fff; flex-shrink:0; }
+  .instr-item { font-size:12px; color:var(--text-muted); display:flex;
+                align-items:center; gap:6px; }
+  .instr-item::before { content:'→'; color:var(--teal); font-size:11px; }
+
+  /* MAIN LAYOUT */
+  .layout { display:flex; flex:1; min-height:0; }
+  #map { flex:1; }
+
+  /* PANEL */
+  .panel { width:280px; min-width:280px; border-left:1px solid var(--border);
+           background:#fff; overflow-y:auto; display:flex; flex-direction:column; }
+  .ps { padding:14px 16px; border-bottom:1px solid var(--border); }
+  .pl { font-size:10px; color:var(--text-dim); letter-spacing:0.1em;
+        text-transform:uppercase; font-family:'DM Mono',monospace; margin-bottom:8px; }
+
+  /* SLIDER */
+  .alt-val { font-size:30px; font-weight:500; color:var(--teal);
+             font-family:'DM Mono',monospace; text-align:center; }
+  .grad-note { font-size:11px; color:var(--text-dim); text-align:center;
+               margin-bottom:8px; min-height:16px; }
+  input[type=range] { width:100%; accent-color:var(--teal); cursor:pointer; }
+  .slider-limits { display:flex; justify-content:space-between; font-size:10px;
+                   color:var(--text-dim); font-family:'DM Mono',monospace; margin-top:2px; }
+
+  /* METRIC */
+  .metric-row { display:flex; justify-content:space-between; align-items:baseline;
+                margin-bottom:4px; }
+  .ml { font-size:12px; color:var(--text-muted); }
+  .mv { font-size:18px; font-weight:500; font-family:'DM Mono',monospace; }
+  .mbar-wrap { height:5px; background:var(--gray-100); border-radius:3px; margin-bottom:8px; }
+  .mbar { height:5px; border-radius:3px; transition:width 0.25s,background 0.25s; width:0; }
+  .mstat { font-size:11px; text-align:center; padding:4px 8px; border-radius:4px;
+           margin-top:4px; font-weight:500; }
+  .mstat.good { background:var(--teal-light); color:var(--teal-dark); }
+  .mstat.warn { background:var(--amber-light); color:var(--amber); }
+  .mstat.bad  { background:var(--red-light);  color:var(--red); }
+  .msub { font-size:11px; color:var(--text-muted); display:flex;
+          justify-content:space-between; margin-bottom:2px; }
+  .msub span:last-child { font-family:'DM Mono',monospace; font-size:11px; }
+
+  /* FOOTER */
+  .panel-footer { padding:12px 16px; font-size:10px; color:var(--text-dim);
+                  font-family:'DM Mono',monospace; line-height:1.7; }
+  .panel-footer a { color:var(--teal); }
+
+  .leaflet-popup-content-wrapper { font-family:'Inter',sans-serif; font-size:12px;
+    border-radius:8px; }
+  .leaflet-popup-content { margin:10px 14px; line-height:1.65; }
+  .ptitle { font-weight:600; color:var(--text); margin-bottom:4px; }
+  .pgood { color:var(--teal-dark); font-weight:500; }
+  .pwarn { color:var(--amber); font-weight:500; }
+  .pbad  { color:var(--red);  font-weight:500; }
+  .pnote { font-size:11px; color:var(--text-dim); margin-top:4px; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="logo-link">
+      <svg viewBox="0 0 42 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:30px;height:20px;">
+        <path d="M2 14 Q7 3 12 14 Q17 25 22 14 Q27 3 32 14 Q37 25 42 14"
+              stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <div class="logo-name">True<span>Noise</span></div>
+    </a>
+    <div>
+      <div class="topbar-title">BRGHT Altitude Sensitivity</div>
+      <div class="topbar-sub">Noise · community impact · fuel cost tradeoff</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <nav class="topbar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="flightpath.html">Flight path</a>
+      <a href="sensitivity.html" class="active">Sensitivity</a>
+      <a href="methodology.html">Methodology</a>
+      <a href="about.html">About</a>
+    </nav>
+    <span class="badge">THEORETICAL MODEL</span>
+  </div>
+</div>
+
+<!-- INTRO -->
+<div class="intro-strip">
+  <p>
+    The <a href="flightpath.html">flight path comparison</a> shows that altitude restrictions
+    below 1,200 ft produce no meaningful relief for Severn communities. This tool explores the
+    BRGHT waypoint proposal in detail: drag the slider to vary the turn altitude from 3,000 to
+    5,000 ft and instantly see the impact on <strong>Ashbrook</strong> (primary affected community),
+    <strong>Aurora Hills</strong> and <strong>Bretton Woods</strong> (south of Severn Run), and
+    <strong>fuel cost</strong>. The model suggests <strong>~4,100 ft</strong> as the sweet spot
+    where Ashbrook drops below the N65 threshold at commercially immaterial fuel cost.
+  </p>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="instr">
+  <span class="instr-item">Drag slider to set BRGHT turn altitude</span>
+  <span class="instr-item">Arc color = Ashbrook noise status</span>
+  <span class="instr-item">Green &lt;60 dBA · Amber 60–65 · Red &gt;65 (N65 threshold)</span>
+  <span class="instr-item">Click any marker for details</span>
+</div>
+
+<!-- MAIN -->
+<div class="layout">
+  <div id="map"></div>
+
+  <div class="panel">
+
+    <!-- SLIDER -->
+    <div class="ps">
+      <div class="pl">BRGHT turn altitude</div>
+      <div class="alt-val" id="p-alt">3,000 ft</div>
+      <div class="grad-note" id="p-grad">762 ft/NM gradient</div>
+      <input type="range" id="p-slider" min="3000" max="5000" step="100" value="3000"
+             oninput="update(+this.value)">
+      <div class="slider-limits"><span>3,000 ft</span><span>5,000 ft</span></div>
+    </div>
+
+    <!-- ASHBROOK -->
+    <div class="ps">
+      <div class="pl">Ashbrook — primary receptor</div>
+      <div class="metric-row">
+        <span class="ml">737-800 NG (worst case)</span>
+        <span class="mv" id="p-ash-ng">—</span>
+      </div>
+      <div class="mbar-wrap"><div class="mbar" id="p-ash-bar"></div></div>
+      <div class="metric-row">
+        <span class="ml">737 MAX 8</span>
+        <span class="mv" id="p-ash-max" style="font-size:14px;">—</span>
+      </div>
+      <div class="mstat" id="p-ash-stat">—</div>
+    </div>
+
+    <!-- BRETTON WOODS -->
+    <div class="ps">
+      <div class="pl">Bretton Woods</div>
+      <div class="metric-row">
+        <span class="ml">737-800 NG (worst case)</span>
+        <span class="mv" id="p-bw-ng">—</span>
+      </div>
+      <div class="mbar-wrap"><div class="mbar" id="p-bw-bar"></div></div>
+      <div class="msub">
+        <span>Altitude overhead</span>
+        <span id="p-bw-alt">—</span>
+      </div>
+      <div class="msub">
+        <span>Lateral dist from track</span>
+        <span id="p-bw-lat">—</span>
+      </div>
+      <div class="mstat" id="p-bw-stat">—</div>
+    </div>
+
+    <!-- AURORA HILLS -->
+    <div class="ps">
+      <div class="pl">Aurora Hills</div>
+      <div class="metric-row">
+        <span class="ml">737-800 NG (worst case)</span>
+        <span class="mv" id="p-ah-ng">—</span>
+      </div>
+      <div class="mbar-wrap"><div class="mbar" id="p-ah-bar"></div></div>
+      <div class="mstat" id="p-ah-stat">—</div>
+    </div>
+
+    <!-- FUEL -->
+    <div class="ps">
+      <div class="pl">Fuel delta vs WARYN procedure</div>
+      <div class="msub"><span>Extra gallons / flight</span><span id="p-gal" style="color:var(--amber);font-weight:500;">—</span></div>
+      <div class="msub"><span>Cost per flight</span><span id="p-cost">—</span></div>
+      <div class="msub"><span>Annual (50 dep/day)</span><span id="p-annual">—</span></div>
+      <div class="msub"><span>% of fuel load</span><span id="p-pct">—</span></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:8px;
+                  border-top:1px solid var(--border);padding-top:8px;line-height:1.5;"
+           id="p-climb">—</div>
+    </div>
+
+    <div class="panel-footer">
+      Calibrated to TrueNoise A320 measurement (72.4 dBA, 9 May 2026).<br>
+      Not a certified FAA AEDT analysis.<br>
+      <a href="flightpath.html">← Six-altitude comparison</a><br>
+      <a href="methodology.html">Full methodology →</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER STRIP -->
+<div style="flex-shrink:0;padding:16px 24px;border-top:1px solid var(--border);
+            background:var(--gray-50);display:flex;align-items:center;
+            justify-content:space-between;flex-wrap:wrap;gap:8px;">
+  <span style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace;">
+    TrueNoise Community Noise Observatory · truenoise.org · Severn, Maryland
+  </span>
+  <span style="font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace;">
+    © OpenStreetMap contributors
+  </span>
+</div>
+
+<script>
+// ── MAP ───────────────────────────────────────────────────────────────────────
+const map = L.map('map',{center:[39.125,-76.680],zoom:12});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom:19
+}).addTo(map);
+
+// ── GEOMETRY ─────────────────────────────────────────────────────────────────
+function dest(lat,lon,brg,nm){
+  const R=6371000,d=nm*1852/R,b=brg*Math.PI/180;
+  const p1=lat*Math.PI/180,l1=lon*Math.PI/180;
+  const p2=Math.asin(Math.sin(p1)*Math.cos(d)+Math.cos(p1)*Math.sin(d)*Math.cos(b));
+  const l2=l1+Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(p1),Math.cos(d)-Math.sin(p1)*Math.sin(p2));
+  return[p2*180/Math.PI,l2*180/Math.PI];
+}
+function brg(la1,lo1,la2,lo2){
+  const p1=la1*Math.PI/180,p2=la2*Math.PI/180,dl=(lo2-lo1)*Math.PI/180;
+  return(Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI+360)%360;
+}
+function hvnm(la1,lo1,la2,lo2){
+  const R=3440.065,p1=la1*Math.PI/180,p2=la2*Math.PI/180;
+  const dp=(la2-la1)*Math.PI/180,dl=(lo2-lo1)*Math.PI/180;
+  return 2*R*Math.asin(Math.sqrt(Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2));
+}
+function arc(clat,clon,rnm,s,e,n=50){
+  const pts=[];if(e<s)e+=360;
+  for(let i=0;i<=n;i++){const b=s+(e-s)*i/n;pts.push(dest(clat,clon,b%360,rnm));}
+  return pts;
+}
+function slant(dnm,alt){return Math.sqrt((dnm*6076.115)**2+alt**2);}
+function spl(ref,sl){return ref-20*Math.log10(sl/1000)-0.5*(sl/1000);}
+
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
+const BWI    =[39.16407,-76.66200];
+const BOBYJ  =[39.190375,-76.760503];
+const WARYN  =[39.154175,-76.653622];
+const BRGHT  =[39.11095,-76.63271];
+const ASH    =[39.112804,-76.657923];
+const BW     =[39.079,-76.656];
+const AH     =[39.086,-76.649];
+const EWBLVD =[39.10623,-76.60828];
+
+const DEP=155, BANK=25, RWY=154, RNMO=3.74;
+const g=32.174, v=200*1.68781;
+const RNM=(v*v/(g*Math.tan(BANK*Math.PI/180)))/6076.115;
+const BRG_BB=brg(BRGHT[0],BRGHT[1],BOBYJ[0],BOBYJ[1]);
+const REF_NG=87.4, REF_MAX=82.9;
+
+// ── DYNAMIC LAYERS ────────────────────────────────────────────────────────────
+let arcLyr=null, postLyr=null;
+
+// ── STATIC LAYERS ─────────────────────────────────────────────────────────────
+// Departure track runway → BRGHT
+L.polyline([[BWI[0],BWI[1]],[BRGHT[0],BRGHT[1]]],
+  {color:'#19B973',weight:2.5,opacity:0.85})
+  .bindPopup('<div class="ptitle">Departure track: RWY 15R → BRGHT</div>All aircraft fly this identically — no dispersion')
+  .addTo(map);
+
+// WARYN reference dashed
+// WARYN reference — just runway to WARYN, no post-turn stub
+// (post-turn heads toward BOBYJ off the left edge — confusing visually)
+L.polyline([[BWI[0],BWI[1]],[WARYN[0],WARYN[1]]],
+  {color:'#E63232',weight:1.5,opacity:0.4,dashArray:'7 5'})
+  .bindPopup('<div class="ptitle">Current WARYN procedure (reference)</div>Aircraft turn right at WARYN toward BOBYJ (off map to west)<br>Shown dashed for comparison only')
+  .addTo(map);
+
+// ── MARKERS ───────────────────────────────────────────────────────────────────
+function icon(col,r=10){
+  return L.divIcon({className:'',
+    html:`<div style="width:${r}px;height:${r}px;border-radius:50%;background:${col};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);"></div>`,
+    iconSize:[r,r],iconAnchor:[r/2,r/2]});
+}
+function lbl(ll,txt,col,ox,oy){
+  L.marker(ll,{icon:L.divIcon({className:'',
+    html:`<div style="font-size:11px;font-family:'Inter',sans-serif;color:${col};font-weight:500;white-space:nowrap;text-shadow:0 1px 2px rgba(255,255,255,0.95);margin-left:${ox}px;margin-top:${oy}px;">${txt}</div>`,
+    iconSize:[0,0],iconAnchor:[0,0]})}).addTo(map);
+}
+
+L.marker(BWI,{icon:icon('#fff',14)})
+  .bindPopup('<div class="ptitle">RWY 15R Threshold</div>39.16407°N 76.66200°W<br>Departure heading: 155° · Calibrated 16 May 2026')
+  .addTo(map);
+lbl(BWI,'RWY 15R','#333',12,-8);
+
+L.marker(BRGHT,{icon:icon('#19B973',14)})
+  .bindPopup('<div class="ptitle">BRGHT — Proposed Waypoint</div>39.11095°N 76.63271°W<br>Brightview Dr / Route 97 · 3.74 nm from runway<br>All aircraft turn here — geographic waypoint eliminates dispersion<div class="pnote">Turn angle to BOBYJ: 155.1° — identical to WARYN</div>')
+  .addTo(map);
+lbl(BRGHT,'BRGHT (proposed)','#0F6E56',10,-16);
+
+L.marker(WARYN,{icon:icon('#E63232',10)})
+  .bindPopup('<div class="ptitle">WARYN (current — reference)</div>0.99 nm from runway<br>Current turn initiation — shown for comparison')
+  .addTo(map);
+lbl(WARYN,'WARYN (current)','#a03',10,-8);
+
+L.marker(ASH,{icon:icon('#FFD740',10)})
+  .bindPopup('<div class="ptitle">Ashbrook — TrueNoise Observer</div>Primary measurement receptor<br>Validated: <span class="pbad">72.4 dBA</span> (A320, 9 May 2026)<br><div class="pnote">Model calibrated to this measurement</div>')
+  .addTo(map);
+lbl(ASH,'Ashbrook','#7a5900',-80,4);
+
+L.marker(BW,{icon:icon('#cc88cc',9)})
+  .bindPopup('<div class="ptitle">Bretton Woods</div>39.079°N 76.656°W · South of Severn Run<br>2.20 nm lateral from BRGHT→BOBYJ track<div class="pnote pgood">Below N65 at all modeled altitudes. Burden-shifting standard satisfied.</div>')
+  .addTo(map);
+lbl(BW,'Bretton Woods','#664466',10,-8);
+
+L.marker(AH,{icon:icon('#8888cc',9)})
+  .bindPopup('<div class="ptitle">Aurora Hills</div>39.086°N 76.649°W · South of Severn Run<br>1.68 nm lateral from BRGHT→BOBYJ track<div class="pnote pwarn">60–65 dBA moderate band at all altitudes. Below N65.</div>')
+  .addTo(map);
+lbl(AH,'Aurora Hills','#446',10,-8);
+
+L.marker(BOBYJ,{icon:icon('#aaaaff',9)})
+  .bindPopup('<div class="ptitle">BOBYJ</div>All departures converge here<br>At or above 4,000 ft · at or below 230 kts')
+  .addTo(map);
+lbl(BOBYJ,'BOBYJ','#446',-65,-8);
+
+lbl([39.100,-76.660],'Severn Run Nature Area','#2d6e2d',-55,0);
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function closestTrack(comm,altMSL){
+  let minD=999,best=0;
+  for(let d=0;d<=7;d+=0.05){
+    const pt=dest(BRGHT[0],BRGHT[1],BRG_BB,d);
+    const dd=hvnm(pt[0],pt[1],comm[0],comm[1]);
+    if(dd<minD){minD=dd;best=d;}
+  }
+  const a=altMSL+best*780;
+  const sl2=slant(minD,a);
+  return{ng:spl(REF_NG,sl2),mx:spl(REF_MAX,sl2),alt:a,lat:minD};
+}
+function closestArc(comm,arcPts2){
+  let m=999;
+  for(const p of arcPts2) m=Math.min(m,hvnm(p[0],p[1],comm[0],comm[1]));
+  return m;
+}
+function col(v){return v<60?'var(--teal)':v<65?'var(--amber)':'var(--red)';}
+function bw(v){return Math.min(100,Math.max(0,(v-45)/40*100))+'%';}
+function stat(el,v){
+  el.className='mstat'+(v<60?' good':v<65?' warn':' bad');
+  el.textContent=v<60?'Below 60 dBA — low impact':v<65?'60–65 dBA — moderate':'Above 65 dBA — N65 exceeded';
+}
+function set(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function setStyle(id,prop,val){const el=document.getElementById(id);if(el)el.style[prop]=val;}
+
+// ── UPDATE ────────────────────────────────────────────────────────────────────
+function update(alt){
+  const altAGL=alt-RWY, gradReq=altAGL/RNMO;
+
+  // Slider labels
+  set('p-alt',alt.toLocaleString()+' ft');
+  const gradOk=gradReq<=780;
+  document.getElementById('p-grad').textContent=
+    gradReq.toFixed(0)+' ft/NM'+(gradOk?' ✓ within minimum':' ⚠ above published minimum');
+  setStyle('p-grad','color',gradReq>1000?'var(--red)':gradReq>780?'var(--amber)':'var(--text-dim)');
+
+  // Arc
+  const ctr=dest(BRGHT[0],BRGHT[1],(DEP+90)%360,RNM);
+  const arcPts2=arc(ctr[0],ctr[1],RNM,(DEP+90+180)%360,(BRG_BB+270)%360);
+
+  // SPL calculations
+  const bwR=closestTrack(BW,alt);
+  const ahR=closestTrack(AH,alt);
+  const ashD=closestArc(ASH,arcPts2);
+  const ashNG=spl(REF_NG,slant(ashD,alt));
+  const ashMX=spl(REF_MAX,slant(ashD,alt));
+
+  // Ashbrook
+  set('p-ash-ng',ashNG.toFixed(1)+' dBA');
+  setStyle('p-ash-ng','color',col(ashNG));
+  setStyle('p-ash-bar','width',bw(ashNG));
+  setStyle('p-ash-bar','background',col(ashNG));
+  set('p-ash-max',ashMX.toFixed(1)+' dBA');
+  stat(document.getElementById('p-ash-stat'),ashNG);
+
+  // Bretton Woods
+  set('p-bw-ng',bwR.ng.toFixed(1)+' dBA');
+  setStyle('p-bw-ng','color',col(bwR.ng));
+  setStyle('p-bw-bar','width',bw(bwR.ng));
+  setStyle('p-bw-bar','background',col(bwR.ng));
+  set('p-bw-alt',Math.round(bwR.alt).toLocaleString()+' ft MSL');
+  set('p-bw-lat',(bwR.lat*6076/5280).toFixed(2)+' mi');
+  stat(document.getElementById('p-bw-stat'),bwR.ng);
+
+  // Aurora Hills
+  set('p-ah-ng',ahR.ng.toFixed(1)+' dBA');
+  setStyle('p-ah-ng','color',col(ahR.ng));
+  setStyle('p-ah-bar','width',bw(ahR.ng));
+  setStyle('p-ah-bar','background',col(ahR.ng));
+  stat(document.getElementById('p-ah-stat'),ahR.ng);
+
+  // Fuel
+  const tm=Math.max(1.0,gradReq/780);
+  const ff=5400, ft2=ff/Math.cos(BANK*Math.PI/180), spd=180;
+  const wf=(0.99/spd)*ff+(5.5/spd)*ft2;
+  const bf=(RNMO/spd)*(ff*tm)+(2.5/spd)*ft2;
+  const dg=(bf-wf)/6.7, dc=dg*3.5;
+  set('p-gal','+'+dg.toFixed(1)+' gal');
+  set('p-cost','$'+dc.toFixed(0)+' / flight');
+  set('p-annual','$'+Math.round(dc*50*365).toLocaleString()+' / yr');
+  set('p-pct',(dg/6000*100).toFixed(2)+'% of load');
+  document.getElementById('p-climb').textContent=
+    'Thrust: '+tm.toFixed(3)+'x standard. '+
+    (tm>1.3?'High gradient — near-max climb power required.':
+     tm>1.05?'Above standard — operationally achievable.':
+     'Within standard gradient — no thrust penalty.');
+
+  // Update map arc
+  const arcCol=ashNG<60?'#19B973':ashNG<65?'#BA7517':'#E24B4A';
+  if(arcLyr){map.removeLayer(arcLyr);}
+  if(postLyr){map.removeLayer(postLyr);}
+  arcLyr=L.polyline(arcPts2,{color:arcCol,weight:3,opacity:0.9}).addTo(map);
+  if(arcPts2.length>0){
+    const ep=arcPts2[arcPts2.length-1];
+    const stub=dest(ep[0],ep[1],BRG_BB,1.5);
+    postLyr=L.polyline([[ep[0],ep[1]],[stub[0],stub[1]]],
+      {color:arcCol,weight:3,opacity:0.9}).addTo(map);
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+update(3000);
+</script>
+</body>
+</html>
