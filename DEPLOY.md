@@ -266,3 +266,57 @@ Insertion loss reference:
 
 Blank values accepted for backwards compatibility with existing sessions.
 Backend reads both fields from the first row of the CSV.
+
+## New CSV Columns — shipped 2026-05-18
+
+Three new session-level columns appended after Windshield Correction (dBA).
+Same value repeats for every row in the session. All nullable for backward compatibility.
+
+EXACT column names (case-sensitive):
+
+  Position 32: Measurement Type        — text
+  Position 33: Position Description    — text (free-form, may contain commas — quote-escaped)
+  Position 34: C-A Delta (dB)          — float, 1 decimal place, may be blank
+
+Measurement Type values:
+  Standardized Receptor   — ISO 1996 compliant, tripod, ≥1 m from walls
+  Community Receptor      — lived position (porch, balcony etc), includes boundary reinforcement
+  Facade-Level            — 0.5–2 m from single wall, WHO L_DEN methodology
+  Field Characterization  — mobile/temporary, strategic location
+  Hand-held               — no fixed mount
+
+C-A Delta threshold guidance:
+  < 15 dB   — clean
+  15–25 dB  — possible wind contamination (flag)
+  ≥ 25 dB   — strong wind contamination (exclude from analysis)
+
+Supabase columns to add (run before deploying main.py):
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS measurement_type TEXT;
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS position_description TEXT;
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS ca_delta_db REAL;
+
+## Background Baseline — schema only, NOT ingested yet (2026-05-18)
+
+The iOS app now computes LAeq, LA10, LA50, LA90, LA95 per session but the
+upload service strips this block before sending to the backend. Schema columns
+have been added to sessions table for future use — DO NOT display on dashboard
+until Marty sends a separate "go" note with validated data and methodology text.
+
+Baseline block format (local only, not uploaded):
+  BACKGROUND BASELINE (from 2-sec peak samples)
+  Sample count,<int>
+  Sampling duration,<hh:mm or mm:ss>
+  LAeq (approx),<float>
+  LA10 (exceeded 10% of time),<float>
+  LA50 (median),<float>
+  LA90 (background floor),<float>
+  LA95 (acoustic floor),<float>
+
+Supabase columns to add now (schema only):
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS laeq REAL;
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la10 REAL;
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la50 REAL;
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la90 REAL;
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la95 REAL;
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS baseline_sample_count INTEGER;
+  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS baseline_duration_seconds REAL;
