@@ -123,6 +123,16 @@ def init_db():
             who_exceedance_pct REAL,
             windshield_config TEXT,
             windshield_correction_dba REAL,
+            measurement_type TEXT,
+            position_description TEXT,
+            ca_delta_db REAL,
+            laeq REAL,
+            la10 REAL,
+            la50 REAL,
+            la90 REAL,
+            la95 REAL,
+            baseline_sample_count INTEGER,
+            baseline_duration_seconds REAL,
             uploaded_at TEXT
         )
     """)
@@ -291,8 +301,11 @@ async def upload_session(
             peak_dba, peak_loudness_sone, peak_annoyance,
             windshield_config,
             windshield_correction_dba,
+            measurement_type,
+            position_description,
+            ca_delta_db,
             uploaded_at
-        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         ON CONFLICT (session_id) DO UPDATE SET
             total_observations = EXCLUDED.total_observations,
             unique_aircraft = EXCLUDED.unique_aircraft,
@@ -306,6 +319,9 @@ async def upload_session(
             peak_annoyance = EXCLUDED.peak_annoyance,
             windshield_config = EXCLUDED.windshield_config,
             windshield_correction_dba = EXCLUDED.windshield_correction_dba,
+            measurement_type = EXCLUDED.measurement_type,
+            position_description = EXCLUDED.position_description,
+            ca_delta_db = EXCLUDED.ca_delta_db,
             uploaded_at = EXCLUDED.uploaded_at
     """, (
         session_id,
@@ -320,6 +336,9 @@ async def upload_session(
         max(annoyance_values) if annoyance_values else 0,
         first_row.get("Windshield Config") or None,
         _float(first_row.get("Windshield Correction (dBA)")),
+        first_row.get("Measurement Type") or None,
+        first_row.get("Position Description") or None,
+        _float(first_row.get("C-A Delta (dB)")),
         uploaded_at,
     ))
 
