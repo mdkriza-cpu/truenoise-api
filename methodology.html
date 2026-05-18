@@ -556,6 +556,115 @@
           </p>
         </div>
 
+        <!-- SECTION 6b: MEASUREMENT POSITION CLASSIFICATION -->
+        <div class="method-section" id="s6b">
+          <div class="method-section-num">Section 6b</div>
+          <h2>Measurement position classification</h2>
+          <p class="prose">
+            Not all measurement positions are acoustically equivalent. A microphone on a
+            tripod in an open field and a microphone clipped to a bedroom window sill produce
+            meaningfully different readings from the same aircraft — and both readings are
+            correct for their respective purposes. TrueNoise records the acoustic geometry
+            of each session so that analysts can apply appropriate interpretation.
+          </p>
+          <p class="prose">
+            Each session is assigned one of five <strong>Measurement Type</strong> values,
+            which define the acoustic geometry rather than the user's identity or intent:
+          </p>
+          <table class="val-table">
+            <thead>
+              <tr>
+                <th>Measurement Type</th>
+                <th>Geometry</th>
+                <th>Primary use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Standardized Receptor</strong></td>
+                <td>Tripod, ≥1 m from all walls and surfaces, 1.2 m height</td>
+                <td>Regulatory comparison; ISO 1996 compliant; directly comparable to airport noise contour modeling</td>
+              </tr>
+              <tr>
+                <td><strong>Community Receptor</strong></td>
+                <td>Where someone actually lives — porch, balcony, back patio, fire escape</td>
+                <td>Lived experience; includes +3 to +6 dB boundary reinforcement that residents actually experience; health impact assessment</td>
+              </tr>
+              <tr>
+                <td><strong>Facade-Level</strong></td>
+                <td>0.5–2 m from a single reflective wall</td>
+                <td>Sleep-disturbance and indoor-exposure prediction; matches WHO L_DEN methodology for façade measurement</td>
+              </tr>
+              <tr>
+                <td><strong>Field Characterization</strong></td>
+                <td>Mobile or temporary position at a strategic location</td>
+                <td>Corridor mapping, approach/departure track characterization, comparative site surveys</td>
+              </tr>
+              <tr>
+                <td><strong>Hand-held</strong></td>
+                <td>No fixed mount</td>
+                <td>Opportunistic observations; higher positional variability; useful for event detection, not absolute SPL</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="prose">
+            A free-form <strong>Position Description</strong> field accompanies each session,
+            capturing the specific setup: for example, "Tripod, 1.5 m, middle of patio" or
+            "Mic clipped to bedroom window sill exterior." This allows future analysts to
+            reconstruct the measurement geometry precisely.
+          </p>
+          <p class="prose">
+            The distinction between Standardized Receptor and Community Receptor is
+            particularly important for advocacy contexts. A Standardized Receptor reading is
+            the appropriate comparison against regulatory thresholds and airport noise contour
+            models — both of which assume free-field conditions. A Community Receptor reading
+            reflects what residents actually hear and what their bodies actually respond to,
+            including the boundary reinforcement from nearby hard surfaces. Both are valid.
+            Neither should be substituted for the other without acknowledgment.
+          </p>
+
+          <p class="prose" style="margin-top:20px;"><strong>Wind contamination screening — C-A Delta</strong></p>
+          <p class="prose">
+            Wind striking the microphone diaphragm produces pressure fluctuations that
+            register as broadband low-frequency noise, inflating A-weighted measurements.
+            TrueNoise screens for wind contamination using the C-A Delta method, per
+            IEC 61672 and ISO 1996: the difference between C-weighted (L<sub>C</sub>) and
+            A-weighted (L<sub>A</sub>) levels is computed over the same 2-second peak window
+            as the primary measurement. Because C-weighting passes low frequencies that
+            A-weighting attenuates, wind contamination produces an abnormally large C-A gap.
+          </p>
+          <ul class="spec-list">
+            <li><span class="spec-key">C-A Delta &lt; 15 dB</span><span class="spec-val">Clean — measurement is uncontaminated by wind</span></li>
+            <li><span class="spec-key">C-A Delta 15–25 dB</span><span class="spec-val">Possible wind contamination — flag for review; consider excluding from SPL analysis</span></li>
+            <li><span class="spec-key">C-A Delta ≥ 25 dB</span><span class="spec-val">Strong wind contamination — exclude from SPL analysis by default</span></li>
+          </ul>
+          <p class="prose">
+            All outdoor sessions use a fur windshield (characterized insertion loss: 1.8 dBA),
+            which suppresses wind noise significantly. The C-A Delta provides an objective,
+            per-observation quality flag that complements the windshield's passive protection.
+            Observations flagged by C-A Delta are retained in the dataset with their flag
+            value; analysts may apply their own thresholds as appropriate for their use case.
+          </p>
+
+          <p class="prose" style="margin-top:20px;"><strong>Background baseline percentiles — forthcoming</strong></p>
+          <p class="prose">
+            The TrueNoise iOS app now computes session-level background acoustic statistics —
+            LAeq, LA10, LA50, LA90, and LA95 — derived from the population of 2-second
+            peak samples captured during a session. These percentiles characterize the ambient
+            acoustic environment at the measurement location independent of aircraft events:
+            LA90 approximates the background acoustic floor, LA50 the median level, and LA10
+            the level exceeded only during the noisiest 10% of the session.
+          </p>
+          <p class="prose">
+            This baseline data is currently retained locally in the iOS app and is not yet
+            uploaded to the TrueNoise database. It will be incorporated into the public
+            dataset once sufficient sessions have been captured at known locations under
+            controlled conditions to validate the percentile estimates against expected
+            acoustic environments. Methodology for interpreting and presenting these values
+            will be published alongside the data.
+          </p>
+        </div>
+
         <!-- SECTION 7: VALIDATION -->
         <div class="method-section" id="s7">
           <div class="method-section-num">Section 7</div>
