@@ -624,20 +624,70 @@
           </p>
 
           <p class="prose" style="margin-top:20px;"><strong>Wind contamination screening — C-A Delta</strong></p>
+
+          <p class="prose" style="margin-top:6px;"><em>A-weighting and C-weighting</em></p>
           <p class="prose">
-            Wind striking the microphone diaphragm produces pressure fluctuations that
-            register as broadband low-frequency noise, inflating A-weighted measurements.
-            TrueNoise screens for wind contamination using the C-A Delta method, per
-            IEC 61672 and ISO 1996: the difference between C-weighted (L<sub>C</sub>) and
-            A-weighted (L<sub>A</sub>) levels is computed over the same 2-second peak window
-            as the primary measurement. Because C-weighting passes low frequencies that
-            A-weighting attenuates, wind contamination produces an abnormally large C-A gap.
+            Sound level meters apply a frequency-weighting filter to raw acoustic measurements
+            to better reflect how the measurement should be interpreted. Two standardized
+            weightings are relevant here, both defined in IEC 61672:
           </p>
           <ul class="spec-list">
-            <li><span class="spec-key">C-A Delta &lt; 15 dB</span><span class="spec-val">Clean — measurement is uncontaminated by wind</span></li>
+            <li><span class="spec-key">A-weighting (dBA)</span><span class="spec-val">Approximates how the human ear perceives loudness at typical environmental sound levels. Heavily attenuates frequencies below 500 Hz and slightly attenuates very high frequencies. Used in nearly all environmental noise regulation — FAA contours, WHO guidelines, EPA standards.</span></li>
+            <li><span class="spec-key">C-weighting (dBC)</span><span class="spec-val">Much closer to a flat frequency response across the audible band — includes far more low-frequency content than A-weighting. Used in peak sound pressure standards, occupational noise assessment, and as a diagnostic complement to A-weighting.</span></li>
+          </ul>
+          <p class="prose">
+            The TrueNoise app computes both A-weighted and C-weighted levels in parallel from
+            every audio sample, using textbook IEC 61672 biquad filter implementations
+            (3 cascaded sections for A-weighting, 2 for C-weighting, both bilinear-transformed
+            from the analog s-domain specification).
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>Why the C-A delta detects wind</em></p>
+          <p class="prose">
+            Wind noise on a microphone is not acoustic — it is turbulent air pressure directly
+            on the diaphragm. This pressure noise is overwhelmingly low-frequency, typically
+            concentrated below 200 Hz. A-weighting heavily suppresses energy below 200 Hz;
+            C-weighting does not. The consequence:
+          </p>
+          <ul class="spec-list">
+            <li><span class="spec-key">Aircraft, traffic, voice, environmental sources</span><span class="spec-val">Most audible energy is in bands where A and C respond similarly. L<sub>C</sub> − L<sub>A</sub> typically 5–15 dB.</span></li>
+            <li><span class="spec-key">Wind pressure on diaphragm</span><span class="spec-val">Almost all energy is in low-frequency bands C-weighting captures but A-weighting suppresses. L<sub>C</sub> − L<sub>A</sub> typically 25–50 dB.</span></li>
+          </ul>
+          <p class="prose">
+            A large C-A delta during a meaningful acoustic signal is therefore a strong
+            indicator of wind contamination rather than genuine acoustic content. This
+            technique is used in professional sound level meters and referenced in
+            ISO 1996 measurement procedure.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>Interpretation thresholds and the SPL floor</em></p>
+          <p class="prose">
+            For each 2-second peak measurement, both A-weighted and C-weighted peak levels
+            are recorded and the delta computed. The thresholds below apply
+            <strong>only when the A-weighted level is at or above 55 dBA</strong> — that is,
+            during a meaningful acoustic event such as an aircraft overflight:
+          </p>
+          <ul class="spec-list">
+            <li><span class="spec-key">C-A Delta &lt; 15 dB</span><span class="spec-val">Clean — measurement is dominated by genuine acoustic content; no wind concern</span></li>
             <li><span class="spec-key">C-A Delta 15–25 dB</span><span class="spec-val">Possible wind contamination — flag for review; consider excluding from SPL analysis</span></li>
             <li><span class="spec-key">C-A Delta ≥ 25 dB</span><span class="spec-val">Strong wind contamination — exclude from SPL analysis by default</span></li>
           </ul>
+          <p class="prose">
+            This SPL floor is important. When the microphone captures only the local ambient
+            environment — no aircraft, no nearby vehicle, no speech — the signal is dominated
+            by low-frequency ambient content: distant traffic, HVAC, building hum,
+            infrastructure rumble. This naturally produces large C-A deltas (often 15–25+ dB)
+            because C-weighting captures low-frequency energy that A-weighting suppresses.
+            A large C-A delta during quiet ambient conditions is not wind contamination — it
+            is information about the location's low-frequency acoustic character.
+          </p>
+          <p class="prose">
+            Field data from a standardized receptor session (18 May 2026) illustrates this
+            directly: aircraft overflight peaks at 70+ dBA showed C-A deltas of 4–6 dB
+            (clean signal, genuine acoustic content), while quiet ambient samples at 45 dBA
+            showed C-A deltas of 18–20 dB — not wind contamination, but the bass-heavy
+            character of the suburban acoustic environment at that location.
+          </p>
           <p class="prose">
             All outdoor sessions use a fur windshield (characterized insertion loss: 1.8 dBA),
             which suppresses wind noise significantly. The C-A Delta provides an objective,
@@ -645,6 +695,13 @@
             Observations flagged by C-A Delta are retained in the dataset with their flag
             value; analysts may apply their own thresholds as appropriate for their use case.
           </p>
+
+          <p class="prose" style="margin-top:16px;"><em>Glossary</em></p>
+          <ul class="spec-list">
+            <li><span class="spec-key">A-weighting (dBA)</span><span class="spec-val">A frequency filter applied to measurements to match human hearing sensitivity; used in nearly all environmental noise regulations.</span></li>
+            <li><span class="spec-key">C-weighting (dBC)</span><span class="spec-val">A nearly-flat frequency filter that includes more low-frequency content; used as a diagnostic complement to A-weighting.</span></li>
+            <li><span class="spec-key">C-A Delta (dB)</span><span class="spec-val">The difference between a C-weighted and A-weighted measurement of the same signal; large values during loud measurements (≥55 dBA) indicate wind contamination.</span></li>
+          </ul>
 
           <p class="prose" style="margin-top:20px;"><strong>Background baseline percentiles — forthcoming</strong></p>
           <p class="prose">
