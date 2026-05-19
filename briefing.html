@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Impact Briefing — TrueNoise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --teal:#1D9E75; --teal-light:#E1F5EE; --teal-dark:#0F6E56;
+    --red:#E24B4A; --red-light:#FCEBEB;
+    --amber:#BA7517; --amber-light:#FAEEDA;
+    --gray-50:#F8F7F4; --gray-100:#F1EFE8;
+    --text:#1a1a18; --text-muted:#5F5E5A; --text-dim:#888780;
+    --border:rgba(0,0,0,0.09); --border-mid:rgba(0,0,0,0.14);
+  }
+  body { font-family:'Inter',sans-serif; background:#fff; color:var(--text); line-height:1.6; }
+  a { color:var(--teal); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+
+  /* TOPBAR */
+  .topbar { padding:14px 40px; border-bottom:1px solid var(--border); background:#fff;
+            display:flex; align-items:center; justify-content:space-between;
+            position:sticky; top:0; z-index:10; flex-wrap:wrap; gap:10px; }
+  .logo-link { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .logo-name { font-size:18px; font-weight:600; letter-spacing:-0.4px; color:var(--text); }
+  .logo-name span { color:var(--teal); }
+  .topbar-nav { display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+  .topbar-nav a { font-size:13px; color:var(--text-muted); }
+  .topbar-nav a:hover { color:var(--teal); }
+  .topbar-nav a.active { color:var(--teal); font-weight:500; }
+  .print-btn { font-size:12px; color:var(--text-dim); border:1px solid var(--border-mid);
+               padding:5px 12px; border-radius:6px; cursor:pointer; background:none;
+               font-family:'Inter',sans-serif; }
+  .print-btn:hover { border-color:var(--teal); color:var(--teal); }
+
+  /* HERO */
+  .hero { background:var(--text); color:#fff; padding:56px 40px 48px; }
+  .hero-eyebrow { font-size:11px; color:#19B973; letter-spacing:0.14em;
+                  text-transform:uppercase; font-family:'DM Mono',monospace;
+                  margin-bottom:14px; }
+  .hero h1 { font-family:'DM Serif Display',serif; font-size:2.4rem; font-weight:400;
+             line-height:1.15; margin-bottom:16px; max-width:720px; }
+  .hero h1 em { font-style:italic; color:#19B973; }
+  .hero-sub { font-size:15px; color:rgba(255,255,255,0.7); line-height:1.75;
+              max-width:640px; margin-bottom:28px; }
+  .hero-stat { display:inline-flex; align-items:baseline; gap:8px;
+               background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+               border-radius:8px; padding:14px 20px; margin-bottom:8px; }
+  .hero-stat-val { font-family:'DM Serif Display',serif; font-size:2.2rem; color:#19B973; }
+  .hero-stat-label { font-size:13px; color:rgba(255,255,255,0.6); }
+  .hero-stats { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:32px; }
+  .hero-disclaimer { font-size:11px; color:rgba(255,255,255,0.4);
+                     font-family:'DM Mono',monospace; line-height:1.6; }
+
+  /* ARTICLE */
+  .article { max-width:760px; margin:0 auto; padding:48px 40px 80px; }
+
+  .section-num { font-size:10px; color:var(--teal); letter-spacing:0.12em;
+                 text-transform:uppercase; font-family:'DM Mono',monospace;
+                 margin-bottom:6px; }
+  .section-title { font-family:'DM Serif Display',serif; font-size:1.5rem;
+                   font-weight:400; color:var(--text); margin-bottom:16px;
+                   line-height:1.2; }
+  .prose { font-size:15px; color:var(--text-muted); line-height:1.9; margin-bottom:16px; }
+  .prose strong { color:var(--text); font-weight:500; }
+  hr.div { border:none; border-top:1px solid var(--border); margin:40px 0 32px; }
+
+  /* ANCHORS TABLE */
+  .anchor-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+                 gap:10px; margin:20px 0 24px; }
+  .anchor-card { background:var(--gray-50); border:1px solid var(--border);
+                 border-radius:8px; padding:14px 16px; }
+  .anchor-label { font-size:12px; color:var(--text-dim); margin-bottom:4px; }
+  .anchor-val { font-size:1.4rem; font-weight:500; font-family:'DM Serif Display',serif;
+                color:var(--text); margin-bottom:2px; }
+  .anchor-note { font-size:12px; color:var(--text-muted); line-height:1.5; }
+  .anchor-card.highlight { border-color:var(--teal); background:var(--teal-light); }
+  .anchor-card.highlight .anchor-val { color:var(--teal-dark); }
+
+  /* PULL QUOTE */
+  .pull { border-left:3px solid var(--teal); padding:14px 20px; margin:24px 0;
+          background:var(--teal-light); border-radius:0 6px 6px 0; }
+  .pull p { font-size:15px; color:var(--text); line-height:1.75; font-style:italic; }
+
+  /* WARNING BOX */
+  .warning { background:var(--red-light); border-left:3px solid var(--red);
+             padding:14px 20px; border-radius:0 6px 6px 0; margin:24px 0; }
+  .warning-label { font-size:10px; color:var(--red); letter-spacing:0.1em;
+                   text-transform:uppercase; font-family:'DM Mono',monospace;
+                   margin-bottom:6px; }
+  .warning p { font-size:14px; color:var(--text); line-height:1.75; }
+
+  /* EFFECTS LIST */
+  .effects { display:flex; flex-direction:column; gap:8px; margin:16px 0 20px; }
+  .effect { display:flex; gap:12px; align-items:flex-start; padding:10px 14px;
+            background:var(--gray-50); border:1px solid var(--border); border-radius:6px; }
+  .effect-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+  .effect-body { flex:1; }
+  .effect-title { font-size:13px; font-weight:500; color:var(--text); margin-bottom:2px; }
+  .effect-desc { font-size:12px; color:var(--text-muted); line-height:1.5; }
+
+  /* LIMITS BOX */
+  .limits { background:var(--amber-light); border:1px solid var(--amber);
+            border-radius:8px; padding:16px 20px; margin:24px 0; }
+  .limits-label { font-size:10px; color:var(--amber); letter-spacing:0.1em;
+                  text-transform:uppercase; font-family:'DM Mono',monospace;
+                  margin-bottom:8px; }
+  .limits ul { list-style:none; }
+  .limits li { font-size:13px; color:var(--text); line-height:1.7;
+               padding-left:16px; position:relative; margin-bottom:4px; }
+  .limits li::before { content:'✓'; position:absolute; left:0; color:var(--teal); }
+  .limits li.cant::before { content:'—'; color:var(--text-dim); }
+
+  /* FOOTER */
+  .article-footer { border-top:1px solid var(--border); padding:24px 0 0;
+                    margin-top:48px; }
+  .article-footer p { font-size:12px; color:var(--text-dim); line-height:1.7; }
+  .article-footer a { color:var(--text-dim); }
+  .article-footer a:hover { color:var(--teal); }
+
+  /* CITATION */
+  .cite { font-size:12px; color:var(--text-dim); font-family:'DM Mono',monospace;
+          margin-top:6px; }
+
+  @media print {
+    .topbar { position:static; }
+    .print-btn { display:none; }
+    .hero { background:#1a1a18 !important; -webkit-print-color-adjust:exact; }
+  }
+  @media (max-width:640px) {
+    .topbar { padding:12px 16px; }
+    .hero { padding:36px 20px 32px; }
+    .hero h1 { font-size:1.7rem; }
+    .article { padding:32px 20px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a href="index.html" class="logo-link">
+    <svg viewBox="0 0 42 28" fill="none" xmlns="http://www.w3.org/2000/svg"
+         style="width:32px;height:22px;">
+      <path d="M2 14 Q7 3 12 14 Q17 25 22 14 Q27 3 32 14 Q37 25 42 14"
+            stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </svg>
+    <div class="logo-name">True<span>Noise</span></div>
+  </a>
+  <nav class="topbar-nav">
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="briefing.html" class="active">Health briefing</a>
+    <a href="measurement-gap.html">Measurement gap</a>
+    <a href="methodology.html">Methodology</a>
+    <a href="about.html">About</a>
+    <button class="print-btn" onclick="window.print()">⎙ Print</button>
+  </nav>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Health impact briefing · Severn, Maryland · May 2026</div>
+  <h1>This is not an inconvenience.<br>It is a <em>health exposure.</em></h1>
+  <p class="hero-sub">
+    Aircraft noise at this location peaks 27.7 dB above the normal background acoustic
+    environment — in the range that public health authorities have linked to cardiovascular
+    disease, sleep disruption, and cognitive harm in children. This briefing translates
+    the measurements into what they mean for the people living underneath the flight path.
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-val">70.2</span>
+      <span class="hero-stat-label">dBA peak · bedroom window · 6:55 AM</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">27.7</span>
+      <span class="hero-stat-label">dB above normal background</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-val">54 / 58</span>
+      <span class="hero-stat-label">events with no recovery time between them</span>
+    </div>
+  </div>
+  <p class="hero-disclaimer">
+    Measurements: TrueNoise Community Noise Observatory · Severn, MD ·
+    A321 takeoff overflight 19 May 2026, 06:55 AM · Extended session same location ·
+    Calibrated against TA657A Type 2 reference meter · See methodology for full detail
+  </p>
+</div>
+
+<!-- ARTICLE -->
+<article class="article">
+
+  <!-- SECTION 1 -->
+  <div class="section-num">Section 1</div>
+  <h2 class="section-title">What 70.2 dBA actually sounds like</h2>
+
+  <p class="prose">
+    Sound levels in dBA are not intuitive. The decibel scale is logarithmic — every 10 dB
+    increase represents roughly a doubling of perceived loudness. These reference points
+    translate the measurement into everyday experience:
+  </p>
+
+  <div class="anchor-grid">
+    <div class="anchor-card">
+      <div class="anchor-label">Normal conversation</div>
+      <div class="anchor-val">60 dBA</div>
+      <div class="anchor-note">Two people talking at normal volume</div>
+    </div>
+    <div class="anchor-card">
+      <div class="anchor-label">Vacuum cleaner (3 ft away)</div>
+      <div class="anchor-val">70 dBA</div>
+      <div class="anchor-note">Busy restaurant · busy street</div>
+    </div>
+    <div class="anchor-card highlight">
+      <div class="anchor-label">This aircraft · bedroom window</div>
+      <div class="anchor-val">70.2 dBA</div>
+      <div class="anchor-note">Peaked for approximately 4 seconds at 6:55 AM</div>
+    </div>
+    <div class="anchor-card">
+      <div class="anchor-label">Kitchen blender</div>
+      <div class="anchor-val">80–85 dBA</div>
+      <div class="anchor-note">On the counter next to you</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    This aircraft, at the bedroom window, was as loud as having a vacuum cleaner running
+    right next to the bed. It was not a distant hum. It was a foreground sound.
+  </p>
+  <p class="prose">
+    The psychoacoustic measurement — perceived loudness in sones — peaked at 21. The sone
+    scale is built so that doubling means twice as loud to a person. A score of 21 sones
+    is roughly <strong>fifteen to twenty times louder than ordinary conversation.</strong>
+    The phon measurement of 84 corresponds to the level at which two people in the same
+    room have to stop talking and wait for the noise to pass before continuing — speech
+    becomes unintelligible without raising voices significantly.
+  </p>
+
+  <hr class="div">
+
+  <!-- SECTION 2 -->
+  <div class="section-num">Section 2</div>
+  <h2 class="section-title">How loud relative to the normal acoustic environment</h2>
+
+  <p class="prose">
+    The measurement that matters most is not the peak level in isolation — it is how far
+    that peak is above the location's normal background. The baseline acoustic floor at
+    this location is <strong>42.5 dBA</strong> (LA90 — the level exceeded 90% of the time,
+    which approximates the true background). That is a properly quiet residential
+    environment: birds, the occasional distant car, an HVAC fan cycling on.
+  </p>
+
+  <div class="pull">
+    <p>The aircraft peak was 70.2 dBA — <strong>27.7 dB above the normal background.</strong>
+    Every 10 dB is roughly a doubling of perceived loudness. This aircraft was perceived
+    as approximately six to seven times louder than the quiet morning it interrupted.</p>
+  </div>
+
+  <p class="prose">
+    It was not a marginal increase. It was a categorical change in the soundscape — a
+    foreground industrial sound dropped into what is otherwise a quiet residential morning.
+    No amount of habituation eliminates the physiological response to that kind of intrusion.
+    The body responds whether or not the mind has learned to expect it.
+  </p>
+
+  <hr class="div">
+
+  <!-- SECTION 3 -->
+  <div class="section-num">Section 3</div>
+  <h2 class="section-title">Sleep disturbance — why 6:55 AM matters</h2>
+
+  <p class="prose">
+    The time of day matters enormously in noise health research. 6:55 AM falls within the
+    World Health Organization's defined night and early morning sensitivity window, when
+    the human body is most vulnerable to noise-induced harm. What does 70.2 dBA at the
+    bedroom window actually mean for someone sleeping inside?
+  </p>
+
+  <div class="effects">
+    <div class="effect">
+      <div class="effect-icon">🪟</div>
+      <div class="effect-body">
+        <div class="effect-title">Windows closed (typical residential construction)</div>
+        <div class="effect-desc">Building envelope reduces exterior sound by approximately
+        25 dB. Indoor bedroom level: approximately <strong>45 dBA</strong>. WHO's threshold
+        for sleep disturbance is 40 dBA indoors. This event very likely caused at least a
+        partial awakening — the kind where the sleeper does not fully wake but sleep stage
+        shifts, heart rate spikes, and stress hormones release without the eyes ever opening.</div>
+      </div>
+    </div>
+    <div class="effect">
+      <div class="effect-icon">🌬</div>
+      <div class="effect-body">
+        <div class="effect-title">Windows open (summer, common in this climate)</div>
+        <div class="effect-desc">Indoor level: approximately <strong>60 dBA</strong>.
+        Sufficient to fully wake an adult. Sufficient to wake a child. Sufficient to
+        end a sleep cycle that cannot simply be resumed.</div>
+      </div>
+    </div>
+    <div class="effect">
+      <div class="effect-icon">🧒</div>
+      <div class="effect-body">
+        <div class="effect-title">Children — particularly vulnerable</div>
+        <div class="effect-desc">Research consistently shows aircraft noise exposure
+        during sleep affects reading comprehension scores, behavioral self-regulation,
+        and cognitive development when exposure persists for years. These are not
+        temporary effects — they accumulate.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- SECTION 4 -->
+  <div class="section-num">Section 4</div>
+  <h2 class="section-title">The pattern matters more than any single event</h2>
+
+  <p class="prose">
+    A single 70 dBA overflight is startling. What makes this a health exposure rather
+    than an inconvenience is the pattern in which events arrive.
+  </p>
+
+  <div class="warning">
+    <div class="warning-label">Recovery deficit</div>
+    <p>From an extended session at this location: aircraft events arrived approximately
+    once every <strong>6 minutes and 41 seconds</strong>. Of 58 intervals between events,
+    <strong>54 were shorter than 15 minutes.</strong></p>
+  </div>
+
+  <p class="prose">
+    The 15-minute threshold is not arbitrary. The human stress response — the cortisol
+    spike triggered by an acoustic startle — requires approximately 15 minutes to fully
+    resolve under normal conditions. When the next noise event arrives before the previous
+    one has physiologically dissipated, stress hormones do not return to baseline. They
+    compound. Not occasionally elevated — <strong>continuously elevated.</strong>
+  </p>
+
+  <div class="pull">
+    <p>This is the mechanism by which environmental noise causes physical disease.
+    Not the single loud event. The relentless interval.</p>
+  </div>
+
+  <p class="prose">
+    The World Health Organization has linked this pattern of chronic noise exposure to the
+    following documented health outcomes:
+  </p>
+
+  <div class="effects">
+    <div class="effect">
+      <div class="effect-icon">❤️</div>
+      <div class="effect-body">
+        <div class="effect-title">Cardiovascular disease and stroke</div>
+        <div class="effect-desc">Each 10 dBA increase in long-term aircraft noise exposure
+        is associated with approximately 12% higher risk of heart disease and stroke.
+        Peaks at this location are well above this threshold; event density compounds
+        the effect through the cortisol mechanism.</div>
+      </div>
+    </div>
+    <div class="effect">
+      <div class="effect-icon">🩸</div>
+      <div class="effect-body">
+        <div class="effect-title">Hypertension</div>
+        <div class="effect-desc">Particularly associated with nighttime and early morning
+        exposure, even when the person does not consciously notice the sound. The body
+        responds to the acoustic stimulus regardless of subjective awareness.</div>
+      </div>
+    </div>
+    <div class="effect">
+      <div class="effect-icon">🧠</div>
+      <div class="effect-body">
+        <div class="effect-title">Type 2 diabetes</div>
+        <div class="effect-desc">Likely mediated through chronic stress hormone disruption
+        of metabolic function. The cortisol pathway connects acoustic stress to metabolic
+        disease through well-understood endocrine mechanisms.</div>
+      </div>
+    </div>
+    <div class="effect">
+      <div class="effect-icon">📚</div>
+      <div class="effect-body">
+        <div class="effect-title">Cognitive impairment in children</div>
+        <div class="effect-desc">Particularly affecting reading comprehension and memory
+        tasks. Documented in the RANCH study across multiple European countries and
+        school populations. Effects are dose-dependent and persist with continued exposure.</div>
+      </div>
+    </div>
+    <div class="effect">
+      <div class="effect-icon">😔</div>
+      <div class="effect-body">
+        <div class="effect-title">Anxiety, depression, tinnitus</div>
+        <div class="effect-desc">Well-documented dose-response relationships in
+        noise-exposed populations. Tinnitus and stress-related health complaints
+        in adults exposed long-term. These are not self-reported inconveniences —
+        they appear in clinical datasets and insurance records.</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="prose">
+    These are not speculative effects. They are documented in large epidemiological studies
+    — most notably the <strong>HYENA study</strong> in Europe (cardiovascular outcomes
+    across five countries) and the <strong>RANCH study</strong> (children's cognitive
+    outcomes near major airports).
+    <span class="cite">Jarup et al., Environmental Health Perspectives (2008) ·
+    Stansfeld et al., The Lancet (2005)</span>
+  </p>
+
+  <hr class="div">
+
+  <!-- SECTION 5 -->
+  <div class="section-num">Section 5</div>
+  <h2 class="section-title">What this data can and cannot say</h2>
+
+  <p class="prose">
+    Intellectual honesty requires stating what the evidence supports and what it does not.
+  </p>
+
+  <div class="limits">
+    <div class="limits-label">What we can say with confidence</div>
+    <ul>
+      <li>The acoustic exposure at this location meets the conditions WHO has linked to the health endpoints above</li>
+      <li>The intrusion magnitude — 27.7 dB above background — is large enough to cause acute startle responses and sleep disruption</li>
+      <li>The event density (9.1 per hour, 54 of 58 intervals under the stress-recovery threshold) is in the range associated with chronic stress mechanisms</li>
+      <li>The measurement system is calibrated against a Type 2 reference meter and validated across three aircraft types, two flight phases, and two microphones — all within IEC Class 2 tolerance</li>
+    </ul>
+    <div class="limits-label" style="margin-top:14px;">What we cannot say</div>
+    <ul>
+      <li class="cant">That any specific person at this address has developed a specific disease because of these aircraft</li>
+      <li class="cant">That long-term outcomes will follow the same dose-response curves observed in European studies — those populations differ</li>
+      <li class="cant">That health effects scale linearly from a small dataset</li>
+    </ul>
+  </div>
+
+  <p class="prose">
+    Health outcomes are statistical at the population level, not deterministic at the
+    individual level. What has been measured is the dose. The disease outcomes are
+    probabilistic. The science does not say "this person will develop heart disease" —
+    it says "people exposed to this much aircraft noise, on average, develop cardiovascular
+    disease at measurably higher rates."
+  </p>
+
+  <hr class="div">
+
+  <!-- CLOSING -->
+  <div class="section-num">Closing</div>
+  <h2 class="section-title">From the numbers to the human stakes</h2>
+
+  <p class="prose">
+    The parent whose afternoon in the backyard with his children is interrupted every seven
+    minutes is not imagining things. The interruption is real, the noise is loud, and the
+    cumulative pattern of those interruptions — repeated daily for years — falls within the
+    range of exposure that established medical evidence links to cardiovascular and cognitive
+    harm. The science does not say he will develop heart disease. It says people exposed
+    to this much aircraft noise, on average, do so at measurably higher rates.
+  </p>
+
+  <p class="prose">
+    The person jarred awake at 6:55 AM is not being sensitive. The noise reached the
+    WHO threshold for sleep disturbance inside a closed bedroom. The body responded
+    whether or not consciousness registered the event.
+  </p>
+
+  <div class="pull">
+    <p>This is a residential location experiencing an exposure pattern that public health
+    authorities have linked to documented harms. It is not an inconvenience. It is a
+    population-scale health exposure. And it is measurable, characterizable, and
+    now documented.</p>
+  </div>
+
+  <p class="prose">
+    TrueNoise exists to make that documentation possible at community scale — with
+    calibrated instruments, rigorous methodology, and transparent data — so that the
+    conversation with regulators can move from "residents are complaining" to
+    "here is what the evidence shows."
+  </p>
+
+  <!-- FOOTER -->
+  <div class="article-footer">
+    <p>
+      TrueNoise Community Noise Observatory · truenoise.org · Severn, Maryland<br>
+      Data: <a href="data.html">truenoise.org/data.html</a> ·
+      Methodology: <a href="methodology.html">truenoise.org/methodology.html</a> ·
+      Policy context: <a href="measurement-gap.html">The measurement gap</a><br>
+      Not affiliated with any airport, airline, or government agency.<br>
+      References: Jarup et al. (2008) <em>Environ Health Perspect</em> 116(3):329–333 ·
+      Stansfeld et al. (2005) <em>The Lancet</em> 365:1942–1949 ·
+      WHO Environmental Noise Guidelines (2018)
+    </p>
+  </div>
+
+</article>
+</body>
+</html>
