@@ -136,10 +136,125 @@
     .hero h1 { font-size:1.7rem; }
     .article { padding:32px 20px 60px; }
   }
+
+  .app { display:flex; min-height:100vh; }
+  .sidebar { width:220px; min-width:220px; border-right:1px solid var(--border);
+             display:flex; flex-direction:column; position:sticky; top:0;
+             height:100vh; overflow-y:auto; background:#fff; }
+  .logo-block { padding:24px 20px 20px; border-bottom:1px solid var(--border); }
+  .logo-mark { display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+  .logo-name-s { font-size:18px; font-weight:600; color:var(--text); }
+  .logo-name-s span { color:var(--teal); }
+  .logo-tagline { font-size:10px; color:var(--text-dim); letter-spacing:0.08em;
+                  text-transform:uppercase; }
+  .sidenav { padding:16px 12px; flex:1; }
+  .sidenav-group { margin-bottom:20px; }
+  .sidenav-label { font-size:10px; color:var(--text-dim); letter-spacing:0.1em;
+                   text-transform:uppercase; padding:0 8px; margin-bottom:4px; }
+  .nav-item { display:flex; align-items:center; gap:8px; padding:7px 8px;
+              border-radius:6px; font-size:13px; color:var(--text-muted);
+              text-decoration:none; }
+  .nav-item:hover { background:var(--gray-100); color:var(--text); text-decoration:none; }
+  .nav-item.active { background:var(--teal-light); color:var(--teal-dark); font-weight:500; }
+  .nav-icon { font-size:15px; width:18px; text-align:center; }
+  .sidebar-footer { padding:16px 20px; border-top:1px solid var(--border);
+                    font-size:11px; color:var(--text-dim); line-height:1.5; }
+  .main-content { flex:1; min-width:0; overflow-y:auto; }
+  .mobile-nav { display:none; position:sticky; top:0; z-index:20; background:#fff;
+                border-bottom:1px solid var(--border); padding:12px 20px;
+                align-items:center; justify-content:space-between; }
+  .mobile-logo { font-size:16px; font-weight:600; color:var(--text); }
+  .mobile-logo span { color:var(--teal); }
+  .hamburger { background:none; border:1px solid var(--border); border-radius:6px;
+               padding:6px 10px; cursor:pointer; font-size:16px; }
+  .mobile-menu { display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+                 background:rgba(0,0,0,0.4); z-index:100; }
+  .mobile-menu.open { display:block; }
+  .mobile-menu-panel { background:#fff; width:280px; height:100%;
+                       padding:20px 16px; overflow-y:auto; }
+  .mobile-menu-close { background:none; border:none; font-size:22px; cursor:pointer;
+                       color:var(--text-muted); margin-bottom:16px; display:block; }
+  @media (max-width:860px) {
+    .sidebar { display:none; }
+    .mobile-nav { display:flex; }
+  }
+  @media print {
+    .sidebar { display:none; }
+    .mobile-nav { display:none; }
+    .topbar { position:static; }
+  }
 </style>
 </head>
 <body>
 
+<div class="mobile-nav">
+  <a href="index.html" style="text-decoration:none;">
+    <div class="mobile-logo">True<span>Noise</span></div>
+  </a>
+  <button class="hamburger" onclick="document.getElementById('bMobileMenu').classList.add('open')">☰</button>
+</div>
+<div class="mobile-menu" id="bMobileMenu"
+     onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="mobile-menu-panel">
+    <button class="mobile-menu-close"
+            onclick="document.getElementById('bMobileMenu').classList.remove('open')">✕</button>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:16px;">
+      True<span style="color:var(--teal)">Noise</span></div>
+    <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Data</div>
+    <a href="dashboard.html" class="nav-item" style="display:flex;margin-bottom:2px;">📊 Health dashboard</a>
+    <a href="dashboard.html#aircraft" class="nav-item" style="display:flex;margin-bottom:2px;">✈ Aircraft analysis</a>
+    <a href="dashboard.html#time" class="nav-item" style="display:flex;margin-bottom:2px;">🕐 Time patterns</a>
+    <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;margin:16px 0 8px;">Research</div>
+    <a href="briefing.html" class="nav-item active" style="display:flex;margin-bottom:2px;">❤ Health briefing</a>
+    <a href="flightpath.html" class="nav-item" style="display:flex;margin-bottom:2px;">🗺 Flight path analysis</a>
+    <a href="sensitivity.html" class="nav-item" style="display:flex;margin-bottom:2px;">🎚 Altitude sensitivity</a>
+    <a href="measurement-gap.html" class="nav-item" style="display:flex;margin-bottom:2px;">📐 Measurement gap</a>
+    <a href="methodology.html" class="nav-item" style="display:flex;margin-bottom:2px;">🔬 Methodology</a>
+    <a href="data.html" class="nav-item" style="display:flex;margin-bottom:2px;">⬇ Download data</a>
+    <a href="about.html" class="nav-item" style="display:flex;">ℹ About &amp; Contact</a>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo-block">
+      <a href="index.html" style="text-decoration:none;display:block;">
+        <div class="logo-mark">
+          <svg viewBox="0 0 42 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:34px;height:23px;">
+            <path d="M2 14 Q7 3 12 14 Q17 25 22 14 Q27 3 32 14 Q37 25 42 14"
+                  stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          </svg>
+          <div><div class="logo-name-s">True<span>Noise</span></div></div>
+        </div>
+        <div class="logo-tagline">Environmental noise research</div>
+      </a>
+    </div>
+    <nav class="sidenav">
+      <div class="sidenav-group">
+        <div class="sidenav-label">Data</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Health dashboard</a>
+        <a href="dashboard.html#aircraft" class="nav-item"><span class="nav-icon">✈</span> Aircraft analysis</a>
+        <a href="dashboard.html#time" class="nav-item"><span class="nav-icon">🕐</span> Time patterns</a>
+      </div>
+      <div class="sidenav-group">
+        <div class="sidenav-label">Research</div>
+        <a href="briefing.html" class="nav-item active"><span class="nav-icon">❤</span> Health briefing</a>
+        <a href="flightpath.html" class="nav-item"><span class="nav-icon">🗺</span> Flight path analysis</a>
+        <a href="sensitivity.html" class="nav-item"><span class="nav-icon">🎚</span> Altitude sensitivity</a>
+        <a href="measurement-gap.html" class="nav-item"><span class="nav-icon">📐</span> Measurement gap</a>
+        <a href="methodology.html" class="nav-item"><span class="nav-icon">🔬</span> Methodology</a>
+        <a href="data.html" class="nav-item"><span class="nav-icon">⬇</span> Download data</a>
+        <a href="about.html" class="nav-item"><span class="nav-icon">ℹ</span> About &amp; Contact</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      Independent community monitoring.<br>
+      Not affiliated with any airport,<br>airline, or government agency.<br><br>
+      <a href="methodology.html" style="color:var(--text-dim);">Methodology</a> ·
+      <a href="about.html" style="color:var(--text-dim);">About</a>
+    </div>
+  </aside>
+  <div class="main-content">
 <!-- TOPBAR -->
 <div class="topbar">
   <a href="index.html" class="logo-link">
@@ -493,5 +608,7 @@
   </div>
 
 </article>
+  </div>
+</div>
 </body>
 </html>
