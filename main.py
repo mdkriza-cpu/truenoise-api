@@ -99,6 +99,7 @@ def init_db():
             approaching TEXT,
             observer_lat REAL,
             observer_lon REAL,
+            excluded BOOLEAN DEFAULT FALSE,
             uploaded_at TEXT
         )
     """)
@@ -248,6 +249,7 @@ async def upload_session(
                 row.get("Approaching"),
                 _float(row.get("Observer Lat")),
                 _float(row.get("Observer Lon")),
+                row.get("Excluded", "No").strip().lower() == "yes",
                 uploaded_at,
             ))
             inserted += cursor.rowcount
