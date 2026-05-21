@@ -320,3 +320,27 @@ Supabase columns to add now (schema only):
   ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la95 REAL;
   ALTER TABLE sessions ADD COLUMN IF NOT EXISTS baseline_sample_count INTEGER;
   ALTER TABLE sessions ADD COLUMN IF NOT EXISTS baseline_duration_seconds REAL;
+
+## Excluded Column — shipped 2026-05-21
+
+New column appended at end of every observation row in CSV.
+
+  Column name: Excluded
+  Type: text — Yes or No
+  Default: No
+
+Behavior:
+  Rows with Excluded=Yes are stripped by the iOS upload service before transmission.
+  The backend will never receive excluded rows under normal operation.
+  The column is stored in the observations table as a boolean for defense in depth.
+  Nullable — backward compatible with all prior sessions.
+
+Supabase column to add:
+  ALTER TABLE observations ADD COLUMN IF NOT EXISTS excluded BOOLEAN DEFAULT FALSE;
+
+ContaminationLevel logic (iOS):
+  .clean    — C-A Delta < 15 dB (above 55 dBA SPL)
+  .possible — C-A Delta 15–25 dB (above 55 dBA SPL)
+  .likely   — C-A Delta >= 25 dB (above 55 dBA SPL)
+  SPL-conditional: flags only fire above 55 dBA — below that threshold
+  a large C-A delta reflects ambient bass character, not wind contamination.
