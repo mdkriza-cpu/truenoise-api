@@ -213,8 +213,9 @@ async def upload_session(
                     ground_distance_mi, slant_range_mi, altitude_ft,
                     bearing, bearing_compass, elevation_angle,
                     speed_kts, climb_rate_fpm, approaching,
-                    observer_lat, observer_lon, uploaded_at
-                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    observer_lat, observer_lon,
+                    excluded, uploaded_at
+                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (session_id, timestamp, callsign) DO NOTHING
             """, (
                 session_id,
