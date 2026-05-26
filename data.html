@@ -428,6 +428,12 @@ async function downloadCSV() {
       }
     }
     console.log(`Download complete: ${fetched} sessions fetched, ${failed} skipped`);
+    console.log(`Total rows: ${allRows.length}`);
+    if (allRows.length > 0) {
+      const timestamps = allRows.map(r => r.timestamp).filter(Boolean).sort();
+      console.log(`Date range: ${timestamps[0]} → ${timestamps[timestamps.length-1]}`);
+    }
+    console.log(`Sessions list (${sessions.length}):`, sessions.map(s => s.session_id));
 
     if (allRows.length === 0) {
       alert('No observations available to download yet.');
