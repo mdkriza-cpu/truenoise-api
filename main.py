@@ -255,6 +255,9 @@ async def upload_session(
             ))
             inserted += cursor.rowcount
         except Exception as e:
+            import logging
+            logging.error(f"Observation INSERT failed: {e}")
+            logging.error(f"Row data: timestamp={row.get('Timestamp')}, callsign={row.get('Callsign')}, dba={row.get('dBA Level')}")
             db.rollback()
             continue
 
