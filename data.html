@@ -397,7 +397,7 @@ async function downloadCSV() {
 
   try {
     // Fetch all observations from the API
-    const res = await fetch(`${API_BASE}/api/v1/sessions`);
+    const res = await fetch(`${API_BASE}/api/v1/sessions?limit=10000`);
     const sessions = await res.json();
 
     if (!sessions || sessions.length === 0) {
