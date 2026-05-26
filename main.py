@@ -434,7 +434,7 @@ def list_sessions(limit: int = 50, db = Depends(get_db)):
     return [dict(r) for r in cursor.fetchall()]
 
 
-@app.get("/api/v1/sessions/{session_id}/observations")
+@app.get("/api/v1/sessions/{session_id:path}/observations")
 def session_observations(session_id: str, db = Depends(get_db)):
     cursor = db.cursor()
     cursor.execute("""
@@ -443,9 +443,7 @@ def session_observations(session_id: str, db = Depends(get_db)):
         ORDER BY timestamp
     """, (session_id,))
     rows = cursor.fetchall()
-    if not rows:
-        raise HTTPException(status_code=404, detail="Session not found")
-    return [dict(r) for r in rows]
+    return [dict(r) for r in rows]  # empty list is fine
 
 
 def _float(val) -> Optional[float]:
