@@ -424,7 +424,7 @@ def dashboard_summary(db = Depends(get_db)):
 
 
 @app.get("/api/v1/sessions")
-def list_sessions(limit: int = 50, db = Depends(get_db)):
+def list_sessions(limit: int = 10000, db = Depends(get_db)):
     cursor = db.cursor()
     cursor.execute("""
         SELECT * FROM sessions
