@@ -32,7 +32,7 @@ def verify_api_key(x_api_key: str = Header(None)):
     return x_api_key
 
 # ---------------------------------------------------------------------------
-# Rate limiting — 100 uploads per IP per hour (temporarily raised for diagnostic re-upload)
+# Rate limiting — 10 uploads per IP per hour
 # ---------------------------------------------------------------------------
 limiter = Limiter(key_func=get_remote_address)
 
@@ -154,7 +154,7 @@ def health():
 
 
 @app.post("/api/v1/upload-session")
-@limiter.limit("100/hour")
+@limiter.limit("10/hour")
 async def upload_session(
     request: Request,
     file: UploadFile = File(...),
