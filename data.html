@@ -408,16 +408,26 @@ async function downloadCSV() {
 
     // Fetch observations for all sessions
     const allRows = [];
+    let fetched = 0, failed = 0;
     for (const session of sessions) {
+      btn.textContent = `Fetching… ${fetched + failed}/${sessions.length}`;
       try {
-        const obsRes = await fetch(`${API_BASE}/api/v1/sessions/${session.session_id}/observations`);
-        if (!obsRes.ok) continue;  // skip sessions with errors
+        const obsRes = await fetch(`${API_BASE}/api/v1/sessions/${encodeURIComponent(session.session_id)}/observations`);
+        if (!obsRes.ok) {
+          console.warn('Skip session (HTTP ' + obsRes.status + '):', session.session_id);
+          failed++;
+          continue;
+        }
         const obs = await obsRes.json();
         if (Array.isArray(obs)) allRows.push(...obs);
+        fetched++;
       } catch(e) {
-        continue;  // skip and keep going
+        console.warn('Skip session (error):', session.session_id, e);
+        failed++;
+        continue;
       }
     }
+    console.log(`Download complete: ${fetched} sessions fetched, ${failed} skipped`);
 
     if (allRows.length === 0) {
       alert('No observations available to download yet.');
