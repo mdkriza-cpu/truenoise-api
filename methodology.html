@@ -260,7 +260,7 @@
         <!-- BOTTOM LINE -->
         <div class="bottom-line">
           <div class="bottom-line-label">Bottom line</div>
-          <p>Our system has been validated against a TA657A Type 2 reference sound level meter
+          <p>Our system has been validated against a Wintact SLM-30B IEC 61672 Class 2 reference sound level meter
           during a live Airbus A320 overflight. The two instruments agreed within <strong>1.4 dBA
           on peak SPL</strong> — well inside the ±2 dB unit-to-unit tolerance that IEC 61672 permits
           between Class 2 meters. This was a real outdoor measurement with wind and ambient noise,
@@ -432,7 +432,7 @@
             <li><span class="spec-key">Internal mic offset</span><span class="spec-val">+108 dB (averaged across multiple calibration sessions on the validation iPhone)</span></li>
             <li><span class="spec-key">External mic offset</span><span class="spec-val">+99 dB (PoP Voice lavalier, averaged similarly)</span></li>
             <li><span class="spec-key">Session-to-session variability</span><span class="spec-val">±3 dB observed — offset is averaged across multiple calibration sessions</span></li>
-            <li><span class="spec-key">Reference instrument</span><span class="spec-val">TA657A Type 2 sound level meter</span></li>
+            <li><span class="spec-key">Reference instrument</span><span class="spec-val">Wintact SLM-30B IEC 61672 Class 2 sound level meter</span></li>
           </ul>
           <p class="prose">
             The offset is determined by simultaneous measurement against a reference instrument and
@@ -446,7 +446,7 @@
             Windshields attenuate real acoustic signal in addition to suppressing wind noise — more
             material in the signal path means more signal loss, particularly at high frequencies where
             wavelengths approach the windshield's structural dimensions. This attenuation has been
-            characterized by simultaneous comparison against the TA657A reference meter across
+            characterized by simultaneous comparison against the Wintact SLM-30B reference meter across
             multiple noise types (broadband, tonal, impulsive):
           </p>
           <table class="val-table">
@@ -463,7 +463,7 @@
                 <td>Bare mic (no windshield)</td>
                 <td>0.0 dBA</td>
                 <td>0 dB reference</td>
-                <td>Matched TA657A across all noise types</td>
+                <td>Matched SLM-30B across all noise types</td>
               </tr>
               <tr>
                 <td>Foam windshield</td>
@@ -494,7 +494,7 @@
             offset to all current outdoor observations.
           </p>
           <p class="prose">
-            The bare mic result — matching the TA657A perfectly across multiple noise types with no
+            The bare mic result — matching the Wintact SLM-30B perfectly across multiple noise types with no
             offset adjustment — is the cleanest possible confirmation that the +99 dB external mic
             calibration offset is correct, stable, and free of drift.
           </p>
@@ -502,7 +502,7 @@
           <p class="prose" style="margin-top:20px;"><strong>Expanded validation dataset</strong></p>
           <p class="prose">
             Subsequent calibration sessions have expanded the validation dataset with additional
-            simultaneous comparisons against the TA657A Type 2 reference meter. Same-session
+            simultaneous comparisons against the Wintact SLM-30B Class 2 reference meter. Same-session
             controlled bench tests against three reference noise sources revealed a modest
             low-frequency sensitivity bias in the external microphone:
           </p>
@@ -510,7 +510,7 @@
             <thead>
               <tr>
                 <th>Reference source</th>
-                <th>App vs TA657A delta</th>
+                <th>App vs SLM-30B delta</th>
                 <th>Notes</th>
               </tr>
             </thead>
@@ -903,9 +903,45 @@
         <!-- SECTION 7: VALIDATION -->
         <div class="method-section" id="s7">
           <div class="method-section-num">Section 7</div>
-          <h2>Validation</h2>
+          <h2>Validation and field calibration</h2>
+
+          <p class="prose" style="margin-bottom:6px;"><strong>Reference meter field calibration</strong></p>
           <p class="prose">
-            On 9 May 2026, the system was compared against a TA657A Type 2 sound level meter during
+            The Wintact SLM-30B reference meter (IEC 61672 Class 2) is field-calibrated to
+            94.0 dBA at the start of each comparison session using an AZ8930 acoustic calibrator
+            (IEC 60942:2018 Class 2). A pre-session calibration log is maintained for each session.
+            This calibration chain means the reference is independently traceable, verified per
+            session rather than annually, and documented for audit.
+          </p>
+          <p class="prose">
+            The AZ8930 calibrator produces a 1 kHz tone at 94 dBA — the standard Class 2
+            calibration reference. The SLM-30B has a trim screw that allows correction of any
+            drift before each session rather than requiring post-hoc mathematical subtraction
+            of a documented offset. Standard practice in commercial sound measurement.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>Field calibration protocol</em></p>
+          <ul class="spec-list">
+            <li><span class="spec-key">Verify before adjusting</span><span class="spec-val">Insert mic into AZ8930, allow 10–15 seconds to stabilize, then read. If the meter already reads 94.0 dBA leave the trim screw alone.</span></li>
+            <li><span class="spec-key">Adjust in small increments</span><span class="spec-val">Less than ¼ turn at a time, re-reading after each adjustment. Large adjustments indicate a deeper problem — battery, mic damage, or calibrator issue — that warrants investigation rather than trimming.</span></li>
+            <li><span class="spec-key">Document every adjustment</span><span class="spec-val">Calibration log entry format: "2026-05-27: Pre-session reading 93.8 dBA; trimmed to 94.0 dBA." This provides traceability for specific sessions and allows drift trends to be identified before they become significant.</span></li>
+            <li><span class="spec-key">Don't over-trim</span><span class="spec-val">Calibrators carry ±0.3 dB tolerance. A reading of 93.9 or 94.1 dBA is within the combined calibrator + meter tolerance and does not require correction. Only trim when there is a clear, consistent offset.</span></li>
+            <li><span class="spec-key">Trim to specification, not agreement</span><span class="spec-val">The reference is 94.0 dBA exactly. The calibration target is the physical standard — not agreement with any other instrument including the iPhone app.</span></li>
+          </ul>
+
+          <div class="pull-quote" style="border-left:3px solid var(--teal);padding:14px 20px;
+               margin:24px 0;background:var(--teal-light);border-radius:0 6px 6px 0;">
+            <p style="font-size:13px;color:var(--text);line-height:1.75;font-style:normal;">
+              <strong>Calibration chain statement:</strong> Sound level meter (Wintact SLM-30B,
+              IEC 61672 Class 2) field-calibrated to 94 dBA at the start of each comparison
+              session using an IEC 60942:2018 Class 2 acoustic calibrator (AZ8930).
+              Pre-session calibration log maintained.
+            </p>
+          </div>
+
+          <p class="prose"><strong>Overflight comparison validation</strong></p>
+          <p class="prose">
+            On 9 May 2026, the system was compared against a Wintact SLM-30B IEC 61672 Class 2 sound level meter during
             a clearly identified Airbus A320 overflight at a documented residential location in
             Severn, Maryland:
           </p>
@@ -920,7 +956,7 @@
             </thead>
             <tbody>
               <tr>
-                <td>TA657A (Type 2 reference)</td>
+                <td>Wintact SLM-30B (Class 2 reference)</td>
                 <td>72.4 dBA</td>
                 <td>IEC 61672 Class 2</td>
               </tr>
@@ -961,7 +997,7 @@
 
           <div class="limitation">
             <div class="limitation-num">1</div>
-            <div class="limitation-body"><strong>The microphone is not IEC 61672 certified.</strong> It is a consumer omnidirectional condenser with a manufacturer-published frequency range but no individual calibration certificate or temperature-stability specification. We rely on empirical validation against the TA657A rather than traceable factory calibration. The expanded validation dataset — spanning two aircraft types, two flight phases, two microphones, and three controlled spectral references — confirms all comparisons fall within the ±2 dB IEC 61672 Class 2 unit-to-unit tolerance. A modest low-frequency sensitivity bias (~1.7 dB spread across spectral references) has been characterized and is consistent with observed aircraft measurement results. Windshield insertion loss has been confirmed within published industry specifications. The system provides a level of empirical confidence that exceeds what a manufacturer specification alone would offer, even without formal certification.</div>
+            <div class="limitation-body"><strong>The microphone is not IEC 61672 certified.</strong> It is a consumer omnidirectional condenser with a manufacturer-published frequency range but no individual calibration certificate or temperature-stability specification. We rely on empirical validation against the Wintact SLM-30B rather than traceable factory calibration. The expanded validation dataset — spanning two aircraft types, two flight phases, two microphones, and three controlled spectral references — confirms all comparisons fall within the ±2 dB IEC 61672 Class 2 unit-to-unit tolerance. A modest low-frequency sensitivity bias (~1.7 dB spread across spectral references) has been characterized and is consistent with observed aircraft measurement results. Windshield insertion loss has been confirmed within published industry specifications. The system provides a level of empirical confidence that exceeds what a manufacturer specification alone would offer, even without formal certification.</div>
           </div>
           <div class="limitation">
             <div class="limitation-num">2</div>
@@ -981,7 +1017,7 @@
           </div>
           <div class="limitation">
             <div class="limitation-num">6</div>
-            <div class="limitation-body"><strong>The calibration offset is empirically derived, not traceable to a national standards laboratory.</strong> A Class 1 reference (Brüel & Kjær 2250, NTi XL2) calibrated at a national metrology institute would be the next step up. Our TA657A reference is Class 2.</div>
+            <div class="limitation-body"><strong>The calibration offset is empirically derived, not traceable to a national standards laboratory.</strong> A Class 1 reference (Brüel & Kjær 2250, NTi XL2) calibrated at a national metrology institute would be the next step up. Our Wintact SLM-30B reference is Class 2.</div>
           </div>
         </div>
 
