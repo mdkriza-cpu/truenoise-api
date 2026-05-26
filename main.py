@@ -254,7 +254,8 @@ async def upload_session(
                 uploaded_at,
             ))
             inserted += cursor.rowcount
-        except Exception:
+        except Exception as e:
+            db.rollback()
             continue
 
     timestamps = [r.get("Timestamp", "") for r in rows if r.get("Timestamp")]
