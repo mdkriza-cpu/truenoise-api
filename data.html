@@ -409,9 +409,14 @@ async function downloadCSV() {
     // Fetch observations for all sessions
     const allRows = [];
     for (const session of sessions) {
-      const obsRes = await fetch(`${API_BASE}/api/v1/sessions/${session.session_id}/observations`);
-      const obs = await obsRes.json();
-      allRows.push(...obs);
+      try {
+        const obsRes = await fetch(`${API_BASE}/api/v1/sessions/${session.session_id}/observations`);
+        if (!obsRes.ok) continue;  // skip sessions with errors
+        const obs = await obsRes.json();
+        if (Array.isArray(obs)) allRows.push(...obs);
+      } catch(e) {
+        continue;  // skip and keep going
+      }
     }
 
     if (allRows.length === 0) {
