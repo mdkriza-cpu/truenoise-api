@@ -393,6 +393,7 @@ async function downloadCSV() {
   const btn = document.getElementById('downloadBtn');
   btn.disabled = true;
   btn.textContent = 'Preparing…';
+  console.log('downloadCSV started');
 
   try {
     // Fetch all observations from the API
@@ -501,7 +502,10 @@ async function downloadCSV() {
     btn.disabled = false;
     btn.innerHTML = '⬇ Download CSV';
   } catch(e) {
-    alert('Download failed. Please try again.');
+    console.error('Download failed:', e);
+    console.error('Error message:', e.message);
+    console.error('Error stack:', e.stack);
+    alert('Download failed: ' + e.message);
     btn.disabled = false;
     btn.innerHTML = '⬇ Download CSV';
   }
