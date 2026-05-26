@@ -389,7 +389,7 @@ async function loadStats() {
   }
 }
 
-async function downloadCSV() {
+async async function downloadCSV() {
   const btn = document.getElementById('downloadBtn');
   btn.disabled = true;
   btn.textContent = 'Preparing…';
@@ -432,7 +432,9 @@ async function downloadCSV() {
       'flight_phase', 'ground_distance_mi', 'slant_range_mi', 'altitude_ft',
       'bearing', 'bearing_compass', 'elevation_angle',
       'speed_kts', 'climb_rate_fpm', 'approaching',
-      'observer_lat', 'observer_lon'
+      'observer_lat', 'observer_lon',
+      'windshield_config', 'windshield_correction_dba',
+      'measurement_type', 'position_description', 'ca_delta_db'
     ];
 
     const headers = [
@@ -445,7 +447,9 @@ async function downloadCSV() {
       'Flight Phase', 'Ground Distance (mi)', 'Slant Range (mi)', 'Altitude (ft)',
       'Bearing', 'Bearing Compass', 'Elevation Angle',
       'Speed (kts)', 'Climb Rate (fpm)', 'Approaching',
-      'Observer Lat', 'Observer Lon'
+      'Observer Lat', 'Observer Lon',
+      'Windshield Config', 'Windshield Correction (dBA)',
+      'Measurement Type', 'Position Description', 'C-A Delta (dB)'
     ];
 
     function escapeCSV(val) {
