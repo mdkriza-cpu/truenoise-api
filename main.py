@@ -137,6 +137,10 @@ def init_db():
             uploaded_at TEXT
         )
     """)
+    # Explicit grants required for Supabase Data API access
+    # (enforced on all tables from October 30, 2026)
+    c.execute("GRANT SELECT ON observations TO anon;")
+    c.execute("GRANT SELECT ON sessions TO anon;")
     conn.commit()
     conn.close()
 
