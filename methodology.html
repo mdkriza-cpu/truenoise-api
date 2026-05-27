@@ -260,11 +260,12 @@
         <!-- BOTTOM LINE -->
         <div class="bottom-line">
           <div class="bottom-line-label">Bottom line</div>
-          <p>Our system has been validated against a Wintact SLM-30B IEC 61672 Class 2 reference sound level meter
-          during a live Airbus A320 overflight. The two instruments agreed within <strong>1.4 dBA
-          on peak SPL</strong> — well inside the ±2 dB unit-to-unit tolerance that IEC 61672 permits
-          between Class 2 meters. This was a real outdoor measurement with wind and ambient noise,
-          not a controlled laboratory tone.</p>
+          <p>Our system was initially validated against a TA657A Class 2 sound level meter during a live
+          Airbus A320 overflight. The two instruments agreed within <strong>1.4 dBA on peak SPL</strong>
+          — well inside the ±2 dB unit-to-unit tolerance that IEC 61672 permits between Class 2 meters.
+          This was a real outdoor measurement with wind and ambient noise, not a controlled laboratory tone.
+          The TA657A has since been upgraded to a Wintact SLM-30B IEC 61672 Class 2 reference sound level
+          meter that can be field-calibrated to compensate for measurement drift.</p>
           <p>We measure at the receptor — where people actually live and sleep — because that is
           the measurement that matters for health outcomes. WHO, EPA, and ICAO noise-impact research
           all use receptor-based exposure, not source-based emission.</p>
@@ -397,6 +398,7 @@
             standard worldwide, but it is known to be incomplete — particularly for impulsive sounds,
             tonal components, and the spectral character that makes some noises feel sharper or more
             annoying than their dBA value would suggest.
+            See <a href="measurement-gap.html">The measurement gap</a> for more information.
           </p>
           <p class="prose">
             We compute, <em>on top of</em> A-weighting, three psychoacoustic metrics from the
@@ -446,7 +448,7 @@
             Windshields attenuate real acoustic signal in addition to suppressing wind noise — more
             material in the signal path means more signal loss, particularly at high frequencies where
             wavelengths approach the windshield's structural dimensions. This attenuation has been
-            characterized by simultaneous comparison against the Wintact SLM-30B reference meter across
+            characterized by simultaneous comparison against the TA657A Class 2 reference meter across
             multiple noise types (broadband, tonal, impulsive):
           </p>
           <table class="val-table">
@@ -494,7 +496,7 @@
             offset to all current outdoor observations.
           </p>
           <p class="prose">
-            The bare mic result — matching the Wintact SLM-30B perfectly across multiple noise types with no
+            The bare mic result — matching the TA657A perfectly across multiple noise types with no
             offset adjustment — is the cleanest possible confirmation that the +99 dB external mic
             calibration offset is correct, stable, and free of drift.
           </p>
@@ -542,7 +544,7 @@
               <tr>
                 <td>9 May 2026</td>
                 <td>A320 approach</td>
-                <td>Internal mic · home patio</td>
+                <td>Internal mic · home patio · vs TA657A</td>
                 <td>72.4</td>
                 <td>71.0</td>
                 <td>−1.4 dB</td>
@@ -550,7 +552,7 @@
               <tr>
                 <td>17 May 2026</td>
                 <td>3 × B737 takeoff</td>
-                <td>External + fur · Standardized Receptor</td>
+                <td>External + fur · Standardized Receptor · vs TA657A</td>
                 <td>65–68 range</td>
                 <td>65–68 range</td>
                 <td>+1.4 avg (0.6–1.9)</td>
@@ -558,10 +560,18 @@
               <tr>
                 <td>19 May 2026</td>
                 <td>A321 takeoff</td>
-                <td>External + fur · Façade position</td>
+                <td>External + fur · Façade position · vs TA657A</td>
                 <td>69.7</td>
                 <td>70.2</td>
                 <td>+0.5 dB</td>
+              </tr>
+              <tr>
+                <td>Ongoing</td>
+                <td>Multiple types</td>
+                <td>vs Wintact SLM-30B (Class 2) · to be published</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
               </tr>
             </tbody>
           </table>
@@ -941,7 +951,7 @@
 
           <p class="prose"><strong>Overflight comparison validation</strong></p>
           <p class="prose">
-            On 9 May 2026, the system was compared against a Wintact SLM-30B IEC 61672 Class 2 sound level meter during
+            On 9 May 2026, the system was compared against a TA657A IEC 61672 Class 2 sound level meter during
             a clearly identified Airbus A320 overflight at a documented residential location in
             Severn, Maryland:
           </p>
@@ -956,7 +966,7 @@
             </thead>
             <tbody>
               <tr>
-                <td>Wintact SLM-30B (Class 2 reference)</td>
+                <td>TA657A (Class 2 reference)</td>
                 <td>72.4 dBA</td>
                 <td>IEC 61672 Class 2</td>
               </tr>
@@ -980,8 +990,9 @@
             anechoic chamber.
           </p>
           <p class="prose">
-            This is one validated comparison. We are continuing to collect comparison data points
-            across different aircraft types and weather conditions, and we will publish the running
+            This is one validated comparison against the TA657A. Ongoing simultaneous comparisons
+            will be performed against the Wintact SLM-30B IEC 61672 Class 2 reference meter across
+            different aircraft types and weather conditions. We will publish the running validation
             table as it grows.
           </p>
         </div>
