@@ -455,6 +455,13 @@
     <a href="about.html">About &amp; Contact</a>
   </p>
   <p id="footer-sync" style="font-size:11px; color:var(--text-dim);"></p>
+
+  <div style="text-align:center;padding:12px;font-size:11px;color:var(--text-dim);
+              font-family:'DM Mono',monospace;border-top:1px solid var(--border);">
+    <span id="visit-count">—</span> visits ·
+    <a href="https://truenoise.goatcounter.com" target="_blank"
+       style="color:var(--text-dim);">analytics</a>
+  </div>
 </footer>
 
 <script>
@@ -487,5 +494,22 @@ loadStats();
 function openMenu(){document.getElementById('mobileMenu').classList.add('open');}
 function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
 </script>
+
+
+<script>
+// Fetch visit count from GoatCounter
+fetch('https://truenoise.goatcounter.com/counter/visits.json')
+  .then(r => r.json())
+  .then(data => {
+    const el = document.getElementById('visit-count');
+    if (el && data.count) el.textContent = data.count.toLocaleString();
+  })
+  .catch(() => {
+    const el = document.getElementById('visit-count');
+    if (el) el.textContent = '';
+  });
+</script>
+<script data-goatcounter="https://truenoise.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
