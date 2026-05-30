@@ -458,10 +458,21 @@
 
   <div style="text-align:center;padding:12px;font-size:11px;color:var(--text-dim);
               font-family:'DM Mono',monospace;border-top:1px solid var(--border);">
-    <span id="visit-count">—</span> visits ·
+    <span id="gc-visit-count"></span>
     <a href="https://truenoise.goatcounter.com" target="_blank"
-       style="color:var(--text-dim);">analytics</a>
+       style="color:var(--text-dim);">site analytics</a>
   </div>
+  <script>
+    // Use GoatCounter's built-in visit_count after count.js loads
+    window.addEventListener('load', function() {
+      if (window.goatcounter && window.goatcounter.visit_count) {
+        window.goatcounter.visit_count({
+          append: '#gc-visit-count',
+          path: 'TOTAL',
+        });
+      }
+    });
+  </script>
 </footer>
 
 <script>
@@ -496,18 +507,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 </script>
 
 
-<script>
-// Fetch total visit count from GoatCounter
-var r = new XMLHttpRequest();
-r.addEventListener('load', function() {
-  try {
-    var el = document.getElementById('visit-count');
-    if (el) el.textContent = JSON.parse(this.responseText).count;
-  } catch(e) {}
-});
-r.open('GET', 'https://truenoise.goatcounter.com/counter/TOTAL.json');
-r.send();
-</script>
+
 <script data-goatcounter="https://truenoise.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 </body>
