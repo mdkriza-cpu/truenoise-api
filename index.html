@@ -505,7 +505,7 @@ r.addEventListener('load', function() {
     if (el) el.textContent = JSON.parse(this.responseText).count;
   } catch(e) {}
 });
-r.open('GET', 'https://truenoise.goatcounter.com/counter//.json');
+r.open('GET', 'https://truenoise.goatcounter.com/counter/TOTAL.json');
 r.send();
 </script>
 <script data-goatcounter="https://truenoise.goatcounter.com/count"
