@@ -497,17 +497,16 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
 
 <script>
-// Fetch visit count from GoatCounter
-fetch('https://truenoise.goatcounter.com/counter/visits.json')
-  .then(r => r.json())
-  .then(data => {
-    const el = document.getElementById('visit-count');
-    if (el && data.count) el.textContent = data.count.toLocaleString();
-  })
-  .catch(() => {
-    const el = document.getElementById('visit-count');
-    if (el) el.textContent = '';
-  });
+// Fetch total visit count from GoatCounter
+var r = new XMLHttpRequest();
+r.addEventListener('load', function() {
+  try {
+    var el = document.getElementById('visit-count');
+    if (el) el.textContent = JSON.parse(this.responseText).count;
+  } catch(e) {}
+});
+r.open('GET', 'https://truenoise.goatcounter.com/counter//.json');
+r.send();
 </script>
 <script data-goatcounter="https://truenoise.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
