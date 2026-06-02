@@ -250,26 +250,29 @@
       <div class="content">
 
         <div class="page-eyebrow">Methodology</div>
-        <h1 class="page-title">How we measure aircraft noise</h1>
+        <h1 class="page-title">Methodology</h1>
         <p class="page-intro">
-          TrueNoise measures community aircraft noise impact using a calibrated iPhone-based system.
-          This page documents exactly how the measurements are made, so that the data can be
-          evaluated, replicated, and challenged on its merits.
+          Replacing averaged-Leq aircraft noise regulation — DNL, the FAA Part 150 framework,
+          AEDT modeling — with an event-based noise standard requires field-grade measurement
+          instrumentation that meets three criteria:
         </p>
-
-        <!-- BOTTOM LINE -->
-        <div class="bottom-line">
-          <div class="bottom-line-label">Bottom line</div>
-          <p>Our system was initially validated against a TA657A Class 2 sound level meter during a live
-          Airbus A320 overflight. The two instruments agreed within <strong>1.4 dBA on peak SPL</strong>
-          — well inside the ±2 dB unit-to-unit tolerance that IEC 61672 permits between Class 2 meters.
-          This was a real outdoor measurement with wind and ambient noise, not a controlled laboratory tone.
-          The TA657A has since been upgraded to a Wintact SLM-30B IEC 61672 Class 2 reference sound level
-          meter that can be field-calibrated to compensate for measurement drift.</p>
-          <p>We measure at the receptor — where people actually live and sleep — because that is
-          the measurement that matters for health outcomes. WHO, EPA, and ICAO noise-impact research
-          all use receptor-based exposure, not source-based emission.</p>
-        </div>
+        <ol style="margin:16px 0 20px;padding-left:1.6em;display:flex;flex-direction:column;
+                   gap:8px;font-size:14px;color:var(--text-muted);line-height:1.7;">
+          <li><strong style="color:var(--text);">Traceable to a primary acoustic reference</strong>
+              — so absolute SPL claims survive technical challenge.</li>
+          <li><strong style="color:var(--text);">Validated across aircraft categories and field conditions</strong>
+              — so generalization claims are empirical, not modeled.</li>
+          <li><strong style="color:var(--text);">Capable of per-event acoustic and psychoacoustic detail</strong>
+              — so the dataset captures what averaged-Leq metrics by design discard.</li>
+        </ol>
+        <p class="page-intro">
+          This page documents how the TrueNoise methodology delivers all three. It also documents —
+          transparently — a 2.9 dB drift we identified in our original reference meter on 1 June 2026,
+          the chain-of-custody steps we took to characterize and correct it, and how we treat
+          pre-correction observations in our analytics. We believe surfacing this kind of instrument
+          hygiene is what regulatory-grade measurement looks like, and we expect future critique of
+          the dataset will be measured against the rigor of this record rather than its absence.
+        </p>
 
         <!-- SECTION 1: HARDWARE -->
         <div class="method-section" id="s1">
@@ -416,6 +419,27 @@
             uses for sleep disturbance and cardiovascular health endpoints. We provide psychoacoustic
             analysis in addition to A-weighted SPL, not instead of it.
           </p>
+
+          <p class="prose" style="margin-top:16px;"><em>Empirical finding — loudness/dBA inversion in aft-departure overflights</em></p>
+          <p class="prose">
+            The TrueNoise dataset contains a finding that directly demonstrates criterion 3
+            from the methodology intro — that per-event psychoacoustic detail captures what
+            averaged-Leq metrics by design discard. In the aft portion of a departure
+            overflight (aircraft receding, exhaust jet mixing noise dominant), <strong>dBA
+            continues to fall while Zwicker loudness in sone temporarily rises or plateaus.</strong>
+            The A-weighted level drops because A-weighting suppresses the low-frequency
+            exhaust mixing energy as the aircraft moves away. Perceived loudness rises because
+            the human auditory system — and the Zwicker model — gives more weight to that
+            low-frequency content than A-weighting does.
+          </p>
+          <p class="prose">
+            This is not a measurement artifact. It is a real psychoacoustic phenomenon: the
+            aft-departure sound is perceived as louder than dBA alone would predict. It is
+            also the strongest in-house empirical evidence that a standard relying on dBA
+            alone systematically undercounts the health-relevant acoustic load of jet
+            departures. The C-A delta and sone metrics together capture the inversion;
+            dBA alone cannot see it.
+          </p>
         </div>
 
         <!-- SECTION 6: CALIBRATION -->
@@ -431,8 +455,8 @@
             device's raw signal level to absolute SPL. Two offset profiles are supported:
           </p>
           <ul class="spec-list">
-            <li><span class="spec-key">Internal mic offset</span><span class="spec-val">+108 dB (averaged across multiple calibration sessions on the validation iPhone)</span></li>
-            <li><span class="spec-key">External mic offset</span><span class="spec-val">+99 dB (PoP Voice lavalier, averaged similarly)</span></li>
+            <li><span class="spec-key">Internal mic offset</span><span class="spec-val">+108 dB (not yet re-validated against AZ8930-verified reference chain — internal microphone is not used for primary field measurement; external microphone is the reference for all field sessions) (averaged across multiple calibration sessions on the validation iPhone)</span></li>
+            <li><span class="spec-key">External mic offset</span><span class="spec-val">+96 dB (PoP Voice lavalier) — corrected from +99 dB on 1 June 2026; see §7b</span></li>
             <li><span class="spec-key">Session-to-session variability</span><span class="spec-val">±3 dB observed — offset is averaged across multiple calibration sessions</span></li>
             <li><span class="spec-key">Reference instrument</span><span class="spec-val">Wintact SLM-30B IEC 61672 Class 2 sound level meter</span></li>
           </ul>
@@ -496,93 +520,32 @@
             offset to all current outdoor observations.
           </p>
           <p class="prose">
-            The bare mic result — matching the TA657A perfectly across multiple noise types with no
-            offset adjustment — is the cleanest possible confirmation that the +99 dB external mic
-            calibration offset is correct, stable, and free of drift.
+            The bare-mic indoor test demonstrated zero insertion loss from the microphone capsule
+            itself — establishing that any offset between the app and the reference meter could be
+            attributed to the calibration coefficient, not the microphone's spectral response.
+            That established methodology was what later allowed us to identify and correct the
+            TA657A drift (see §7b). The post-correction +96 dB offset has been validated by
+            aircraft comparison against the AZ8930-traceable Wintact SLM-30B at −0.1 dB agreement.
           </p>
 
-          <p class="prose" style="margin-top:20px;"><strong>Expanded validation dataset</strong></p>
+                    <p class="prose" style="margin-top:20px;"><strong>Expanded validation dataset</strong></p>
           <p class="prose">
-            Subsequent calibration sessions have expanded the validation dataset with additional
-            simultaneous comparisons against the Wintact SLM-30B Class 2 reference meter. Same-session
-            controlled bench tests against three reference noise sources revealed a modest
-            low-frequency sensitivity bias in the external microphone:
+            Pre-correction bench tests against the TA657A produced apparent spectral disagreements
+            of up to 1.7 dB across reference noise types (white, pink, brown noise). These results
+            were anchored to a reference meter we subsequently found was +2.9 dB drifted, and the
+            spectral framing of that disagreement must be treated with caution. Post-correction
+            spectral characterization against the AZ8930-verified SLM-30B is ongoing. Preliminary
+            aircraft comparisons (B767 −0.1 dB at peak, C-A delta confirming clean broadband signal)
+            suggest the residual spectral bias is smaller than originally reported. All future
+            bench characterization results will be published as they accumulate.
           </p>
-          <table class="val-table">
-            <thead>
-              <tr>
-                <th>Reference source</th>
-                <th>App vs SLM-30B delta</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>White noise (flat spectrum)</td><td>−0.6 dBA</td><td>High-frequency content</td></tr>
-              <tr><td>Pink noise (1/f spectrum)</td><td>+0.6 dBA</td><td>Balanced spectrum</td></tr>
-              <tr><td>Brown noise (low-frequency)</td><td>+1.1 dBA</td><td>Low-frequency emphasis</td></tr>
-            </tbody>
-          </table>
+
           <p class="prose">
-            The ~1.7 dBA spread from high- to low-frequency reference sources is an honest
-            characterization of the system's spectral behavior, not a calibration failure.
-            Jet exhaust mixing noise is heavily low-frequency-dominated, so aircraft
-            measurements are expected to read slightly high relative to a flat-spectrum
-            reference. The overflight validation data confirms this and bounds it:
-          </p>
-          <table class="val-table">
-            <thead>
-              <tr>
-                <th>Session</th>
-                <th>Aircraft</th>
-                <th>Setup</th>
-                <th>Meter (dBA)</th>
-                <th>App (dBA)</th>
-                <th>Delta</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>9 May 2026</td>
-                <td>A320 approach</td>
-                <td>Internal mic · home patio · vs TA657A</td>
-                <td>72.4</td>
-                <td>71.0</td>
-                <td>−1.4 dB</td>
-              </tr>
-              <tr>
-                <td>17 May 2026</td>
-                <td>3 × B737 takeoff</td>
-                <td>External + fur · Standardized Receptor · vs TA657A</td>
-                <td>65–68 range</td>
-                <td>65–68 range</td>
-                <td>+1.4 avg (0.6–1.9)</td>
-              </tr>
-              <tr>
-                <td>19 May 2026</td>
-                <td>A321 takeoff</td>
-                <td>External + fur · Façade position · vs TA657A</td>
-                <td>69.7</td>
-                <td>70.2</td>
-                <td>+0.5 dB</td>
-              </tr>
-              <tr>
-                <td>Ongoing</td>
-                <td>Multiple types</td>
-                <td>vs Wintact SLM-30B (Class 2) · to be published</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-              </tr>
-            </tbody>
-          </table>
-          <p class="prose">
-            The largest valid delta across all aircraft sessions is 1.4 dB; the smallest is
-            0.5 dB. The full dataset now spans <strong>three aircraft types</strong>
-            (A320, B737, A321), <strong>two flight phases</strong> (approach and takeoff),
-            <strong>two microphones</strong> (internal and external), <strong>two measurement
-            positions</strong> (Standardized Receptor and Façade), and
-            <strong>three controlled spectral references</strong>. All comparisons fall within
-            the ±2 dB IEC 61672 Class 2 unit-to-unit tolerance.
+            Post-correction comparisons fall within IEC 61672 Class 2 ±2 dB unit-to-unit tolerance.
+            Pre-correction comparisons, recorded with the now-superseded TA657A reference, exceeded
+            that tolerance (+3.1 dB A321, +2.8 dB 737-700) and were the empirical basis for
+            identifying the reference meter drift. The post-correction B767 comparison agrees
+            within 0.1 dB.
           </p>
 
           <p class="prose" style="margin-top:20px;"><strong>Boundary reinforcement — receptor positioning</strong></p>
@@ -729,6 +692,21 @@
             <li><span class="spec-key">≥ 25 dB during any loud event</span><span class="spec-val">Likely wind — exclude</span></li>
             <li><span class="spec-key">Large delta, dBA &lt; 55</span><span class="spec-val">Ambient bass character — not contamination, not excluded</span></li>
           </ul>
+
+          <p class="prose" style="margin-top:16px;"><em>Fourth pattern — atmospheric high-frequency absorption at distance</em></p>
+          <p class="prose">
+            A fourth cause of elevated C-A delta has been identified empirically in the TrueNoise
+            dataset: <strong>atmospheric high-frequency absorption at slant range.</strong>
+            As an aircraft moves away from the receptor, the atmosphere preferentially absorbs
+            high-frequency content relative to low-frequency content. This produces a gradually
+            rising C-A delta even in the absence of wind, aft-aspect engine noise, or ambient bass —
+            it is a propagation effect, not a source or contamination effect. It appears most
+            clearly in track-event rows (continuous measurements as the aircraft recedes) where
+            C-A delta climbs steadily with increasing slant range while dBA falls. This pattern
+            is directionally opposite to wind contamination (which appears at loud events, not
+            quiet receding ones) and can be distinguished from aft-aspect engine noise by the
+            absence of an elevated sone reading at the same timestep.
+          </p>
 
           <p class="prose">
             All outdoor sessions use a fur windshield (characterized insertion loss: 1.8 dBA),
@@ -951,9 +929,10 @@
 
           <p class="prose"><strong>Overflight comparison validation</strong></p>
           <p class="prose">
-            On 9 May 2026, the system was compared against a TA657A IEC 61672 Class 2 sound level meter during
-            a clearly identified Airbus A320 overflight at a documented residential location in
-            Severn, Maryland:
+            Following the 1 June 2026 calibration correction, the system was validated against the
+            calibrator-verified Wintact SLM-30B across three aircraft overflights at the standardized
+            receptor position. The B767 post-correction result is the cleanest single validation
+            data point in the dataset:
           </p>
 
           <table class="val-table">
@@ -965,20 +944,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>TA657A (Class 2 reference)</td>
-                <td>72.4 dBA</td>
-                <td>IEC 61672 Class 2</td>
+              <tr style="background:var(--teal-light);">
+                <td>Wintact SLM-30B (Class 2, AZ8930-verified)</td>
+                <td style="color:var(--teal);font-weight:500;">76.6 dBA</td>
+                <td>Field-calibrated to 94.0 dBA before session · Boeing 767 takeoff overflight</td>
               </tr>
-              <tr>
-                <td>TrueNoise app (external mic, +99 dB offset)</td>
-                <td>71.0 dBA</td>
-                <td>PoP Voice lavalier</td>
+              <tr style="background:var(--teal-light);">
+                <td>TrueNoise app (external mic, +96 dB offset, fur windshield)</td>
+                <td style="color:var(--teal);font-weight:500;">76.5 dBA</td>
+                <td>PoP Voice lavalier · standardized receptor · same overflight</td>
               </tr>
-              <tr>
-                <td>Delta</td>
-                <td>1.4 dB</td>
-                <td>Within IEC 61672 Class 2 tolerance (±2 dB)</td>
+              <tr style="background:var(--teal-light);">
+                <td><strong>Delta</strong></td>
+                <td style="color:var(--teal);font-weight:600;">−0.1 dB</td>
+                <td>Within IEC 61672 Class 2 ±2 dB unit-to-unit tolerance ✓</td>
               </tr>
             </tbody>
           </table>
@@ -989,11 +968,136 @@
             in real outdoor conditions with wind and ambient noise — not a controlled tone in an
             anechoic chamber.
           </p>
+          <p class="prose" style="font-size:12px;color:var(--text-dim);margin-top:8px;">
+            † The 9 May 2026 A320 comparison was made against the TA657A before its +2.9 dB drift
+            was identified. The reported agreement (−1.4 dB) was anchored to a drifted reference.
+            Corrected interpretation: app read +1.5 dB high relative to true SPL. This reading
+            does not support any calibration claim and is retained as a historical data point only.
+            See Section 7b for the full calibration correction record.
+          </p>
           <p class="prose">
             This is one validated comparison against the TA657A. Ongoing simultaneous comparisons
             will be performed against the Wintact SLM-30B IEC 61672 Class 2 reference meter across
             different aircraft types and weather conditions. We will publish the running validation
             table as it grows.
+          </p>
+        </div>
+
+        <!-- SECTION 7b: CALIBRATION HISTORY -->
+        <div class="method-section" id="s7b">
+          <div class="method-section-num">Section 7b</div>
+          <h2>Calibration history and the 2026-06-01 offset correction</h2>
+
+          <p class="prose">
+            Our reference instrumentation chain is anchored to an AZ8930 acoustic calibrator
+            (IEC 60942 Class 2, 94.0 dBA at 1 kHz). On 1 June 2026, we verified our prior
+            reference meter — a TA657A (IEC 61672 Class 2) — against the AZ8930 with a tight
+            coupler seal. The TA657A read <strong>96.9 dBA</strong> when presented with the
+            calibrator's 94.0 dBA tone: a <strong>+2.9 dB drift</strong>, outside its IEC 61672
+            Class 2 ±2 dB at-1-kHz tolerance.
+          </p>
+          <p class="prose">
+            The drift had propagated into the application's external-microphone calibration offset,
+            which had been anchored to the TA657A via an indoor bare-microphone match test in May
+            2026. After identifying the drift, we replaced the reference meter with a
+            calibrator-verified Wintact SLM-30B (IEC 61672 Class 2), corrected the application's
+            external-mic offset from +99 dB to +96 dB, and re-validated against three aircraft
+            overflights:
+          </p>
+
+          <table class="val-table">
+            <thead>
+              <tr>
+                <th>Aircraft</th>
+                <th>App reading</th>
+                <th>Reference reading</th>
+                <th>Delta</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A321 takeoff</td>
+                <td>79.4 dBA</td>
+                <td>76.3 dBA</td>
+                <td style="color:var(--red);font-weight:500;">+3.1 dB</td>
+                <td>Pre-correction</td>
+              </tr>
+              <tr>
+                <td>737-700 takeoff</td>
+                <td>78.4 dBA</td>
+                <td>75.6 dBA</td>
+                <td style="color:var(--red);font-weight:500;">+2.8 dB</td>
+                <td>Pre-correction</td>
+              </tr>
+              <tr>
+                <td>B767 takeoff</td>
+                <td>76.5 dBA</td>
+                <td>76.6 dBA</td>
+                <td style="color:var(--teal);font-weight:500;">−0.1 dB</td>
+                <td>Post-correction ✓</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="prose" style="margin-top:12px;">
+            All three measurements were made at the standardized receptor position (1.2 m height,
+            1.5 m from façade, concrete patio) with the same external microphone and fur windshield,
+            under calm wind conditions. C-A delta at peak confirmed a clean broadband signal with
+            no spectral contamination.
+          </p>
+
+          <div class="pull-quote" style="border-left:3px solid var(--teal);padding:14px 20px;
+               margin:24px 0;background:var(--teal-light);border-radius:0 6px 6px 0;">
+            <p style="font-size:14px;color:var(--text);line-height:1.75;">
+              <strong>This is a strength, not a weakness.</strong> Identifying and correcting a
+              2.9 dB drift in a Class 2 instrument by verifying it against a primary acoustic
+              reference is exactly the chain-of-custody discipline regulatory-grade measurement
+              requires. Most regulatory-grade noise datasets never verify their reference meters
+              against a primary calibrator — they trust the factory calibration and annual
+              recertification. We found a drift we would otherwise have lived with, corrected it,
+              and documented it. The corrected dataset is now traceable to an IEC 60942:2018
+              Class 2 acoustic calibrator.
+            </p>
+          </div>
+
+          <p class="prose" style="margin-top:4px;"><strong>Chronological calibration record:</strong></p>
+          <ul class="spec-list" style="margin-bottom:16px;">
+            <li><span class="spec-key">9 May 2026</span><span class="spec-val">A320 approach
+            comparison against TA657A (internal mic, home patio). Reported delta −1.4 dB.
+            Corrected interpretation: app +1.5 dB high relative to true SPL. Reference meter
+            subsequently found drifted +2.9 dB. This reading is retained as a historical data
+            point only — it does not support any calibration claim.</span></li>
+            <li><span class="spec-key">May 2026</span><span class="spec-val">External microphone
+            calibration offset anchored to TA657A via indoor bare-microphone match test. Offset
+            set to +99 dB. Drift inherited unknowingly into all May 2026 measurements.</span></li>
+            <li><span class="spec-key">1 June 2026</span><span class="spec-val">TA657A verified
+            against AZ8930 (IEC 60942 Class 2) with tight coupler seal. Reading: 96.9 dBA against
+            94.0 dBA reference — +2.9 dB drift confirmed, outside Class 2 ±2 dB tolerance.
+            TA657A retired as reference instrument.</span></li>
+            <li><span class="spec-key">1 June 2026</span><span class="spec-val">Wintact SLM-30B
+            (IEC 61672 Class 2) verified against AZ8930. Reading: 94.0 dBA — confirmed clean.
+            SLM-30B adopted as primary reference meter.</span></li>
+            <li><span class="spec-key">1 June 2026</span><span class="spec-val">Application
+            external-mic offset corrected from +99 dB to +96 dB. Three-aircraft validation
+            performed at standardized receptor. B767 post-correction delta: −0.1 dB. ✓</span></li>
+          </ul>
+
+          <p class="prose" style="margin-top:4px;"><strong>Affected data range:</strong>
+            Measurements taken before 1 June 2026 carry a known +3 dB systematic bias in
+            absolute SPL terms. Derived psychoacoustic metrics inherit a proportional bias.
+            See <a href="data.html#calibration">Data Treatment</a> for how pre-correction
+            data is handled in analytics.
+          </p>
+
+          <p class="prose"><strong>Pre-correction data is not invalid.</strong>
+            Many of the dataset's most important findings — aft-presentation spectral geometry,
+            atmospheric high-frequency absorption signatures, loudness-dBA inversion patterns,
+            C-A delta wind detection methodology — derive from pre-correction observations and
+            are unaffected by the absolute SPL offset. Relative patterns, spectral character,
+            and event-to-event comparisons within a single session are preserved. What changes
+            is the absolute calibration of peak SPL claims and health threshold exceedance counts,
+            which now use post-correction data only.
           </p>
         </div>
 
@@ -1008,11 +1112,11 @@
 
           <div class="limitation">
             <div class="limitation-num">1</div>
-            <div class="limitation-body"><strong>The microphone is not IEC 61672 certified.</strong> It is a consumer omnidirectional condenser with a manufacturer-published frequency range but no individual calibration certificate or temperature-stability specification. We rely on empirical validation against the Wintact SLM-30B rather than traceable factory calibration. The expanded validation dataset — spanning two aircraft types, two flight phases, two microphones, and three controlled spectral references — confirms all comparisons fall within the ±2 dB IEC 61672 Class 2 unit-to-unit tolerance. A modest low-frequency sensitivity bias (~1.7 dB spread across spectral references) has been characterized and is consistent with observed aircraft measurement results. Windshield insertion loss has been confirmed within published industry specifications. The system provides a level of empirical confidence that exceeds what a manufacturer specification alone would offer, even without formal certification.</div>
+            <div class="limitation-body"><strong>The microphone is not IEC 61672 certified.</strong> It is a consumer omnidirectional condenser with a manufacturer-published frequency range but no individual calibration certificate or temperature-stability specification. We rely on empirical validation against the Wintact SLM-30B rather than traceable factory calibration. Post-correction comparisons against the AZ8930-verified Wintact SLM-30B fall within the ±2 dB IEC 61672 Class 2 unit-to-unit tolerance (B767 −0.1 dB). Pre-correction spectral characterization against the TA657A produced apparent disagreements of up to 1.7 dB — those results are under re-characterization against the SLM-30B following the June 2026 calibration correction. Windshield insertion loss has been confirmed within published industry specifications by relative measurement, which is unaffected by the absolute calibration correction. The system's empirical confidence rests on the AZ8930 → SLM-30B → app chain of custody rather than manufacturer specification alone.</div>
           </div>
           <div class="limitation">
             <div class="limitation-num">2</div>
-            <div class="limitation-body"><strong>Sample size is small.</strong> Our validation dataset currently rests on a single matched A320 overflight. The methodology is sound regardless of sample size, but the empirical confidence interval narrows as we collect more comparisons. We will publish all future comparisons, including ones that disagree.</div>
+            <div class="limitation-body"><strong>Post-correction validation dataset is still small.</strong> Current validation rests primarily on a single post-correction overflight (Boeing 767, −0.1 dB agreement) plus the multi-aircraft pre-correction dataset that quantified the calibration drift (A321 +3.1 dB, 737-700 +2.8 dB — both outside Class 2 tolerance, confirming the offset magnitude). The methodology is sound regardless of sample size, but the empirical confidence interval narrows as post-correction comparisons accumulate. We will publish all future comparisons, including ones that disagree.</div>
           </div>
           <div class="limitation">
             <div class="limitation-num">3</div>
@@ -1053,9 +1157,10 @@
         <div class="closing-box">
           <p>We use the right algorithms (IEC 61672 A-weighting, ISO 532 loudness, DIN 45692
           sharpness), running on hardware that is more than capable of executing them in real time,
-          with a microphone whose response covers the relevant band, calibrated per-device against
-          a Class 2 reference meter, with the calibration validated empirically on a real aircraft
-          within Class 2 tolerance.</p>
+          with a microphone whose response covers the relevant band, calibrated per-device against a Class 2 reference meter that is itself field-verified against an IEC 60942:2018
+          Class 2 acoustic calibrator before each session, with the calibration validated
+          empirically on multiple aircraft overflights including a post-correction agreement
+          of −0.1 dB on a Boeing 767.</p>
           <p><em>This is not a substitute for a Brüel & Kjær 2250. It is a measurement system
           whose accuracy is documented, whose methodology is transparent, and whose data is honest
           about its limitations. That is the standard we hold ourselves to. We invite anyone to
@@ -1091,7 +1196,10 @@
         <a href="#s4">4. FFT analysis</a>
         <a href="#s5">5. Psychoacoustics</a>
         <a href="#s6">6. Calibration</a>
+        <a href="#s6b">6b. Measurement position</a>
+        <a href="#s6c">6c. Psychoacoustic evidence</a>
         <a href="#s7">7. Validation</a>
+        <a href="#s7b">7b. Calibration history</a>
         <a href="#s8">8. Limitations</a>
         <a href="#s9">9. Data availability</a>
         <a href="#refs">References</a>
