@@ -100,7 +100,12 @@ def init_db():
             observer_lat REAL,
             observer_lon REAL,
             excluded BOOLEAN DEFAULT FALSE,
-            uploaded_at TEXT
+            uploaded_at TEXT,
+            calibration_epoch TEXT GENERATED ALWAYS AS (
+                CASE WHEN uploaded_at < '2026-06-01 20:30:00'
+                     THEN 'pre_2026_06_01'
+                     ELSE 'post_2026_06_01' END
+            ) STORED
         )
     """)
     c.execute("""
