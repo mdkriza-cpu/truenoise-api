@@ -272,7 +272,7 @@
     </div>
 
     <div class="panel-footer">
-      Calibrated to TrueNoise A320 measurement (72.4 dBA, 9 May 2026).<br>
+      Calibrated to TrueNoise A320 measurement (69.3 dBA, 9 May 2026, post-calibration-correction).<br>
       Not a certified FAA AEDT analysis.<br>
       <a href="flightpath.html">← Six-altitude comparison</a><br>
       <a href="methodology.html">Full methodology →</a>
@@ -339,7 +339,7 @@ const DEP=155, BANK=25, RWY=154, RNMO=3.74;
 const g=32.174, v=200*1.68781;
 const RNM=(v*v/(g*Math.tan(BANK*Math.PI/180)))/6076.115;
 const BRG_BB=brg(BRGHT[0],BRGHT[1],BOBYJ[0],BOBYJ[1]);
-const REF_NG=87.4, REF_MAX=82.9;
+const REF_NG=84.3, REF_MAX=79.8; // corrected from 87.4/82.9 — post-calibration-correction 2026-06-01
 
 // ── DYNAMIC LAYERS ────────────────────────────────────────────────────────────
 let arcLyr=null, postLyr=null;
@@ -387,7 +387,7 @@ L.marker(WARYN,{icon:icon('#E63232',10)})
 lbl(WARYN,'WARYN (current)','#a03',10,-8);
 
 L.marker(ASH,{icon:icon('#FFD740',10)})
-  .bindPopup('<div class="ptitle">Ashbrook — TrueNoise Observer</div>Primary measurement receptor<br>Validated: <span class="pbad">72.4 dBA</span> (A320, 9 May 2026)<br><div class="pnote">Model calibrated to this measurement</div>')
+  .bindPopup('<div class="ptitle">Ashbrook — TrueNoise Observer</div>Primary measurement receptor<br>Validated: <span class="pbad">69.3 dBA</span> (A320, 9 May 2026, post-calibration-correction)<br><div class="pnote">Model calibrated to this measurement</div>')
   .addTo(map);
 lbl(ASH,'Ashbrook','#7a5900',-80,4);
 
