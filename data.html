@@ -302,6 +302,67 @@
         </div>
       </div>
 
+      <!-- CALIBRATION DATA TREATMENT -->
+      <div id="calibration" style="margin-bottom:36px;padding:20px 24px;
+           background:var(--amber-light);border:1px solid var(--amber);border-radius:10px;">
+        <div style="font-size:10px;color:var(--amber);letter-spacing:0.12em;
+             text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:8px;">
+          Pre-correction data treatment · effective 1 June 2026</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:1.2rem;
+             font-weight:400;color:var(--text);margin-bottom:12px;">
+          What you need to know about data collected before June 2026</div>
+        <p class="prose">
+          On 1 June 2026 a <strong>+2.9 dB calibration drift</strong> was identified in the
+          TA657A reference meter and corrected. Measurements uploaded before that date carry
+          a known +3 dB systematic bias in absolute SPL. The reference meter has been replaced
+          with a calibrator-verified Wintact SLM-30B and the application offset corrected.
+          See <a href="methodology.html#s7b">Methodology Section 7b</a> for the full account.
+        </p>
+        <p class="prose" style="margin-top:8px;"><strong>How pre-correction data is used
+        in this dataset:</strong></p>
+        <table class="col-table" style="margin-top:8px;">
+          <thead>
+            <tr>
+              <th style="width:40%;">Chart / use</th>
+              <th>Treatment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-name">Event counts, frequency by aircraft type</td>
+              <td style="font-size:13px;color:var(--text-muted);">Used unchanged — relative counts unaffected by absolute offset</td>
+            </tr>
+            <tr>
+              <td class="col-name">Spectral patterns, C-A delta, aft-aspect geometry</td>
+              <td style="font-size:13px;color:var(--text-muted);">Used unchanged — spectral character independent of absolute calibration</td>
+            </tr>
+            <tr>
+              <td class="col-name">Relative trends within a single session</td>
+              <td style="font-size:13px;color:var(--text-muted);">Used unchanged — offset cancels in relative comparisons</td>
+            </tr>
+            <tr>
+              <td class="col-name">Absolute SPL claims (Lmax, N65, N70 exceedance)</td>
+              <td style="font-size:13px;color:var(--text-muted);">Post-correction data only, or subtract 3 dB from pre-correction values</td>
+            </tr>
+            <tr>
+              <td class="col-name">Loudness in sone for health-impact claims</td>
+              <td style="font-size:13px;color:var(--text-muted);">Post-correction only, or multiply pre-correction sone by 0.81</td>
+            </tr>
+            <tr>
+              <td class="col-name">Comparison to FAA/WHO thresholds (65 dBA, etc.)</td>
+              <td style="font-size:13px;color:var(--text-muted);">Post-correction data only</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:12px;
+           font-family:'DM Mono',monospace;line-height:1.6;">
+          Correction math (Stevens power law, valid above 40 phon — covers all aircraft observations):<br>
+          dBA / Lmax / phon → subtract 3 · Zwicker loudness (sone) → multiply by 0.81 ·
+          Psychoacoustic annoyance → multiply by 0.81 · Sharpness (acum) → approximately unchanged ·
+          Health classification → recompute from corrected metrics
+        </p>
+      </div>
+
       <!-- COLUMN DEFINITIONS -->
       <div style="margin-bottom: 36px;">
         <div style="font-size:10px; color:var(--teal); letter-spacing:0.12em; text-transform:uppercase; font-family:'DM Mono',monospace; margin-bottom:8px;">Column definitions</div>
