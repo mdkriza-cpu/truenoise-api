@@ -1,14 +1,14 @@
 # TrueNoise — Backend Deployment Guide
-## For Xcode Claude and Martin
+## For XC (Xcode Claude) and Marty
 
 ---
 
-## CURRENT STATUS (as of May 12, 2026)
+## CURRENT STATUS (as of June 2026)
 
-Everything below is already live. This document is the handoff for
-building the iOS app upload function.
+Everything below is live. This document is the reference for iOS app
+development and backend integration.
 
-- **Public dashboard:** https://truenoise.org
+- **Public site:** https://truenoise.org
 - **API backend:** https://aircraft-noise-tracker-api.onrender.com
 - **Database:** Supabase PostgreSQL (permanent, no expiry)
 - **GitHub repo:** https://github.com/mdkriza-cpu/truenoise-api
@@ -18,25 +18,25 @@ building the iOS app upload function.
 ## ARCHITECTURE SUMMARY
 
 ```
-iOS App (Aircraft Noise Tracker)
+iOS App (TrueNoise)
     │
     │  POST /api/v1/upload-session
     │  (CSV file, multipart/form-data)
     ▼
-Render (FastAPI backend)
-    │
+Render (FastAPI backend — main.py)
+    │  Rate limit: 10 uploads/hr per IP
     │  psycopg / PostgreSQL
     ▼
 Supabase (permanent PostgreSQL database)
     │
     │  GET /api/v1/dashboard-summary
     ▼
-truenoise.org (GitHub Pages dashboard)
+truenoise.org (GitHub Pages — static HTML)
 ```
 
 ---
 
-## API SPECIFICATION FOR XCODE CLAUDE
+## API SPECIFICATION
 
 ### Upload Endpoint
 ```
@@ -48,26 +48,122 @@ POST https://aircraft-noise-tracker-api.onrender.com/api/v1/upload-session
 Content-Type: multipart/form-data
 X-Api-Key: imDQ5QWAD0mWvmltaUV-0Wcup8nR3xwSrx_gEDgmegw
 Form field name: "file"
-File content: session CSV (comma-separated, same format the app exports)
+File content: session CSV (comma-separated)
 ```
 
 The API key must be sent as the header `X-Api-Key` on every upload request.
-Requests without a valid key will receive a 401 Unauthorized response.
 
-### CSV format
-The CSV uses comma delimiters (not tab). Column headers must match exactly:
+### Rate limit
+The backend enforces **10 uploads per hour per IP**. Exceeding this returns
+`429 Too Many Requests`. The retry strategy below handles this gracefully.
+
+---
+
+## CSV FORMAT — CANONICAL COLUMN ORDER
+
+The CSV uses **comma delimiters**. Column headers must match exactly
+(case-sensitive). All columns from Position 32 onward are nullable for
+backward compatibility with sessions recorded before those fields existed.
+
 ```
-Timestamp,Type,dBA Level,Loudness (sone),Loudness Health Impact,
-Loudness Level (phon),Loudness Context,Sharpness (acum),
-Sharpness Health Impact,Annoyance,Annoyance Health Impact,
-Onset Rate (dB/s),Onset Health Impact,Callsign,ICAO24,Type Code,
-Type Name,Registration,Operator,Flight Phase,Ground Distance (mi),
-Slant Range (mi),Altitude (ft),Bearing,Bearing Compass,
-Elevation Angle,Speed (kts),Climb Rate (fpm),Approaching,
-Observer Lat,Observer Lon
+Pos  Column name                    Type      Notes
+───  ─────────────────────────────  ────────  ──────────────────────────────────
+ 1   Timestamp                      datetime  Local time
+ 2   Type                           text      "entry" or "track"
+ 3   dBA Level                      float
+ 4   Loudness (sone)                float     Zwicker ISO 532
+ 5   Loudness Health Impact         text      Risk tier label
+ 6   Loudness Level (phon)          float
+ 7   Loudness Context               text
+ 8   Sharpness (acum)               float     DIN 45692
+ 9   Sharpness Health Impact        text
+10   Annoyance                      float     Zwicker & Fastl composite
+11   Annoyance Health Impact        text
+12   Onset Rate (dB/s)              float
+13   Onset Health Impact            text
+14   Callsign                       text      ADS-B flight identifier
+15   ICAO24                         text      Transponder hex code
+16   Type Code                      text      ICAO aircraft type (e.g. B38M)
+17   Type Name                      text      Full name (e.g. Boeing 737MAX 8)
+18   Registration                   text      Tail number
+19   Operator                       text      Airline / operator name
+20   Flight Phase                   text      Taking Off, On Approach, etc.
+21   Ground Distance (mi)           float     Horizontal distance from observer
+22   Slant Range (mi)               float     3D distance (accounts for altitude)
+23   Altitude (ft)                  float     Barometric altitude
+24   Bearing                        float     Compass degrees from observer
+25   Bearing Compass                text      Cardinal direction string
+26   Elevation Angle                float     Look-up angle from observer
+27   Speed (kts)                    float     Ground speed
+28   Climb Rate (fpm)               float     Vertical rate (+ = climbing)
+29   Approaching                    bool
+30   Observer Lat                   float     GPS latitude of measurement point
+31   Observer Lon                   float     GPS longitude of measurement point
+32   Windshield Config              text      None / Foam / Fur
+33   Windshield Correction (dBA)    float     0.0 / 0.7 / 1.8
+34   Measurement Type               text      See values below
+35   Position Description           text      Free-form; quote-escape if commas
+36   C-A Delta (dB)                 float     Wind contamination indicator
+37   Excluded                       text      Yes or No (default No)
 ```
 
-### Swift implementation (URLSession)
+**Windshield Config values and insertion loss:**
+```
+None  →  0.0 dBA
+Foam  →  0.7 dBA   (midpoint of 0.6–0.8 measured range)
+Fur   →  1.8 dBA   (used for all outdoor sessions)
+```
+
+**Measurement Type values:**
+```
+Standardized Receptor    ISO 1996 compliant · tripod · ≥1 m from walls
+Community Receptor       Lived position (porch, balcony, etc.)
+Facade-Level             0.5–2 m from single wall · WHO L_DEN methodology
+Field Characterization   Mobile/temporary · strategic location
+Hand-held                No fixed mount · indicative only
+```
+
+**C-A Delta threshold guidance:**
+```
+< 15 dB    Clean
+15–25 dB   Possible wind contamination — flag for review
+≥ 25 dB    Strong wind contamination — exclude from SPL analysis
+```
+Flags only apply above 55 dBA SPL. Below that threshold, a large C-A
+delta reflects ambient bass character, not wind contamination.
+
+**Excluded column behavior:**
+Rows with `Excluded=Yes` must be stripped by the iOS upload service
+before transmission. The backend should never receive excluded rows
+under normal operation. The column is stored as a boolean in the
+observations table for defense in depth.
+
+---
+
+## CALIBRATION EPOCH — IMPORTANT FOR XC
+
+The backend automatically tags every uploaded observation with a
+`calibration_epoch` value based on the row timestamp:
+
+```
+pre_2026_06_01   — sessions recorded before 1 June 2026 20:30:00
+post_2026_06_01  — sessions recorded from that point forward
+```
+
+**The app does not send this column.** It is a server-side generated
+column in the observations table. XC does not need to include it in
+the CSV or handle it in any way — the backend derives it automatically
+from the Timestamp column.
+
+Context: on 1 June 2026 a +2.9 dB calibration drift was identified in
+the prior reference meter (TA657A) and corrected. The epoch tag allows
+the dashboard and download page to handle pre- and post-correction data
+appropriately. See truenoise.org/methodology.html §7b for full details.
+
+---
+
+## SWIFT IMPLEMENTATION
+
 ```swift
 func uploadSession(csvURL: URL) async throws {
     let url = URL(string: "https://aircraft-noise-tracker-api.onrender.com/api/v1/upload-session")!
@@ -75,7 +171,7 @@ func uploadSession(csvURL: URL) async throws {
     request.httpMethod = "POST"
 
     let boundary = UUID().uuidString
-    request.setValue("multipart/form-data; boundary=\(boundary)", 
+    request.setValue("multipart/form-data; boundary=\(boundary)",
                      forHTTPHeaderField: "Content-Type")
     request.setValue("imDQ5QWAD0mWvmltaUV-0Wcup8nR3xwSrx_gEDgmegw",
                      forHTTPHeaderField: "X-Api-Key")
@@ -90,16 +186,18 @@ func uploadSession(csvURL: URL) async throws {
     request.httpBody = body
 
     let (data, response) = try await URLSession.shared.data(for: request)
-    
+
     guard let httpResponse = response as? HTTPURLResponse else {
         throw UploadError.invalidResponse
     }
-    
-    if httpResponse.statusCode == 200 {
-        // Success — parse and log the response
+
+    switch httpResponse.statusCode {
+    case 200:
         let result = try JSONDecoder().decode(UploadResponse.self, from: data)
-        print("Uploaded session: \(result.sessionId), \(result.observationsInserted) observations")
-    } else {
+        print("Uploaded: \(result.sessionId), \(result.observationsInserted) observations")
+    case 429:
+        throw UploadError.rateLimited   // retry after 1 hour
+    default:
         throw UploadError.serverError(httpResponse.statusCode)
     }
 }
@@ -113,7 +211,7 @@ struct UploadResponse: Codable {
     let n80: Int
     let recoveryDeficit: Int
     let uniqueAircraft: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case status
         case sessionId = "session_id"
@@ -126,6 +224,7 @@ struct UploadResponse: Codable {
 
 enum UploadError: Error {
     case invalidResponse
+    case rateLimited
     case serverError(Int)
 }
 ```
@@ -145,21 +244,19 @@ enum UploadError: Error {
 ```
 
 ### Error responses
-- `400` — not a CSV file, or CSV is empty
-- `500` — server error (retry later)
+```
+400   Not a CSV file, or CSV is empty
+401   Missing or invalid X-Api-Key header
+429   Rate limit exceeded (10 uploads/hr per IP) — retry after 1 hour
+500   Server error — retry later
+```
 
 ---
 
-## RETRY STRATEGY (recommended)
+## RETRY STRATEGY
 
 The Render free tier spins down after 15 minutes of inactivity.
-First request after idle takes up to 50 seconds.
-
-Recommended approach:
-1. Trigger upload from the same "Save" flow that writes the CSV locally
-2. On failure (network error or 5xx), store the CSV path in UserDefaults
-3. On next app launch, check for queued uploads and retry
-4. The backend uses INSERT OR REPLACE so duplicate uploads are safe
+First request after idle can take up to 50 seconds.
 
 ```swift
 // Store failed upload for retry
@@ -177,40 +274,35 @@ func retryPendingUploads() async {
         let url = URL(fileURLWithPath: path)
         do {
             try await uploadSession(csvURL: url)
+        } catch UploadError.rateLimited {
+            remaining.append(path)  // keep — retry after rate limit window
         } catch {
-            remaining.append(path) // keep for next retry
+            remaining.append(path)  // keep for next retry
         }
     }
     UserDefaults.standard.set(remaining, forKey: "pendingUploads")
 }
 ```
 
+The backend uses a unique index on `(session_id, timestamp, callsign)`
+so duplicate uploads are safe — re-uploading the same session is idempotent.
+
 ---
 
 ## OTHER API ENDPOINTS
 
-### Health check
 ```
-GET https://aircraft-noise-tracker-api.onrender.com/health
-→ {"status": "ok", "timestamp": "2026-05-12T..."}
-```
+GET  /health
+     → {"status": "ok", "timestamp": "2026-06-04T..."}
 
-### Dashboard summary (powers truenoise.org)
-```
-GET https://aircraft-noise-tracker-api.onrender.com/api/v1/dashboard-summary
-→ aggregated stats across all sessions
-```
+GET  /api/v1/dashboard-summary
+     → aggregated stats across all sessions (powers truenoise.org dashboard)
 
-### List sessions
-```
-GET https://aircraft-noise-tracker-api.onrender.com/api/v1/sessions
-→ most recent 50 sessions
-```
+GET  /api/v1/sessions
+     → most recent 50 sessions
 
-### Session observations
-```
-GET https://aircraft-noise-tracker-api.onrender.com/api/v1/sessions/{session_id}/observations
-→ all raw observations for a specific session
+GET  /api/v1/sessions/{session_id}/observations
+     → all raw observations for a specific session
 ```
 
 ---
@@ -219,128 +311,143 @@ GET https://aircraft-noise-tracker-api.onrender.com/api/v1/sessions/{session_id}
 
 ### `observations` table
 One row per measurement row in the CSV.
-Key columns: `session_id`, `timestamp`, `dba_level`, `loudness_sone`,
-`annoyance`, `callsign`, `type_code`, `operator`, `flight_phase`
+
+```
+session_id               text
+timestamp                datetime
+type                     text        "entry" or "track"
+dba_level                real
+loudness_sone            real
+loudness_health_impact   text
+loudness_level_phon      real
+loudness_context         text
+sharpness_acum           real
+sharpness_health_impact  text
+annoyance                real
+annoyance_health_impact  text
+onset_rate               real
+onset_health_impact      text
+callsign                 text
+icao24                   text
+type_code                text
+type_name                text
+registration             text
+operator                 text
+flight_phase             text
+ground_distance_mi       real
+slant_range_mi           real
+altitude_ft              real
+bearing                  real
+bearing_compass          text
+elevation_angle          real
+speed_kts                real
+climb_rate_fpm           real
+approaching              boolean
+observer_lat             real
+observer_lon             real
+windshield_config        text        nullable
+windshield_correction_dba real       nullable
+measurement_type         text        nullable
+position_description     text        nullable
+ca_delta_db              real        nullable
+excluded                 boolean     default false
+calibration_epoch        text        GENERATED — do not send in CSV
+```
+
+Unique index: `(session_id, timestamp, callsign)` — prevents duplicates.
+RLS enabled. GRANT SELECT to anon role active.
 
 ### `sessions` table
 One row per uploaded session with pre-computed summary stats.
-Key columns: `n65`, `n70`, `n80`, `recovery_deficit`, `event_density`,
-`peak_dba`, `peak_loudness_sone`
+
+```
+session_id               text        primary key
+session_start            datetime
+uploaded_at              datetime
+total_observations       integer
+n65                      integer
+n70                      integer
+n80                      integer
+recovery_deficit         integer
+event_density            real
+peak_dba                 real
+peak_loudness_sone       real
+unique_aircraft          integer
+measurement_type         text        nullable
+position_description     text        nullable
+ca_delta_db              real        nullable
+who_daily_average_dba    real        nullable  (future — not yet ingested)
+who_exceedance_pct       real        nullable  (future — not yet ingested)
+laeq                     real        nullable  (future — not yet ingested)
+la10                     real        nullable  (future — not yet ingested)
+la50                     real        nullable  (future — not yet ingested)
+la90                     real        nullable  (future — not yet ingested)
+la95                     real        nullable  (future — not yet ingested)
+baseline_sample_count    integer     nullable  (future — not yet ingested)
+baseline_duration_seconds real       nullable  (future — not yet ingested)
+```
 
 ---
 
-## WHO BENCHMARK COLUMNS (FUTURE)
+## BACKGROUND BASELINE — NOT YET INGESTED
 
-The `sessions` table already has placeholder columns:
-- `who_daily_average_dba`
-- `who_exceedance_pct`
+The iOS app computes LAeq, LA10, LA50, LA90, LA95 per session. The upload
+service currently strips this block before sending to the backend. Schema
+columns exist for future use.
 
-When the app computes and sends these, the backend will store them automatically.
-
----
-
-## NOTES ON NAMING
-
-The app is currently called "Aircraft Noise Tracker" but the platform
-is being renamed to support broader environmental noise monitoring
-beyond aircraft. The backend API name on Render still shows the old
-name but functions correctly. A full rename is planned.
-
-The two public websites:
-- **truenoise.org** — data, methodology, dashboard (what we built)
-- **stopsevernnoise.org** — community advocacy (to be built separately)
-
-
-## Windshield Configuration Fields
-Two session-level columns to add at the END of every CSV row (after Observer Lon).
-Same value repeated for every row in the session.
-
-EXACT column names (case-sensitive):
-  Windshield Config           — text: None, Foam, or Fur
-  Windshield Correction (dBA) — number: 0.0, 0.7, or 1.8
-
-Insertion loss reference:
-  None  -> 0.0 dBA
-  Foam  -> 0.7 dBA  (midpoint of 0.6-0.8 measured range)
-  Fur   -> 1.8 dBA  (used for all outdoor sessions)
-
-Blank values accepted for backwards compatibility with existing sessions.
-Backend reads both fields from the first row of the CSV.
-
-## New CSV Columns — shipped 2026-05-18
-
-Three new session-level columns appended after Windshield Correction (dBA).
-Same value repeats for every row in the session. All nullable for backward compatibility.
-
-EXACT column names (case-sensitive):
-
-  Position 32: Measurement Type        — text
-  Position 33: Position Description    — text (free-form, may contain commas — quote-escaped)
-  Position 34: C-A Delta (dB)          — float, 1 decimal place, may be blank
-
-Measurement Type values:
-  Standardized Receptor   — ISO 1996 compliant, tripod, ≥1 m from walls
-  Community Receptor      — lived position (porch, balcony etc), includes boundary reinforcement
-  Facade-Level            — 0.5–2 m from single wall, WHO L_DEN methodology
-  Field Characterization  — mobile/temporary, strategic location
-  Hand-held               — no fixed mount
-
-C-A Delta threshold guidance:
-  < 15 dB   — clean
-  15–25 dB  — possible wind contamination (flag)
-  ≥ 25 dB   — strong wind contamination (exclude from analysis)
-
-Supabase columns to add (run before deploying main.py):
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS measurement_type TEXT;
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS position_description TEXT;
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS ca_delta_db REAL;
-
-## Background Baseline — schema only, NOT ingested yet (2026-05-18)
-
-The iOS app now computes LAeq, LA10, LA50, LA90, LA95 per session but the
-upload service strips this block before sending to the backend. Schema columns
-have been added to sessions table for future use — DO NOT display on dashboard
-until Marty sends a separate "go" note with validated data and methodology text.
+**Do not display baseline stats on the dashboard** until Marty sends a
+separate "go" note with validated data and methodology text.
 
 Baseline block format (local only, not uploaded):
-  BACKGROUND BASELINE (from 2-sec peak samples)
-  Sample count,<int>
-  Sampling duration,<hh:mm or mm:ss>
-  LAeq (approx),<float>
-  LA10 (exceeded 10% of time),<float>
-  LA50 (median),<float>
-  LA90 (background floor),<float>
-  LA95 (acoustic floor),<float>
+```
+BACKGROUND BASELINE (from 2-sec peak samples)
+Sample count,<int>
+Sampling duration,<hh:mm or mm:ss>
+LAeq (approx),<float>
+LA10 (exceeded 10% of time),<float>
+LA50 (median),<float>
+LA90 (background floor),<float>
+LA95 (acoustic floor),<float>
+```
 
-Supabase columns to add now (schema only):
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS laeq REAL;
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la10 REAL;
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la50 REAL;
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la90 REAL;
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS la95 REAL;
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS baseline_sample_count INTEGER;
-  ALTER TABLE sessions ADD COLUMN IF NOT EXISTS baseline_duration_seconds REAL;
+---
 
-## Excluded Column — shipped 2026-05-21
+## NOTES
 
-New column appended at end of every observation row in CSV.
+**Naming:** The Render service is still named `aircraft-noise-tracker-api`
+(legacy). It functions correctly. A full rename is not a priority.
 
-  Column name: Excluded
-  Type: text — Yes or No
-  Default: No
+**Two public sites:**
+- **truenoise.org** — data, methodology, dashboard
+- **stopsevernnoise.org** — community advocacy (in planning, not yet built)
 
-Behavior:
-  Rows with Excluded=Yes are stripped by the iOS upload service before transmission.
-  The backend will never receive excluded rows under normal operation.
-  The column is stored in the observations table as a boolean for defense in depth.
-  Nullable — backward compatible with all prior sessions.
+**Calibration reference (current):**
+App external mic offset: **+96 dB** (corrected from +99 dB on 1 June 2026).
+Internal mic offset: +108 dB (not yet re-validated post-correction — not
+used for field measurement). See methodology.html for full calibration chain.
 
-Supabase column to add:
-  ALTER TABLE observations ADD COLUMN IF NOT EXISTS excluded BOOLEAN DEFAULT FALSE;
+---
 
-ContaminationLevel logic (iOS):
-  .clean    — C-A Delta < 15 dB (above 55 dBA SPL)
-  .possible — C-A Delta 15–25 dB (above 55 dBA SPL)
-  .likely   — C-A Delta >= 25 dB (above 55 dBA SPL)
-  SPL-conditional: flags only fire above 55 dBA — below that threshold
-  a large C-A delta reflects ambient bass character, not wind contamination.
+## CHANGELOG
+
+```
+2026-06-04  Consolidated all append blocks into single canonical document.
+            Added calibration_epoch documentation (server-generated, app
+            does not send). Added rate limit (10/hr) to architecture,
+            error responses, and retry strategy. Added 429 error case to
+            Swift implementation. Updated status header to June 2026.
+            Full observations schema table with all current columns.
+
+2026-05-21  Excluded column added to CSV (pos 37). Rows with Excluded=Yes
+            stripped by iOS before upload. Stored as boolean in observations.
+
+2026-05-18  Measurement Type, Position Description, C-A Delta columns added
+            (pos 34–36). Background baseline schema columns added to sessions
+            table (not yet ingested).
+
+2026-05-15  Windshield Config and Windshield Correction columns added
+            (pos 32–33).
+
+2026-05-12  Initial document. Core upload endpoint, Swift implementation,
+            retry strategy, base CSV format (pos 1–31).
+```
