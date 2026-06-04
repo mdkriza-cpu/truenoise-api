@@ -300,7 +300,7 @@
       <div class="disclaimer">
         <p><strong>Important:</strong> This is a theoretical model for research and public education.
         Noise estimates use inverse square law propagation calibrated to a single TrueNoise
-        field measurement (A320, 72.4 dBA, 9 May 2026). Fuel estimates use published aircraft
+        field measurement (A320, 69.3 dBA, 9 May 2026, post-calibration-correction). Fuel estimates use published aircraft
         performance data. This is not a certified FAA AEDT noise analysis and should not be
         cited as one. Its purpose is to demonstrate that the BRGHT alternative warrants
         formal independent modeling by the FAA as part of its feasibility study.
@@ -318,37 +318,37 @@
             <input type="checkbox" id="cb800" checked onchange="toggleAlt(800)">
             <div class="alt-swatch" style="background:#E63232;"></div>
             <span class="alt-label">800 ft</span>
-            <span class="alt-spl">72 dBA</span>
+            <span class="alt-spl">53 dBA</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb900" checked onchange="toggleAlt(900)">
             <div class="alt-swatch" style="background:#E65A1E;"></div>
             <span class="alt-label">900 ft</span>
-            <span class="alt-spl">72 dBA</span>
+            <span class="alt-spl">54 dBA</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb1000" checked onchange="toggleAlt(1000)">
             <div class="alt-swatch" style="background:#D48C1E;"></div>
             <span class="alt-label">1,000 ft (≈ WARYN)</span>
-            <span class="alt-spl">73 dBA</span>
+            <span class="alt-spl">54 dBA</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb1100" checked onchange="toggleAlt(1100)">
             <div class="alt-swatch" style="background:#C0B41E;"></div>
             <span class="alt-label">1,100 ft</span>
-            <span class="alt-spl">74 dBA</span>
+            <span class="alt-spl">55 dBA</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb1200" checked onchange="toggleAlt(1200)">
             <div class="alt-swatch" style="background:#8CBE1E;"></div>
             <span class="alt-label">1,200 ft</span>
-            <span class="alt-spl">74 dBA</span>
+            <span class="alt-spl">56 dBA</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb3000" checked onchange="toggleAlt(3000)">
             <div class="alt-swatch" style="background:#19B973;"></div>
             <span class="alt-label">3,000 ft (BRGHT)</span>
-            <span class="alt-spl">63 dBA</span>
+            <span class="alt-spl">65 dBA</span>
           </div>
           <div style="font-size:10px;color:var(--text-dim);margin-top:6px;font-family:'DM Mono',monospace;">
             dBA = estimated peak SPL at Ashbrook
@@ -441,17 +441,17 @@ const aircraft=[
 ];
 
 const altConfig={
-  800: {color:'#E63232',lw:2,spl_max8:51.4,spl_ng:55.9,
+  800: {color:'#E63232',lw:2,spl_max8:48.3,spl_ng:52.8,
     community:'Linthicum / Brooklyn Park — dense residential directly under turn arc at very low altitude. No improvement over current procedure.'},
-  900: {color:'#E65A1E',lw:2,spl_max8:52.1,spl_ng:56.6,
+  900: {color:'#E65A1E',lw:2,spl_max8:49.0,spl_ng:53.5,
     community:'Linthicum / Brooklyn Park — marginally less acute than 800 ft but same communities affected.'},
-  1000:{color:'#D48C1E',lw:2,spl_max8:52.9,spl_ng:57.4,
+  1000:{color:'#D48C1E',lw:2,spl_max8:49.8,spl_ng:54.3,
     community:'Essentially identical to current WARYN geometry. Turn at ~1.02 nm — no meaningful improvement for Severn residential communities.'},
-  1100:{color:'#C0B41E',lw:2,spl_max8:53.6,spl_ng:58.1,
+  1100:{color:'#C0B41E',lw:2,spl_max8:50.5,spl_ng:55.0,
     community:'Residential Severn near airport perimeter — modest southward shift, still concentrated over homes.'},
-  1200:{color:'#8CBE1E',lw:2,spl_max8:54.4,spl_ng:58.9,
+  1200:{color:'#8CBE1E',lw:2,spl_max8:51.3,spl_ng:55.8,
     community:'Residential Severn — 1,200 ft remains well short of meaningful community relief.'},
-  3000:{color:'#19B973',lw:3,spl_max8:63.1,spl_ng:67.6,
+  3000:{color:'#19B973',lw:3,spl_max8:60.0,spl_ng:64.5,
     community:'Severn Run Natural Environment Area — largely uninhabited. Arc clears residential communities. ~10 dB improvement at Ashbrook vs current WARYN procedure.'}
 };
 
@@ -561,10 +561,10 @@ addLabel(BRGHT,'BRGHT (proposed)','#0F6E56');
 L.marker(ASHBROOK,{icon:makeIcon('#FFD740',10)})
   .bindPopup(`<div class="pop-title">Ashbrook — TrueNoise Observer</div>`+
     `39.1128°N, 76.6579°W · Severn, Maryland<br>`+
-    `Validated measurement: <span class="pop-bad">72.4 dBA</span> (A320, 9 May 2026)<br>`+
+    `Validated measurement: <span class="pop-bad">69.3 dBA</span> (A320, 9 May 2026, post-calibration-correction)<br>`+
     `AirNoise complaints: 94 departure events, Oct 2025–Apr 2026<br>`+
     `Median complaint altitude: 2,450 ft MSL<br>`+
-    `<div class="pop-note">Model calibrated to this measurement. BRGHT procedure estimated at 63 dBA here — approximately half the perceived loudness.</div>`)
+    `<div class="pop-note">Model calibrated to this measurement. BRGHT procedure estimated at 60 dBA here — approximately half the perceived loudness.</div>`)
   .addTo(map);
 addLabel(ASHBROOK,'Ashbrook (observer)','#7a5900',-90,4);
 
