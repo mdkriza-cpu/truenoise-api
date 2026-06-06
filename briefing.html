@@ -206,6 +206,7 @@
     <a href="dashboard.html#time" class="nav-item" style="display:flex;margin-bottom:2px;">🕐 Time patterns</a>
     <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;margin:16px 0 8px;">Research</div>
     <a href="briefing.html" class="nav-item active" style="display:flex;margin-bottom:2px;">❤ Health briefing</a>
+    <a href="causal-chain.html" class="nav-item" style="display:flex;margin-bottom:2px;">🔗 Causal chain</a>
     <a href="flightpath.html" class="nav-item" style="display:flex;margin-bottom:2px;">🗺 Flight path analysis</a>
     <a href="sensitivity.html" class="nav-item" style="display:flex;margin-bottom:2px;">🎚 Altitude sensitivity</a>
     <a href="measurement-gap.html" class="nav-item" style="display:flex;margin-bottom:2px;">📐 Measurement gap</a>
@@ -239,6 +240,7 @@
       <div class="sidenav-group">
         <div class="sidenav-label">Research</div>
         <a href="briefing.html" class="nav-item active"><span class="nav-icon">❤</span> Health briefing</a>
+        <a href="causal-chain.html" class="nav-item"><span class="nav-icon">🔗</span> Causal chain</a>
         <a href="flightpath.html" class="nav-item"><span class="nav-icon">🗺</span> Flight path analysis</a>
         <a href="sensitivity.html" class="nav-item"><span class="nav-icon">🎚</span> Altitude sensitivity</a>
         <a href="measurement-gap.html" class="nav-item"><span class="nav-icon">📐</span> Measurement gap</a>
@@ -288,7 +290,7 @@
   </p>
   <div class="hero-stats">
     <div class="hero-stat">
-      <span class="hero-stat-val">70.2</span>
+      <span class="hero-stat-val">70.2<sup style="font-size:0.55em;vertical-align:super;">†</sup></span>
       <span class="hero-stat-label">dBA peak · bedroom window · 6:55 AM</span>
     </div>
     <div class="hero-stat">
@@ -303,12 +305,37 @@
   <p class="hero-disclaimer">
     Measurements: TrueNoise Community Noise Observatory · Severn, MD ·
     A321 takeoff overflight 19 May 2026, 06:55 AM · Extended session same location ·
-    Calibrated against TA657A Type 2 reference meter · See methodology for full detail
+    Calibrated against AZ8930-verified Wintact SLM-30B Class 2 reference meter · See methodology for full detail
+  </p>
+  <p id="cal-note" style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:8px;font-family:'DM Mono',monospace;line-height:1.6;">
+    † Pre-correction reading from 19 May 2026. Corrected absolute value: approximately 67.2 dBA.
+    The 27.7 dB above-background delta and the 54/58 disrupted-interval count remain valid post-correction.
   </p>
 </div>
 
 <!-- ARTICLE -->
 <article class="article">
+
+  <!-- CALIBRATION EPOCH NOTICE -->
+  <div style="background:var(--gray-50);border:1px solid var(--border-mid);border-radius:8px;
+              padding:20px 24px;margin-bottom:36px;">
+    <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.12em;text-transform:uppercase;
+                font-family:'DM Mono',monospace;margin-bottom:8px;">Note on calibration epoch</div>
+    <p style="font-size:14px;color:var(--text-muted);line-height:1.75;margin-bottom:10px;">
+      The measurements cited in this briefing are from the <strong style="color:var(--text);">pre-correction
+      data epoch</strong> (before 1 June 2026), which carries a +3 dB systematic bias in absolute SPL
+      terms. See the <a href="methodology.html#s7b">calibration history</a> for the full record.
+    </p>
+    <p style="font-size:14px;color:var(--text-muted);line-height:1.75;">
+      The <strong style="color:var(--text);">relative measurements</strong> that this briefing's argument
+      actually rests on — the 27.7 dB above-background delta and the Recovery Deficit Index (54 of 58
+      disrupted intervals) — are <strong style="color:var(--text);">unaffected</strong> by the calibration
+      correction. Both are defined relative to the session's own background level, so the offset cancels
+      mathematically. The absolute peak SPL value (70.2 dBA) should be read as approximately 3 dB high;
+      the corrected value is ~67.2 dBA. The disruption pattern described in this briefing stands
+      independent of the absolute calibration adjustment.
+    </p>
+  </div>
 
   <!-- SECTION 1 -->
   <div class="section-num">Section 1</div>
@@ -461,6 +488,14 @@
   </div>
 
   <p class="prose">
+    The five-stage causal chain — from acoustic exposure through immediate biological response,
+    short-term metabolic shifts, chronic dysregulation, and ultimately to clinical outcomes —
+    is documented in peer-reviewed literature across cardiovascular physiology,
+    psychoneuroendocrinology, and epidemiology.
+    <a href="causal-chain.html">See the full causal chain with evidence →</a>
+  </p>
+
+  <p class="prose">
     The World Health Organization has linked this pattern of chronic noise exposure to the
     following documented health outcomes:
   </p>
@@ -540,7 +575,7 @@
       <li>The acoustic exposure at this location meets the conditions WHO has linked to the health endpoints above</li>
       <li>The intrusion magnitude — 27.7 dB above background — is large enough to cause acute startle responses and sleep disruption</li>
       <li>The event density (9.1 per hour, 54 of 58 intervals under the stress-recovery threshold) is in the range associated with chronic stress mechanisms</li>
-      <li>The measurement system is calibrated against a Type 2 reference meter and validated across three aircraft types, two flight phases, and two microphones — all within IEC Class 2 tolerance</li>
+      <li>The measurement system is calibrated against an AZ8930-verified Class 2 reference meter and validated across multiple aircraft types, flight phases, and two independent operating points — all within IEC 61672 Class 2 tolerance</li>
     </ul>
     <div class="limits-label" style="margin-top:14px;">What we cannot say</div>
     <ul>
