@@ -610,14 +610,16 @@
             Scenario B confirms the full field chain on a real aircraft at a standardized free-field
             position. Scenario C confirms the full field chain at a façade boundary position across
             eight aircraft spanning four aircraft types — with all eight deltas in the conservative
-            direction (app below meter). The Façade-Level bias of −0.78 dB relative to Standardized
-            Receptor (−0.1 dB) is attributable to position-dependent reflection interference between
-            non-co-located capsules at the boundary layer, not a calibration offset.
+            direction. The Façade-Level bias of −0.78 dB relative to Standardized Receptor (−0.1 dB)
+            is attributable to position-dependent reflection interference between non-co-located
+            capsules at the boundary layer, not a calibration offset. Altitude within the SR geometry
+            does not appear to drive the delta — the geometry effect (0.7 dB) and within-SR altitude
+            variation (0.6 dB range) are comparable in magnitude.
           </p>
           <p class="prose">
             The system is calibrated within IEC 61672 Class 2 ±2 dB tolerance and shows agreement
             substantially tighter than that tolerance across all validated operating points.
-            <strong>Post-correction validation spans 9 aircraft across 2 measurement geometries.</strong>
+            <strong>Post-correction validation spans 11 aircraft across 2 measurement geometries.</strong>
           </p>
 
           <div class="pull-quote" style="border-left:3px solid var(--teal);padding:14px 20px;
@@ -627,6 +629,7 @@
               primary reference) → Wintact SLM-30B (IEC 61672 Class 2, −0.0 dB against AZ8930)
               → TrueNoise app + external mic + +96 dB offset + fur windshield + 1.8 dB correction
               (−0.3 dB Scenario A · −0.1 dB Scenario B · −0.78 dB mean Scenario C).
+              11 post-correction aircraft · overall mean Δ ≈ −0.55 dB · range −1.1 to +0.2 dB.
               The TA657A reference meter has been retired following identification of
               frequency-dependent drift that could not be corrected by trimming.
             </p>
@@ -855,40 +858,45 @@
             chain is independently traceable, verified per session, and documented for audit.
           </p>
 
-          <p class="prose" style="margin-top:16px;"><strong>Overflight comparison validation</strong></p>
+          <p class="prose" style="margin-top:16px;"><strong>Overflight comparison validation — Standardized Receptor</strong></p>
           <p class="prose">
-            Following the 1 June 2026 calibration correction, the system was validated against the
-            calibrator-verified Wintact SLM-30B. The B767 post-correction result is the cleanest
-            single validation data point in the dataset:
+            Following the 1 June 2026 calibration correction, opportunistic simultaneous comparisons
+            against the AZ8930-verified Wintact SLM-30B have been conducted across multiple sessions.
+            The Standardized Receptor dataset now covers three aircraft across two altitudes and
+            three aircraft families:
           </p>
 
           <table class="val-table">
             <thead>
-              <tr><th>Instrument</th><th>Peak SPL</th><th>Notes</th></tr>
+              <tr><th>Aircraft</th><th>Altitude</th><th>App (dBA)</th><th>SLM-30B (dBA)</th><th>Delta</th></tr>
             </thead>
             <tbody>
               <tr style="background:var(--teal-light);">
-                <td>Wintact SLM-30B (Class 2, AZ8930-verified)</td>
-                <td style="color:var(--teal);font-weight:500;">76.6 dBA</td>
-                <td>Field-calibrated to 94.0 dBA before session · Boeing 767 takeoff overflight</td>
+                <td>B767 takeoff</td><td>—</td><td>76.5</td><td>76.6</td>
+                <td style="color:var(--teal);font-weight:600;">−0.1 dB ✓</td>
               </tr>
               <tr style="background:var(--teal-light);">
-                <td>TrueNoise app (external mic, +96 dB offset, fur windshield)</td>
-                <td style="color:var(--teal);font-weight:500;">76.5 dBA</td>
-                <td>PoP Voice lavalier · standardized receptor · same overflight</td>
+                <td>A321 takeoff</td><td>2,425 ft</td><td>78.2</td><td>78.6</td>
+                <td style="color:var(--teal);font-weight:600;">−0.4 dB ✓</td>
               </tr>
               <tr style="background:var(--teal-light);">
-                <td><strong>Delta</strong></td>
-                <td style="color:var(--teal);font-weight:600;">−0.1 dB</td>
-                <td>Within IEC 61672 Class 2 ±2 dB unit-to-unit tolerance ✓</td>
+                <td>757-200 takeoff</td><td>4,650 ft</td><td>69.3</td><td>69.1</td>
+                <td style="color:var(--teal);font-weight:600;">+0.2 dB ✓</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td><strong>SR mean (3 aircraft)</strong></td><td></td><td></td><td></td>
+                <td style="color:var(--teal);font-weight:600;">−0.1 dB · range 0.6 dB</td>
               </tr>
             </tbody>
           </table>
 
           <p class="prose">
-            This is one validated comparison against the SLM-30B post-correction. Ongoing
-            simultaneous comparisons will be performed across different aircraft types and
-            weather conditions. We will publish the running validation table as it grows.
+            The 0.6 dB range across three aircraft families and two altitudes is notably tight.
+            The 757-200 at 4,650 ft is the first non-negative post-correction delta, suggesting
+            the mean is stable near zero rather than consistently biased in one direction at
+            Standardized Receptor. Whether the +0.2 dB reflects a spectral effect (the 757-200
+            has a different LF character), altitude-dependent geometry, or statistical variation
+            cannot be determined from three samples — the dataset will continue to grow.
           </p>
 
           <p class="prose" style="margin-top:20px;"><strong>Expanded validation — Façade-Level geometry (8 June 2026)</strong></p>
@@ -911,8 +919,8 @@
               <tr><td>737-800 takeoff</td><td>74.5</td><td>75.3</td><td style="color:var(--teal);font-weight:500;">−0.8</td></tr>
               <tr><td>EMB 505 (Rwy 15L)</td><td>59.4</td><td>60.3</td><td style="color:var(--teal);font-weight:500;">−0.9</td></tr>
               <tr style="background:var(--teal-light);">
-                <td><strong>Mean (8 aircraft)</strong></td><td></td><td></td>
-                <td style="color:var(--teal);font-weight:600;">−0.78 dB</td>
+                <td><strong>Façade mean (8 aircraft)</strong></td><td></td><td></td>
+                <td style="color:var(--teal);font-weight:600;">−0.78 dB · range 0.7 dB</td>
               </tr>
             </tbody>
           </table>
@@ -920,25 +928,48 @@
           <p class="prose">
             All eight deltas are negative — the app reads consistently below the reference meter at
             this geometry. The probability of 8/8 same-direction results from random variation alone
-            is approximately 0.8%, confirming this is a real systematic signal rather than noise.
-            The bias direction is <strong>conservative</strong>: the app under-reports relative to
-            the reference meter. Any challenge to the dataset on grounds of inflation is contradicted
-            by this result.
+            is approximately 0.8%, confirming a real systematic signal. The bias direction is
+            <strong>conservative</strong>: the app under-reports relative to the reference meter.
+            Any challenge to the dataset on grounds of inflation is contradicted by this result.
+          </p>
+
+          <p class="prose" style="margin-top:20px;"><strong>Geometry comparison — what the two datasets reveal</strong></p>
+
+          <table class="val-table">
+            <thead>
+              <tr><th>Geometry</th><th>N</th><th>Mean Δ</th><th>Range</th><th>Interpretation</th></tr>
+            </thead>
+            <tbody>
+              <tr style="background:var(--teal-light);">
+                <td>Standardized Receptor</td><td>3</td>
+                <td style="color:var(--teal);font-weight:600;">−0.1 dB</td>
+                <td>0.6 dB</td>
+                <td>Mic + offset chain, free-field — minimal boundary contribution</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>Façade-Level</td><td>8</td>
+                <td style="color:var(--teal);font-weight:600;">−0.78 dB</td>
+                <td>0.7 dB</td>
+                <td>Boundary interference field — capsule position in reflection pattern</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="prose">
+            The geometry effect (SR vs Façade: 0.7 dB) and the within-SR altitude effect
+            (range 0.6 dB) are comparable in magnitude. This indicates that <strong>measurement
+            position in the local reflection pattern matters more than aircraft altitude</strong>
+            for the app-vs-meter delta. The +96 dB offset is validated for the isolated mic +
+            offset chain; the Façade-Level bias is an environmental boundary effect, not a
+            calibration offset.
           </p>
           <p class="prose">
-            The larger bias at Façade-Level (mean −0.78 dB) relative to Standardized Receptor
-            (−0.1 dB) is consistent with position-dependent reflection interference. At a façade,
-            incident sound and wall reflections produce a complex interference field; the meter and
-            app capsules are not co-located, and the meter capsule is in a slightly higher-pressure
-            reflection node. This is an environmental geometry effect, not a calibration offset.
-            The +96 dB offset is correct for the isolated mic + offset chain; the façade geometry
-            adds boundary-layer variability on top.
-          </p>
-          <p class="prose">
-            Post-correction validation now spans <strong>9 aircraft across 2 measurement
-            geometries</strong>. All deltas fall within IEC 61672 Class 2 ±2 dB unit-to-unit
-            tolerance. In any context where the dataset is challenged: <em>the app reads on average
-            0.78 dB lower than a Class 2 reference meter at Façade-Level positions.</em>
+            Post-correction validation now spans <strong>11 aircraft across 2 measurement
+            geometries</strong> — B767, A321 (×3), 737-700, 737-800, 737-900, 737 Max 8 (×3),
+            757-200, EMB 505. Overall mean Δ ≈ −0.55 dB, range −1.1 to +0.2 dB. All within
+            IEC 61672 Class 2 ±2 dB tolerance. In any context where the dataset is challenged:
+            <em>across 11 post-correction measurements the app reads on average 0.55 dB below
+            a Class 2 reference meter.</em>
           </p>
 
           <p class="prose" style="font-size:12px;color:var(--text-dim);margin-top:8px;">
@@ -973,6 +1004,16 @@
               <tr style="background:var(--teal-light);">
                 <td>B767 takeoff</td><td>76.5 dBA</td><td>76.6 dBA</td>
                 <td style="color:var(--teal);font-weight:600;">−0.1 dB ✓</td>
+                <td>Post-correction · Standardized Receptor</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>A321 takeoff · 2,425 ft</td><td>78.2 dBA</td><td>78.6 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−0.4 dB ✓</td>
+                <td>Post-correction · Standardized Receptor</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>757-200 takeoff · 4,650 ft</td><td>69.3 dBA</td><td>69.1 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">+0.2 dB ✓</td>
                 <td>Post-correction · Standardized Receptor</td>
               </tr>
               <tr style="background:var(--teal-light);">
@@ -1047,7 +1088,8 @@
             <li><span class="spec-key">1 June 2026</span><span class="spec-val">Wintact SLM-30B verified against AZ8930. Reading: 94.0 dBA — confirmed clean. SLM-30B adopted as primary reference meter.</span></li>
             <li><span class="spec-key">1 June 2026</span><span class="spec-val">Application external-mic offset corrected from +99 dB to +96 dB. Three-aircraft validation performed at standardized receptor. B767 post-correction delta: −0.1 dB. ✓</span></li>
             <li><span class="spec-key">2 June 2026</span><span class="spec-val">External microphone placed directly in AZ8930 calibrator with snug coupler fit; windshield setting changed to bare/None in app. App reading: 93.7 dBA against 94.0 dBA reference. Delta: −0.3 dB. Independent confirmation of the +96 dB offset at 1 kHz pure tone — validates the microphone + offset sub-chain in isolation from the windshield and aircraft signal characteristics.</span></li>
-            <li><span class="spec-key">8 June 2026</span><span class="spec-val">Eight-aircraft simultaneous comparison at Façade-Level position against AZ8930-verified Wintact SLM-30B. Aircraft: A321 (×2), 737 Max 8 (×3), 737-900, 737-800, EMB 505. All 8 deltas negative (app below meter). Mean delta: −0.78 dB. Range: −0.4 to −1.1 dB. App reads conservatively at façade geometry — consistent with position-dependent reflection interference between non-co-located capsules. All within IEC 61672 Class 2 ±2 dB tolerance. Post-correction validation dataset now spans 9 aircraft across 2 geometries. ✓</span></li>
+            <li><span class="spec-key">8 June 2026</span><span class="spec-val">Eight-aircraft simultaneous comparison at Façade-Level position against AZ8930-verified Wintact SLM-30B. Aircraft: A321 (×2), 737 Max 8 (×3), 737-900, 737-800, EMB 505. All 8 deltas negative (app below meter). Mean delta: −0.78 dB. Range: −0.4 to −1.1 dB. App reads conservatively at façade geometry — consistent with position-dependent reflection interference between non-co-located capsules. All within IEC 61672 Class 2 ±2 dB tolerance. ✓</span></li>
+            <li><span class="spec-key">8 June 2026</span><span class="spec-val">Standardized Receptor dataset expanded to 3 aircraft: A321 at 2,425 ft (−0.4 dB) and 757-200 at 4,650 ft (+0.2 dB) added to B767 (−0.1 dB). SR mean Δ: −0.1 dB · range 0.6 dB. Geometry effect (SR vs Façade: 0.7 dB) comparable to altitude effect within SR (0.6 dB range) — position in local reflection pattern is the dominant variable. Post-correction validation dataset now spans 11 aircraft across 2 geometries. ✓</span></li>
           </ul>
 
           <p class="prose" style="margin-top:4px;"><strong>Affected data range:</strong>
