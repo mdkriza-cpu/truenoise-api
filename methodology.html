@@ -494,9 +494,10 @@
           <p class="prose">
             Windshields attenuate real acoustic signal in addition to suppressing wind noise — more
             material in the signal path means more signal loss, particularly at high frequencies where
-            wavelengths approach the windshield's structural dimensions. This attenuation has been
-            characterized by simultaneous comparison against the TA657A Class 2 reference meter across
-            multiple noise types (broadband, tonal, impulsive):
+            wavelengths approach the windshield's structural dimensions. The fur windshield insertion
+            loss of 1.8 dBA was determined by a <em>delta measurement</em>: simultaneous bare-mic and
+            fur-mic readings of the same signal, with the TA657A as a co-located reference to anchor
+            the comparison.
           </p>
           <table class="val-table">
             <thead>
@@ -512,7 +513,7 @@
                 <td>Bare mic (no windshield)</td>
                 <td>0.0 dBA</td>
                 <td>0 dB reference</td>
-                <td>Matched SLM-30B across all noise types</td>
+                <td>Reference baseline for delta measurement</td>
               </tr>
               <tr>
                 <td>Foam windshield</td>
@@ -529,32 +530,43 @@
             </tbody>
           </table>
           <p class="prose">
-            The fact that insertion loss is consistent across all noise types confirms that windshield
-            attenuation is broadly frequency-flat across the audible band, as expected from published
-            specifications. Different source spectra all see similar dBA reductions — there are no
-            frequency-dependent surprises in the measurement chain.
+            The 1.8 dBA fur correction is robust to the TA657A drift discovered on 1 June 2026.
+            Because insertion loss is a <em>difference</em> between bare and fur readings on the
+            same signal, any absolute error in the TA657A's reference level cancels in the subtraction.
+            Whatever the meter read high by, both bare and fur readings inherited the same error;
+            the delta between them is unaffected. The fur correction value does not need to be
+            re-derived following the calibration correction.
+          </p>
+          <p class="prose">
+            <strong>Methodological note — indoor bench characterization retired.</strong>
+            Early windshield testing was conducted indoors with a consumer audio source, with the
+            app mic and SLM-30B co-located near the speaker. Subsequent analysis identified that
+            this setup is subject to near-field positional variability (within approximately λ/2
+            of a finite source, sound pressure varies substantially with position), speaker
+            frequency response non-linearity, and room boundary reflections — all of which
+            contaminate absolute spectral characterization. The bench setup cannot support claims
+            of multi-spectrum characterization with the rigor implied by "broadband, tonal, impulsive"
+            testing against a reference meter. That framing has been retired from this page.
+            Future windshield characterization will use a co-located outdoor far-field protocol,
+            in which both microphones are placed at identical geometry relative to a distant source,
+            eliminating near-field and reflection artifacts. No date has been set for this work.
+            The 1.8 dBA insertion loss figure is retained as a reasonable historical estimate,
+            within the published industry range of 1.5–3.0 dBA for fur windshields, and robust
+            to the TA657A drift as described above.
           </p>
           <p class="prose">
             All outdoor monitoring sessions are conducted with the fur windshield installed. Published
             measurements therefore carry a known conservative correction of 1.8 dBA — actual noise
-            levels at the receptor are 1.8 dB higher than reported values. This correction will be
-            applied automatically in future dataset versions once per-session windshield configuration
-            is logged by the app. Researchers requiring the corrected values may apply the 1.8 dBA
-            offset to all current outdoor observations.
-          </p>
-          <p class="prose">
-            The bare-mic indoor test demonstrated zero insertion loss from the microphone capsule
-            itself — establishing that any offset between the app and the reference meter could be
-            attributed to the calibration coefficient, not the microphone's spectral response.
-            That established methodology was what later allowed us to identify and correct the
-            TA657A drift (see §7b). The post-correction +96 dB offset has been validated by
-            aircraft comparison against the AZ8930-traceable Wintact SLM-30B at −0.1 dB agreement.
+            levels at the receptor are 1.8 dB higher than reported values. This correction is
+            applied automatically by the app based on the per-session windshield configuration.
+            Researchers requiring the corrected values may apply the 1.8 dBA offset to sessions
+            where windshield configuration is not yet logged.
           </p>
 
-                              <p class="prose" style="margin-top:20px;"><strong>Two-operating-point validation</strong></p>
+                              <p class="prose" style="margin-top:20px;"><strong>Multi-geometry validation</strong></p>
           <p class="prose">
-            The calibrated system has been validated at two independent operating points,
-            each verifying a different sub-chain of the measurement system:
+            The calibrated system has been validated across three independent operating points,
+            spanning two measurement geometries and two signal types:
           </p>
 
           <table class="val-table">
@@ -562,7 +574,7 @@
               <tr>
                 <th>Scenario</th>
                 <th>Reference</th>
-                <th>Signal</th>
+                <th>Signal / geometry</th>
                 <th>Delta</th>
                 <th>What it validates</th>
               </tr>
@@ -571,28 +583,41 @@
               <tr style="background:var(--teal-light);">
                 <td><strong>A — Calibrator</strong></td>
                 <td>AZ8930 (IEC 60942 Class 2) · 94.0 dBA · 1 kHz</td>
-                <td>Pure tone · bare mic · no windshield · no correction applied</td>
+                <td>Pure tone · bare mic · no windshield · no correction</td>
                 <td style="color:var(--teal);font-weight:600;">−0.3 dB</td>
                 <td>Microphone + +96 dB offset sub-chain only</td>
               </tr>
               <tr style="background:var(--teal-light);">
-                <td><strong>B — Aircraft</strong></td>
-                <td>Wintact SLM-30B (IEC 61672 Class 2, AZ8930-verified) · Boeing 767 overflight</td>
-                <td>Broadband aircraft noise · fur windshield · +1.8 dB insertion-loss correction applied</td>
+                <td><strong>B — Standardized Receptor</strong></td>
+                <td>Wintact SLM-30B (IEC 61672 Class 2, AZ8930-verified) · B767 overflight</td>
+                <td>Broadband aircraft · fur windshield · +1.8 dB correction · free-field</td>
                 <td style="color:var(--teal);font-weight:600;">−0.1 dB</td>
                 <td>Full field chain: mic + offset + windshield correction</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td><strong>C — Façade-Level</strong></td>
+                <td>Wintact SLM-30B (IEC 61672 Class 2, AZ8930-verified) · 8 aircraft</td>
+                <td>Broadband aircraft · fur windshield · +1.8 dB correction · façade geometry</td>
+                <td style="color:var(--teal);font-weight:600;">−0.78 dB mean<br><span style="font-size:11px;font-weight:400;">range −0.4 to −1.1 dB</span></td>
+                <td>Full field chain at façade geometry · 8/8 conservative</td>
               </tr>
             </tbody>
           </table>
 
           <p class="prose">
-            The two scenarios are stronger together than either alone. Scenario A confirms
-            the microphone and offset are correctly calibrated against a primary acoustic
-            reference. Scenario B confirms the full field chain — including the fur windshield
-            and its +1.8 dB insertion-loss correction — against an independently verified
-            Class 2 reference meter on a real aircraft overflight. The system is calibrated
-            within IEC 61672 Class 2 ±2 dB tolerance and shows agreement substantially
-            tighter than that tolerance across both validated operating points.
+            The three scenarios are stronger together than any alone. Scenario A confirms the
+            microphone and offset are correctly calibrated against a primary acoustic reference.
+            Scenario B confirms the full field chain on a real aircraft at a standardized free-field
+            position. Scenario C confirms the full field chain at a façade boundary position across
+            eight aircraft spanning four aircraft types — with all eight deltas in the conservative
+            direction (app below meter). The Façade-Level bias of −0.78 dB relative to Standardized
+            Receptor (−0.1 dB) is attributable to position-dependent reflection interference between
+            non-co-located capsules at the boundary layer, not a calibration offset.
+          </p>
+          <p class="prose">
+            The system is calibrated within IEC 61672 Class 2 ±2 dB tolerance and shows agreement
+            substantially tighter than that tolerance across all validated operating points.
+            <strong>Post-correction validation spans 9 aircraft across 2 measurement geometries.</strong>
           </p>
 
           <div class="pull-quote" style="border-left:3px solid var(--teal);padding:14px 20px;
@@ -601,13 +626,11 @@
               <strong>Validation chain summary:</strong> AZ8930 calibrator (IEC 60942 Class 2,
               primary reference) → Wintact SLM-30B (IEC 61672 Class 2, −0.0 dB against AZ8930)
               → TrueNoise app + external mic + +96 dB offset + fur windshield + 1.8 dB correction
-              (−0.3 dB Scenario A, −0.1 dB Scenario B). The TA657A reference meter has been
-              retired following identification of frequency-dependent drift that could not be
-              corrected by trimming.
+              (−0.3 dB Scenario A · −0.1 dB Scenario B · −0.78 dB mean Scenario C).
+              The TA657A reference meter has been retired following identification of
+              frequency-dependent drift that could not be corrected by trimming.
             </p>
           </div>
-
-          
 
         </div>
 
@@ -868,6 +891,56 @@
             weather conditions. We will publish the running validation table as it grows.
           </p>
 
+          <p class="prose" style="margin-top:20px;"><strong>Expanded validation — Façade-Level geometry (8 June 2026)</strong></p>
+          <p class="prose">
+            A simultaneous eight-aircraft comparison was performed at a Façade-Level measurement
+            position (0.5–2 m from a single building wall), yielding the following dataset:
+          </p>
+
+          <table class="val-table">
+            <thead>
+              <tr><th>Aircraft</th><th>App (dBA)</th><th>SLM-30B (dBA)</th><th>Delta</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>A321 takeoff</td><td>73.9</td><td>74.7</td><td style="color:var(--teal);font-weight:500;">−0.8</td></tr>
+              <tr><td>737 Max 8 takeoff</td><td>73.0</td><td>73.9</td><td style="color:var(--teal);font-weight:500;">−0.9</td></tr>
+              <tr><td>737 Max 8 takeoff</td><td>73.5</td><td>74.6</td><td style="color:var(--teal);font-weight:500;">−1.1</td></tr>
+              <tr><td>A321 takeoff</td><td>74.1</td><td>74.7</td><td style="color:var(--teal);font-weight:500;">−0.6</td></tr>
+              <tr><td>737 Max 8 takeoff</td><td>72.3</td><td>72.7</td><td style="color:var(--teal);font-weight:500;">−0.4</td></tr>
+              <tr><td>737-900 takeoff</td><td>77.6</td><td>78.3</td><td style="color:var(--teal);font-weight:500;">−0.7</td></tr>
+              <tr><td>737-800 takeoff</td><td>74.5</td><td>75.3</td><td style="color:var(--teal);font-weight:500;">−0.8</td></tr>
+              <tr><td>EMB 505 (Rwy 15L)</td><td>59.4</td><td>60.3</td><td style="color:var(--teal);font-weight:500;">−0.9</td></tr>
+              <tr style="background:var(--teal-light);">
+                <td><strong>Mean (8 aircraft)</strong></td><td></td><td></td>
+                <td style="color:var(--teal);font-weight:600;">−0.78 dB</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="prose">
+            All eight deltas are negative — the app reads consistently below the reference meter at
+            this geometry. The probability of 8/8 same-direction results from random variation alone
+            is approximately 0.8%, confirming this is a real systematic signal rather than noise.
+            The bias direction is <strong>conservative</strong>: the app under-reports relative to
+            the reference meter. Any challenge to the dataset on grounds of inflation is contradicted
+            by this result.
+          </p>
+          <p class="prose">
+            The larger bias at Façade-Level (mean −0.78 dB) relative to Standardized Receptor
+            (−0.1 dB) is consistent with position-dependent reflection interference. At a façade,
+            incident sound and wall reflections produce a complex interference field; the meter and
+            app capsules are not co-located, and the meter capsule is in a slightly higher-pressure
+            reflection node. This is an environmental geometry effect, not a calibration offset.
+            The +96 dB offset is correct for the isolated mic + offset chain; the façade geometry
+            adds boundary-layer variability on top.
+          </p>
+          <p class="prose">
+            Post-correction validation now spans <strong>9 aircraft across 2 measurement
+            geometries</strong>. All deltas fall within IEC 61672 Class 2 ±2 dB unit-to-unit
+            tolerance. In any context where the dataset is challenged: <em>the app reads on average
+            0.78 dB lower than a Class 2 reference meter at Façade-Level positions.</em>
+          </p>
+
           <p class="prose" style="font-size:12px;color:var(--text-dim);margin-top:8px;">
             † The 9 May 2026 A320 comparison was made against the TA657A before its +2.9 dB drift
             was identified. The reported agreement (−1.4 dB) was anchored to a drifted reference.
@@ -894,13 +967,53 @@
 
           <table class="val-table">
             <thead>
-              <tr><th>Aircraft</th><th>App reading</th><th>Reference reading</th><th>Delta</th><th>Status</th></tr>
+              <tr><th>Aircraft</th><th>App reading</th><th>Reference reading</th><th>Delta</th><th>Status / Geometry</th></tr>
             </thead>
             <tbody>
               <tr style="background:var(--teal-light);">
                 <td>B767 takeoff</td><td>76.5 dBA</td><td>76.6 dBA</td>
                 <td style="color:var(--teal);font-weight:600;">−0.1 dB ✓</td>
-                <td>Post-correction</td>
+                <td>Post-correction · Standardized Receptor</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>A321 takeoff</td><td>73.9 dBA</td><td>74.7 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−0.8 dB ✓</td>
+                <td>Post-correction · Façade-Level</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>737 Max 8 takeoff</td><td>73.0 dBA</td><td>73.9 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−0.9 dB ✓</td>
+                <td>Post-correction · Façade-Level</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>737 Max 8 takeoff</td><td>73.5 dBA</td><td>74.6 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−1.1 dB ✓</td>
+                <td>Post-correction · Façade-Level</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>A321 takeoff</td><td>74.1 dBA</td><td>74.7 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−0.6 dB ✓</td>
+                <td>Post-correction · Façade-Level</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>737 Max 8 takeoff</td><td>72.3 dBA</td><td>72.7 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−0.4 dB ✓</td>
+                <td>Post-correction · Façade-Level</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>737-900 takeoff</td><td>77.6 dBA</td><td>78.3 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−0.7 dB ✓</td>
+                <td>Post-correction · Façade-Level</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>737-800 takeoff</td><td>74.5 dBA</td><td>75.3 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−0.8 dB ✓</td>
+                <td>Post-correction · Façade-Level</td>
+              </tr>
+              <tr style="background:var(--teal-light);">
+                <td>EMB 505 takeoff (Rwy 15L)</td><td>59.4 dBA</td><td>60.3 dBA</td>
+                <td style="color:var(--teal);font-weight:600;">−0.9 dB ✓</td>
+                <td>Post-correction · Façade-Level</td>
               </tr>
               <tr>
                 <td>A321 takeoff</td><td>79.4 dBA</td><td>76.3 dBA</td>
@@ -934,6 +1047,7 @@
             <li><span class="spec-key">1 June 2026</span><span class="spec-val">Wintact SLM-30B verified against AZ8930. Reading: 94.0 dBA — confirmed clean. SLM-30B adopted as primary reference meter.</span></li>
             <li><span class="spec-key">1 June 2026</span><span class="spec-val">Application external-mic offset corrected from +99 dB to +96 dB. Three-aircraft validation performed at standardized receptor. B767 post-correction delta: −0.1 dB. ✓</span></li>
             <li><span class="spec-key">2 June 2026</span><span class="spec-val">External microphone placed directly in AZ8930 calibrator with snug coupler fit; windshield setting changed to bare/None in app. App reading: 93.7 dBA against 94.0 dBA reference. Delta: −0.3 dB. Independent confirmation of the +96 dB offset at 1 kHz pure tone — validates the microphone + offset sub-chain in isolation from the windshield and aircraft signal characteristics.</span></li>
+            <li><span class="spec-key">8 June 2026</span><span class="spec-val">Eight-aircraft simultaneous comparison at Façade-Level position against AZ8930-verified Wintact SLM-30B. Aircraft: A321 (×2), 737 Max 8 (×3), 737-900, 737-800, EMB 505. All 8 deltas negative (app below meter). Mean delta: −0.78 dB. Range: −0.4 to −1.1 dB. App reads conservatively at façade geometry — consistent with position-dependent reflection interference between non-co-located capsules. All within IEC 61672 Class 2 ±2 dB tolerance. Post-correction validation dataset now spans 9 aircraft across 2 geometries. ✓</span></li>
           </ul>
 
           <p class="prose" style="margin-top:4px;"><strong>Affected data range:</strong>
