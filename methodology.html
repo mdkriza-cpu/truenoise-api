@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="canonical" href="https://truenoise.org/methodology.html">
 <title>Methodology — TrueNoise</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -291,6 +290,7 @@
             <a href="#s6b" style="color:var(--teal);">6b. Measurement position</a>
             <a href="#s6c" style="color:var(--teal);">6c. C-A delta / wind</a>
             <a href="#s6d" style="color:var(--teal);">6d. Psychoacoustic evidence</a>
+            <a href="#s6e" style="color:var(--teal);">6e. Seasonal / atmospheric</a>
             <a href="#s7" style="color:var(--teal);">7. Validation</a>
             <a href="#s7b" style="color:var(--teal);">7b. Calibration history</a>
             <a href="#s8" style="color:var(--teal);">8. Limitations</a>
@@ -846,6 +846,71 @@
           </ol>
         </div>
 
+        <!-- SECTION 6e: SEASONAL / ATMOSPHERIC PROPAGATION -->
+        <div class="method-section" id="s6e">
+          <div class="method-section-num">Section 6e</div>
+          <h2>Seasonal and atmospheric propagation effects</h2>
+
+          <p class="prose" style="margin-top:6px;">
+            Ground-level aircraft noise measurements are not solely a function of aircraft
+            geometry and thrust. Atmospheric conditions between source and receiver modulate
+            sound propagation in ways that create a systematic seasonal pattern. Two distinct
+            mechanisms — one acoustic, one operational — push summer readings lower than
+            winter readings at otherwise identical geometry.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>Atmospheric refraction</em></p>
+          <p class="prose">
+            When ground-level air is warmer than the air aloft — the normal condition on hot
+            summer days — the gradient in sound speed causes acoustic rays to bend upward,
+            away from the ground. This reduces observed SPL at ground level. The same physics
+            explains why cold, still winter mornings carry aircraft sound further than hot
+            summer afternoons. At typical slant ranges of 0.5–1.0 miles, this effect can
+            account for an estimated 2–5 dBA of apparent quieting relative to cooler
+            conditions at equivalent geometry.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>Reduced thrust on hot-day departures</em></p>
+          <p class="prose">
+            Airlines routinely file a reduced assumed temperature (&ldquo;flex temp&rdquo;)
+            for takeoff thrust calculations. On hot days, engines are already density-limited,
+            and the commanded N1 for a given flex assumption is lower than on cooler days,
+            reducing both jet mixing and fan noise. This mechanism applies to departures only;
+            approach noise is largely independent of ambient temperature.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>Practical implication for this dataset</em></p>
+          <p class="prose">
+            These mechanisms predict that summer absolute SPL readings at equivalent geometry
+            will run several dBA lower than cooler-condition readings, and preliminary field
+            observation is consistent with this: an overflight informally observed at
+            approximately 5 dBA below expectation prompted a controlled re-test of the
+            measurement chain (1 July 2026), which found the microphone performing normally
+            against the calibrated reference in a point-source comparison and within
+            −0.7 to −1.1 dBA on live aircraft. With a hardware fault excluded, atmospheric
+            propagation and reduced-thrust departures remain the operative explanation for
+            transient warm-condition quieting. We treat the magnitude — plausibly on the order
+            of 3–6 dBA when refraction and reduced departure thrust combine — as provisional
+            pending measurement across a full annual cycle.
+          </p>
+          <p class="prose">
+            The essential point is that such quieting does <strong>not</strong> indicate
+            reduced aircraft operations or genuine noise mitigation; it reflects atmospheric
+            and operational state. Relative metrics — dBA above background, event frequency,
+            and the C-weighted-minus-A-weighted delta described in
+            <a href="#s6c">&sect;6c</a> — are unaffected by seasonal propagation and remain
+            valid across seasons. Trend charts presenting absolute SPL over time should be
+            interpreted with this seasonal caveat in mind.
+          </p>
+
+          <p class="prose" style="margin-top:16px;">
+            This is the same principle that motivates the event-based approach throughout this
+            project: absolute time-averaged sound levels are sensitive to conditions that have
+            nothing to do with how many aircraft pass overhead or how disruptive each one is,
+            whereas relative and event-count metrics remain stable across seasons.
+          </p>
+        </div>
+
         <!-- SECTION 7: VALIDATION -->
         <div class="method-section" id="s7">
           <div class="method-section-num">Section 7</div>
@@ -1172,6 +1237,17 @@
             The internal microphone is not used for primary field measurement — the external
             microphone is the reference for all field sessions. The internal mic is used only for
             indoor characterization work. Re-validation against the SLM-30B is planned.</div>
+          </div>
+
+          <div class="limitation">
+            <div class="limitation-num">7</div>
+            <div class="limitation-body"><strong>Absolute SPL varies seasonally due to atmospheric propagation and hot-day thrust reduction.</strong>
+            Summer readings at equivalent geometry run several dBA lower than winter readings
+            because of upward acoustic refraction in warm surface air and reduced-thrust
+            (flex-temp) departures on hot days. This is an artifact of atmospheric and
+            operational state, not genuine noise mitigation, and it affects absolute SPL trend
+            charts but not relative or event-count metrics. Fully described in
+            <a href="#s6e">&sect;6e</a>.</div>
           </div>
         </div>
 
