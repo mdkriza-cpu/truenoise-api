@@ -291,6 +291,7 @@
             <a href="#s6c" style="color:var(--teal);">6c. C-A delta / wind</a>
             <a href="#s6d" style="color:var(--teal);">6d. Psychoacoustic evidence</a>
             <a href="#s6e" style="color:var(--teal);">6e. Seasonal / atmospheric</a>
+            <a href="#s6f" style="color:var(--teal);">6f. Humidity / windshield</a>
             <a href="#s7" style="color:var(--teal);">7. Validation</a>
             <a href="#s7b" style="color:var(--teal);">7b. Calibration history</a>
             <a href="#s8" style="color:var(--teal);">8. Limitations</a>
@@ -911,7 +912,106 @@
           </p>
         </div>
 
-        <!-- SECTION 7: VALIDATION -->
+        <!-- SECTION 6f: HUMIDITY-ASSOCIATED OFFSET -->
+        <div class="method-section" id="s6f">
+          <div class="method-section-num">Section 6f</div>
+          <h2>A humidity-associated offset, and a mechanism that did not survive testing</h2>
+
+          <p class="prose" style="margin-top:6px;">
+            The external microphone is normally fitted with a fur windshield, for which the
+            platform applies a fixed correction of +1.8 dBA. Comparison against the reference
+            meter on 24 July 2026 found that platform-to-reference agreement differed
+            substantially between a humid morning and a drier afternoon. We report the
+            observation, the mechanism we proposed for it, and the test that failed to confirm
+            that mechanism, because the failure is as informative as the observation.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>The observation</em></p>
+          <p class="prose">
+            In the afternoon session at approximately 45% relative humidity, three overflights
+            at comparable geometry (slant ranges 0.6&ndash;0.7 mi, altitudes 2,218&ndash;2,511 ft)
+            gave a mean platform-minus-reference difference of &minus;0.67 dB, standard
+            deviation about 0.15 dB. In the morning session at approximately 76% relative
+            humidity, the mean difference was &minus;1.65 dB. The afternoon figure sits close to
+            two independent prior estimates of the platform&rsquo;s conservative offset:
+            &minus;0.95 dB from the 1 July controlled comparison and &minus;0.78 dB from the
+            fa&ccedil;ade-level series. The convergence of those three estimates is the firmest
+            part of this record.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>The proposed mechanism</em></p>
+          <p class="prose">
+            The obvious explanation is moisture. A fur windshield absorbs atmospheric water,
+            and a damp windshield attenuates high-frequency content more than a dry one,
+            increasing insertion loss beyond what a fixed correction accounts for. Atmospheric
+            absorption along the propagation path is separately humidity-dependent at high
+            frequencies and would act in the same direction. Either mechanism predicts the same
+            signature: the humid session should show <em>less high-frequency energy</em> in the
+            recorded signal.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>The test, and its result</em></p>
+          <p class="prose">
+            Because the platform computes psychoacoustic sharpness (in acum, a measure of
+            high-frequency proportion) at every sample, this prediction is directly testable
+            against the archive. If damp fur or humid air were removing high-frequency content,
+            the humid morning session should show <strong>lower</strong> sharpness than the
+            drier session at matched A-weighted level.
+          </p>
+          <p class="prose">
+            It does not. Comparing 24 July morning against afternoon in 2 dB bands from 50 to
+            74 dBA, the humid morning session shows <strong>higher</strong> sharpness in all
+            twelve bands, by a mean of +0.059 acum. Fleet composition differed between sessions
+            &mdash; the morning carried a higher proportion of 737 MAX aircraft, which are
+            independently sharper at matched level &mdash; but restricting to 737 NG and Classic
+            aircraft only leaves the result unchanged: higher morning sharpness in all twelve
+            bands, mean +0.053 acum. Measurement geometry does not explain it either; mean slant
+            range and altitude were near-identical between sessions (1.06 vs 1.07 mi;
+            2,499 vs 2,569 ft).
+          </p>
+          <p class="prose">
+            The proposed high-frequency-attenuation mechanism is therefore <strong>not
+            supported</strong> by the psychoacoustic record. Whatever produces the broadband
+            offset, it does not appear to act by removing high-frequency content.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>An unresolved anomaly</em></p>
+          <p class="prose">
+            A second result from the same comparison is currently unexplained. The
+            C-weighted-minus-A-weighted delta, an indicator of low-frequency content, is also
+            <em>higher</em> in the humid morning session (+0.85 dB overall). Sharpness and
+            C&minus;A delta are inversely related across the full archive (r = &minus;0.44), as
+            they should be: a sound cannot easily be proportionally richer in both high and low
+            frequency content at once. That both rise together in the morning session is either
+            a genuine spectral broadening under different atmospheric conditions, or an
+            indication that one of the two metrics behaves unexpectedly under some condition.
+            This is flagged as an open implementation question, and neither metric should carry
+            weight in published analysis until it is resolved.
+          </p>
+
+          <p class="prose" style="margin-top:16px;"><em>What we know, and what we do about it</em></p>
+          <p class="prose">
+            We know that platform-to-reference agreement was about 1 dB worse in a humid
+            morning session than in a drier afternoon session on the same day, and that the
+            afternoon figure agrees with two independent prior estimates. We do not know the
+            mechanism. Two sessions on one day cannot separate humidity from temperature, time
+            of day, windshield thermal state, background noise floor, or the refraction effects
+            described in <a href="#s6e">&sect;6e</a>, and the one mechanistic prediction we could
+            test was not confirmed. No calibration constant has been changed on the strength of
+            this observation, and the apparent slope of roughly 1 dB per 30 percentage points of
+            relative humidity should not be used as a correction factor.
+          </p>
+          <p class="prose">
+            The response is procedural and conservative. Above roughly 65% relative humidity,
+            either substitute the foam windshield or record the humidity condition and treat
+            displayed levels as potentially under-reporting by up to about 1 dBA. Because the
+            platform already reads low relative to the reference, this error is in the
+            conservative direction for any claim about exposure. Establishing whether the effect
+            is real, and what causes it, requires paired comparisons across a range of humidity
+            conditions with temperature, geometry, and fleet composition controlled. That work
+            is planned.
+          </p>
+        </div>
         <div class="method-section" id="s7">
           <div class="method-section-num">Section 7</div>
           <h2>Validation and field calibration</h2>
@@ -1248,6 +1348,23 @@
             operational state, not genuine noise mitigation, and it affects absolute SPL trend
             charts but not relative or event-count metrics. Fully described in
             <a href="#s6e">&sect;6e</a>.</div>
+          </div>
+
+          <div class="limitation">
+            <div class="limitation-num">8</div>
+            <div class="limitation-body"><strong>Platform-to-reference agreement varied by about 1 dB between a humid and a drier session, and the cause is not established.</strong>
+            Paired comparison on 24 July 2026 found a platform-minus-reference difference of
+            &minus;0.67 dB at approximately 45% relative humidity but &minus;1.65 dB at
+            approximately 76%. We proposed that a damp fur windshield attenuates high-frequency
+            content, but the psychoacoustic record does not support this: the humid session
+            shows <em>higher</em> sharpness at matched level, not lower, in all twelve level
+            bands tested and also within a single aircraft family. The mechanism is therefore
+            unknown, no calibration constant has been changed, and the apparent slope should
+            not be used as a correction. Mitigation is procedural &mdash; substitute foam above
+            roughly 65% RH, or treat readings as potentially under-reporting by up to about
+            1 dBA. Note this error is in the conservative direction. A related anomaly in the
+            C&minus;A delta is unresolved. Fully described in
+            <a href="#s6f">&sect;6f</a>.</div>
           </div>
         </div>
 
