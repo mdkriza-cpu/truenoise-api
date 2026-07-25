@@ -99,6 +99,10 @@ def init_db():
             approaching TEXT,
             observer_lat REAL,
             observer_lon REAL,
+            wind_speed_mph REAL,
+            wind_direction_deg REAL,
+            temperature_c REAL,
+            relative_humidity_pct INTEGER,
             excluded BOOLEAN DEFAULT FALSE,
             uploaded_at TEXT,
             calibration_epoch TEXT GENERATED ALWAYS AS (
@@ -223,8 +227,10 @@ async def upload_session(
                     bearing, bearing_compass, elevation_angle,
                     speed_kts, climb_rate_fpm, approaching,
                     observer_lat, observer_lon,
+                    wind_speed_mph, wind_direction_deg,
+                    temperature_c, relative_humidity_pct,
                     excluded, uploaded_at
-                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (session_id, timestamp, callsign) DO NOTHING
             """, (
                 session_id,
@@ -259,6 +265,10 @@ async def upload_session(
                 row.get("Approaching"),
                 _float(row.get("Observer Lat")),
                 _float(row.get("Observer Lon")),
+                _float(row.get("Wind Speed (mph)")),
+                _float(row.get("Wind Direction (°)")),
+                _float(row.get("Temperature (C)")),
+                _float(row.get("Relative Humidity (%)")),
                 row.get("Excluded", "No").strip().lower() == "yes",
                 uploaded_at,
             ))
