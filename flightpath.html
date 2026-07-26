@@ -299,13 +299,22 @@
       </div>
 
       <div class="disclaimer">
-        <p><strong>Important:</strong> This is a theoretical model for research and public education.
-        Noise estimates use inverse square law propagation calibrated to a single TrueNoise
-        field measurement (A320, 69.3 dBA, 9 May 2026, post-calibration-correction). Fuel estimates use published aircraft
-        performance data. This is not a certified FAA AEDT noise analysis and should not be
-        cited as one. Its purpose is to demonstrate that the BRGHT alternative warrants
-        formal independent modeling by the FAA as part of its feasibility study.
-        See <a href="methodology.html">full methodology</a> for calibration details.</p>
+        <p><strong>Important:</strong> This is a theoretical model for research and public
+        education. Peak noise estimates are computed from each procedure's closest-approach
+        slant range to a receptor and anchored to TrueNoise field measurements (2,561
+        calibrated samples across 136 flights, 18&ndash;22 July 2026; external microphone on an
+        IEC 61672 Class 2 traceable chain; mid-weight jet ≈ 69.7 dBA at 0.6 mi slant range).
+        Each estimate is given as a range bracketing textbook inverse-square propagation
+        against the steeper falloff measured at this site. Aircraft-class differences reflect
+        measured source-level variation. Fuel estimates use published aircraft performance
+        data. This is <strong>not</strong> a certified FAA AEDT noise analysis and should not
+        be cited as one; precise receptor-by-receptor levels depend on turn radius,
+        groundspeed, thrust schedule, and atmospheric conditions that only formal modeling
+        resolves. Its purpose is to demonstrate that the BRGHT alternative warrants formal
+        independent modeling by the FAA as part of its feasibility study — modeling this
+        multi-track proposal has not yet received. See
+        <a href="methodology.html">full methodology</a> for the calibration chain and its
+        limitations.</p>
       </div>
     </div>
 
@@ -319,40 +328,42 @@
             <input type="checkbox" id="cb800" checked onchange="toggleAlt(800)">
             <div class="alt-swatch" style="background:#E63232;"></div>
             <span class="alt-label">800 ft</span>
-            <span class="alt-spl">53 dBA</span>
+            <span class="alt-spl" style="color:#E63232;">over homes</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb900" checked onchange="toggleAlt(900)">
             <div class="alt-swatch" style="background:#E65A1E;"></div>
             <span class="alt-label">900 ft</span>
-            <span class="alt-spl">54 dBA</span>
+            <span class="alt-spl" style="color:#E65A1E;">over homes</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb1000" checked onchange="toggleAlt(1000)">
             <div class="alt-swatch" style="background:#D48C1E;"></div>
             <span class="alt-label">1,000 ft (≈ WARYN)</span>
-            <span class="alt-spl">54 dBA</span>
+            <span class="alt-spl" style="color:#D48C1E;">over homes</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb1100" checked onchange="toggleAlt(1100)">
             <div class="alt-swatch" style="background:#C0B41E;"></div>
             <span class="alt-label">1,100 ft</span>
-            <span class="alt-spl">55 dBA</span>
+            <span class="alt-spl" style="color:#C0B41E;">over homes</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb1200" checked onchange="toggleAlt(1200)">
             <div class="alt-swatch" style="background:#8CBE1E;"></div>
             <span class="alt-label">1,200 ft</span>
-            <span class="alt-spl">56 dBA</span>
+            <span class="alt-spl" style="color:#8CBE1E;">over homes</span>
           </div>
           <div class="alt-row">
             <input type="checkbox" id="cb3000" checked onchange="toggleAlt(3000)">
             <div class="alt-swatch" style="background:#19B973;"></div>
             <span class="alt-label">3,000 ft (BRGHT)</span>
-            <span class="alt-spl">65 dBA</span>
+            <span class="alt-spl" style="color:#19B973;">over parkland</span>
           </div>
           <div style="font-size:10px;color:var(--text-dim);margin-top:6px;font-family:'DM Mono',monospace;">
-            dBA = estimated peak SPL at Ashbrook
+            Label = where the concentrated departure burden falls. Click any track for the
+            measured-anchored peak estimate at Ashbrook (one receptor; low turns move the
+            burden to whichever community sits under that turn).
           </div>
         </div>
 
@@ -372,11 +383,11 @@
           <div style="font-size:12px;color:var(--text-muted);line-height:1.7;">
             <div style="margin-bottom:8px;">
               <span style="color:var(--red);font-weight:500;">800–1,200 ft:</span>
-              All turn within 1.26 nm — same geography as current WARYN. No meaningful relief for Severn.
+              All turn within ~1.3 nm — near the current WARYN geometry. These options relocate the low-altitude overflight <em>among</em> residential neighborhoods; they do not remove it. Aircraft remain low and close to homes.
             </div>
             <div style="margin-bottom:8px;">
               <span style="color:var(--teal);font-weight:500;">BRGHT 3,000 ft:</span>
-              Turn at 3.74 nm — arc sweeps over Severn Run Nature Area. Estimated 10 dB improvement at Ashbrook.
+              Turn at 3.74 nm — the arc sweeps over the uninhabited Severn Run Nature Area, holding aircraft high until past the homes. This is the distributional case: the concentrated departure burden moves off residences onto parkland. Modeled peak at Ashbrook falls into the low-to-mid 60s dBA, from low 70s under the low-altitude turns.
             </div>
             <div>
               <span style="color:var(--text);font-weight:500;">Fuel delta:</span>
@@ -386,6 +397,15 @@
         </div>
 
         <div class="mp-note">
+          <div style="font-size:10px;color:var(--text-dim);line-height:1.6;margin-bottom:8px;">
+            <strong>How levels are estimated.</strong> Each track's closest-approach slant
+            range to a receptor is computed from the turn geometry, then converted to a peak
+            level anchored to TrueNoise field measurements (2,561 calibrated samples, 136
+            flights, IEC 61672 Class 2 chain; mid-weight jet ≈ 69.7 dBA at 0.6 mi). Ranges
+            bracket textbook inverse-square against the site's measured falloff. These are
+            estimates to show the proposal merits formal AEDT modeling — which it has not yet
+            received — not a substitute for it.
+          </div>
           <a href="methodology.html" style="font-size:11px;">Full methodology →</a><br>
           <a href="data.html" style="font-size:11px;">Download raw data →</a><br>
           <span style="font-size:10px;color:var(--text-dim);">Map: © OpenStreetMap contributors</span>
@@ -441,19 +461,68 @@ const aircraft=[
   {climb:850,dash:false},{climb:720,dash:true}
 ];
 
+// ── MEASURED NOISE MODEL ──────────────────────────────────────────────────────
+// SPL at Ashbrook is COMPUTED from each track's closest-approach slant range,
+// not hard-coded. Anchored to TrueNoise field measurements (2,561 calibrated
+// samples, 136 flights, 18-22 July 2026; external mic, IEC 61672 Class 2 chain).
+//
+// Reference: median measured level for a mid-weight jet (737-800 / A321 class)
+// is ~69.7 dBA at 0.6 mi slant range at this receptor.
+//
+// Two propagation bounds are carried, because the site's measured falloff is
+// steeper than textbook spreading (real atmospheric + ground excess attenuation),
+// but the archive's steepest estimates are inflated by receding-aircraft thrust
+// reduction. We therefore BRACKET every projection:
+//   • conservative bound: inverse-square only (-6.0 dB / distance doubling)
+//   • measured bound:     site falloff (~-9 dB / doubling, capped from the raw
+//                         archive fit to exclude the thrust-confounded tail)
+const NOISE={
+  refSlantMi:0.6, refLevelMid:69.7,        // measured anchor, mid-weight class
+  classOffset:{heavy:+4.0, mid:0.0, light:-2.4}, // measured, at matched slant
+  dbPerDoubling_conservative:-6.0,          // textbook inverse-square (lower benefit)
+  dbPerDoubling_measured:-9.0               // site excess attenuation (upper benefit)
+};
+// weight class from climb performance (proxy): slow climbers ~ heavier
+function classFor(climb){ return climb>=900?'light':(climb>=800?'mid':'mid'); }
+// Level at a given slant range, for a class, under a chosen falloff bound
+function levelAt(slantMi, wclass, dbPerDoubling){
+  const base=NOISE.refLevelMid + (NOISE.classOffset[wclass]||0);
+  const doublings=Math.log2(Math.max(slantMi,0.05)/NOISE.refSlantMi);
+  return base + dbPerDoubling*doublings;
+}
+// Closest-approach slant range (mi) from a polyline of [lat,lon] track points
+// to a receptor, given the aircraft altitude profile along the track.
+function closestSlantMi(trackPts, altFtAt, receptor){
+  let best=1e9;
+  for(let i=0;i<trackPts.length;i++){
+    const p=trackPts[i];
+    const groundFt=haversineNm(receptor[0],receptor[1],p[0],p[1])*6076.115;
+    const hFt=Math.max(altFtAt(i)-RWY_ELEV,0);
+    const s=Math.sqrt(groundFt*groundFt+hFt*hFt)/5280;
+    if(s<best) best=s;
+  }
+  return best;
+}
+function haversineNm(la1,lo1,la2,lo2){
+  const R=3440.065, p1=la1*Math.PI/180,p2=la2*Math.PI/180;
+  const dp=(la2-la1)*Math.PI/180, dl=(lo2-lo1)*Math.PI/180;
+  const h=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+
 const altConfig={
-  800: {color:'#E63232',lw:2,spl_max8:48.3,spl_ng:52.8,
-    community:'Linthicum / Brooklyn Park — dense residential directly under turn arc at very low altitude. No improvement over current procedure.'},
-  900: {color:'#E65A1E',lw:2,spl_max8:49.0,spl_ng:53.5,
-    community:'Linthicum / Brooklyn Park — marginally less acute than 800 ft but same communities affected.'},
-  1000:{color:'#D48C1E',lw:2,spl_max8:49.8,spl_ng:54.3,
-    community:'Essentially identical to current WARYN geometry. Turn at ~1.02 nm — no meaningful improvement for Severn residential communities.'},
-  1100:{color:'#C0B41E',lw:2,spl_max8:50.5,spl_ng:55.0,
-    community:'Residential Severn near airport perimeter — modest southward shift, still concentrated over homes.'},
-  1200:{color:'#8CBE1E',lw:2,spl_max8:51.3,spl_ng:55.8,
-    community:'Residential Severn — 1,200 ft remains well short of meaningful community relief.'},
-  3000:{color:'#19B973',lw:3,spl_max8:60.0,spl_ng:64.5,
-    community:'Severn Run Natural Environment Area — largely uninhabited. Arc clears residential communities. ~10 dB improvement at Ashbrook vs current WARYN procedure.'}
+  800: {color:'#E63232',lw:2,
+    community:'Linthicum / Brooklyn Park — dense residential directly under the turn arc at very low altitude. Relocates the burden among neighborhoods; no relief.'},
+  900: {color:'#E65A1E',lw:2,
+    community:'Linthicum / Brooklyn Park — marginally less acute than 800 ft, same communities overflown.'},
+  1000:{color:'#D48C1E',lw:2,
+    community:'Essentially the current WARYN geometry. Turn at ~1.0 nm — no meaningful relief for Severn residential communities.'},
+  1100:{color:'#C0B41E',lw:2,
+    community:'Residential Severn near the airport perimeter — modest southward shift, still concentrated over homes.'},
+  1200:{color:'#8CBE1E',lw:2,
+    community:'Residential Severn — still well short of clearing the residential grid.'},
+  3000:{color:'#19B973',lw:3,
+    community:'Severn Run Natural Environment Area — largely uninhabited. The arc clears the residential communities entirely and holds aircraft high until past the homes. This is the distributional case: the burden moves off residences onto parkland.'}
 };
 
 // ── LAYER GROUPS ──────────────────────────────────────────────────────────────
@@ -483,16 +552,39 @@ function buildTracks() {
       const ctr=destination(tlat,tlon,(DEP_HDG+90)%360,R_NM);
       const arc=arcPts(ctr[0],ctr[1],R_NM,(DEP_HDG+90+180)%360,(brgB+270)%360);
 
-      const splVal=(ac.climb>=850?cfg.spl_max8:cfg.spl_ng).toFixed(1);
-      const splClass=alt===3000?'pop-good':alt<=1000?'pop-bad':'pop-warn';
+      // Assemble the full track: departure leg -> turn point -> arc.
+      const depLeg=[]; const NSEG=20;
+      for(let k=0;k<=NSEG;k++){
+        const p=destination(BWI[0],BWI[1],DEP_HDG,(k/NSEG)*haversineNm(BWI[0],BWI[1],tlat,tlon));
+        depLeg.push(p);
+      }
+      const fullTrack=depLeg.concat(arc);
+      // Altitude along the track: climb at ac.climb (ft/nm) to the turn, then hold/slow-climb.
+      const turnGdNm=alt===3000?haversineNm(BWI[0],BWI[1],BRGHT[0],BRGHT[1]):(alt-RWY_ELEV)/ac.climb;
+      const altAt=(idx)=>{
+        if(idx<depLeg.length){
+          const f=idx/(depLeg.length-1);
+          return RWY_ELEV + Math.min(ac.climb*turnGdNm*f, alt-RWY_ELEV) + RWY_ELEV*0;
+        }
+        return alt; // on the arc, at (or near) turn altitude
+      };
+      // Closest-approach slant range to Ashbrook, from real geometry.
+      const slantMi=closestSlantMi(fullTrack, altAt, ASHBROOK);
+      const wc=classFor(ac.climb);
+      const loBenefit=levelAt(slantMi,wc,NOISE.dbPerDoubling_conservative); // inverse-square
+      const hiBenefit=levelAt(slantMi,wc,NOISE.dbPerDoubling_measured);     // site falloff
+      const splLo=Math.min(loBenefit,hiBenefit), splHi=Math.max(loBenefit,hiBenefit);
+      const splMid=((splLo+splHi)/2);
+      const splClass=splMid>=70?'pop-bad':(splMid>=65?'pop-warn':'pop-good');
       const distStr=alt===3000?'BRGHT waypoint — 3.74 nm (fixed for all aircraft)':
-        ((alt-RWY_ELEV)/ac.climb).toFixed(2)+' nm (performance-dependent)';
+        turnGdNm.toFixed(2)+' nm (performance-dependent)';
       const acLabel=ac.climb>=900?'Light/fast climber':'Heavy/slow climber';
 
-      const popup=`<div class="pop-title">${altConfig[alt===3000?3000:alt].color?'':''}`+
+      const popup=`<div class="pop-title">`+
         `Turn at ${alt===3000?'3,000 ft (BRGHT)':alt+' ft'} — ${acLabel}</div>`+
         `<div>Turn initiation: ${distStr}</div>`+
-        `<div>Est. SPL at Ashbrook: <span class="${splClass}">${splVal} dBA</span></div>`+
+        `<div>Closest approach to Ashbrook: ${slantMi.toFixed(2)} mi slant</div>`+
+        `<div>Est. peak at Ashbrook: <span class="${splClass}">${splLo.toFixed(0)}\u2013${splHi.toFixed(0)} dBA</span></div>`+
         `<div class="pop-note">${cfg.community}</div>`;
 
       const opts={color:cfg.color,weight:cfg.lw,opacity:0.85,dashArray:ac.dash?'6 5':null};
@@ -562,10 +654,10 @@ addLabel(BRGHT,'BRGHT (proposed)','#0F6E56');
 L.marker(ASHBROOK,{icon:makeIcon('#FFD740',10)})
   .bindPopup(`<div class="pop-title">Ashbrook — TrueNoise Observer</div>`+
     `39.1128°N, 76.6579°W · Severn, Maryland<br>`+
-    `Validated measurement: <span class="pop-bad">69.3 dBA</span> (A320, 9 May 2026, post-calibration-correction)<br>`+
+    `Measured departures: <span class="pop-bad">median peak ≈ 72 dBA</span> (136 flights, 18–22 July 2026; closest approach median 0.60 mi)<br>`+
     `AirNoise complaints: 94 departure events, Oct 2025–Apr 2026<br>`+
     `Median complaint altitude: 2,450 ft MSL<br>`+
-    `<div class="pop-note">Model calibrated to this measurement. BRGHT procedure estimated at 60 dBA here — approximately half the perceived loudness.</div>`)
+    `<div class="pop-note">Under a BRGHT turn the aircraft passes ~1.4 mi slant from here instead of ~0.6 mi; modeled peak falls to the low-to-mid 60s dBA — a clear reduction here, while the concentrated burden moves off the residential grid entirely.</div>`)
   .addTo(map);
 addLabel(ASHBROOK,'Ashbrook (observer)','#7a5900',-90,4);
 
@@ -587,9 +679,9 @@ L.marker(BRETTON,{icon:makeIcon('#cc88cc',8)})
     `39.079°N, 76.656°W · South of Severn Run<br>`+
     `Community south of Severn Run Natural Environment Area<br>`+
     `Under BRGHT post-turn track toward BOBYJ<br>`+
-    `<div class="pop-note pop-good">Estimated SPL: 57–58 dBA at 3,000 ft turn altitude. `+
-    `Lateral distance from track: 2.20 nm. Below N65 threshold at all modeled altitudes. `+
-    `Burden-shifting standard satisfied.</div>`)
+    `<div class="pop-note pop-good">Lateral distance from BRGHT post-turn track: 2.20 nm. `+
+    `At this offset and altitude the modeled peak is well below N65 for all aircraft classes. `+
+    `The burden-relocation objective is met here.</div>`)
   .addTo(map);
 addLabel(BRETTON,'Bretton Woods','#664466');
 
@@ -598,7 +690,7 @@ L.marker(AURORA,{icon:makeIcon('#8888cc',8)})
   .bindPopup(`<div class="pop-title">Aurora Hills</div>`+
     `39.086°N, 76.649°W · South of Severn Run<br>`+
     `Community south of Severn Run Natural Environment Area<br>`+
-    `<div class="pop-note pop-warn">Estimated SPL: 61 dBA at 3,000 ft turn altitude. `+
+    `<div class="pop-note pop-warn">Modeled peak in the low 60s dBA at 3,000 ft turn altitude. `+
     `Lateral distance from track: 1.68 nm. Moderate impact — below N65 at all altitudes. `+
     `Burden-shifting standard satisfied.</div>`)
   .addTo(map);
@@ -649,12 +741,15 @@ buildTracks();
       Explore the BRGHT altitude tradeoff interactively
     </h2>
     <p class="prose" style="max-width:640px;margin-bottom:20px;">
-      The six-altitude comparison above shows that 800–1,200 ft restrictions produce no
-      meaningful relief. The sensitivity tool lets you vary the BRGHT turn altitude from
-      3,000 to 5,000 ft and instantly see the impact on Ashbrook, Aurora Hills, and
-      Bretton Woods — alongside the fuel cost tradeoff. The model suggests
-      <strong>~4,100 ft</strong> as the sweet spot where Ashbrook drops below the
-      N65 threshold at commercially immaterial fuel cost.
+      The six-altitude comparison above shows that 800&ndash;1,200 ft restrictions relocate the
+      low-altitude burden among residential neighborhoods rather than removing it. The
+      sensitivity tool lets you vary the BRGHT turn altitude from 3,000 to 5,000 ft and see
+      the effect at Ashbrook, Aurora Hills, and Bretton Woods, alongside the fuel-cost
+      tradeoff. Higher turn altitudes increase the aircraft&rsquo;s slant range from every
+      receptor and lower the modeled peak; the practical question is the altitude at which
+      the concentrated burden clears the residential grid onto the Severn Run parkland, which
+      the BRGHT geometry achieves at 3,000 ft and above. Exact receptor-by-receptor decibel
+      values await the formal FAA modeling this proposal has not yet received.
     </p>
     <a href="sensitivity.html" style="display:inline-flex;align-items:center;gap:8px;
        background:var(--teal);color:#fff;padding:10px 20px;border-radius:6px;
