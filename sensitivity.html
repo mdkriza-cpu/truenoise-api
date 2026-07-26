@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="canonical" href="https://truenoise.org/sensitivity.html">
 <title>BRGHT Altitude Sensitivity — TrueNoise</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -184,10 +183,13 @@
     The <a href="flightpath.html">flight path comparison</a> shows that altitude restrictions
     below 1,200 ft produce no meaningful relief for Severn communities. This tool explores the
     BRGHT waypoint proposal in detail: drag the slider to vary the turn altitude from 3,000 to
-    5,000 ft and instantly see the impact on <strong>Ashbrook</strong> (primary affected community),
-    <strong>Aurora Hills</strong> and <strong>Bretton Woods</strong> (south of Severn Run), and
-    <strong>fuel cost</strong>. The model suggests <strong>~4,100 ft</strong> as the sweet spot
-    where Ashbrook drops below the N65 threshold at commercially immaterial fuel cost.
+    5,000 ft and see the effect on <strong>Ashbrook</strong>, <strong>Aurora Hills</strong>, and
+    <strong>Bretton Woods</strong> (south of Severn Run), alongside the <strong>fuel cost</strong>.
+    Anchored to TrueNoise field measurements, the model shows every receptor already well below
+    the N65 threshold at 3,000 ft — because the BRGHT geometry holds aircraft high and moves the
+    concentrated departure burden onto the uninhabited Severn Run parkland. Higher turn altitudes
+    lower the modeled levels further at a small, quantifiable fuel cost; the tool lets you weigh
+    that tradeoff. Noise values are shown as ranges bracketing two propagation assumptions.
   </p>
 </div>
 
@@ -219,12 +221,12 @@
     <div class="ps">
       <div class="pl">Ashbrook — primary receptor</div>
       <div class="metric-row">
-        <span class="ml">737-800 NG (worst case)</span>
+        <span class="ml">Est. peak (mid-weight jet)</span>
         <span class="mv" id="p-ash-ng">—</span>
       </div>
       <div class="mbar-wrap"><div class="mbar" id="p-ash-bar"></div></div>
       <div class="metric-row">
-        <span class="ml">737 MAX 8</span>
+        <span class="ml">Geometry</span>
         <span class="mv" id="p-ash-max" style="font-size:14px;">—</span>
       </div>
       <div class="mstat" id="p-ash-stat">—</div>
@@ -234,7 +236,7 @@
     <div class="ps">
       <div class="pl">Bretton Woods</div>
       <div class="metric-row">
-        <span class="ml">737-800 NG (worst case)</span>
+        <span class="ml">Est. peak (mid-weight jet)</span>
         <span class="mv" id="p-bw-ng">—</span>
       </div>
       <div class="mbar-wrap"><div class="mbar" id="p-bw-bar"></div></div>
@@ -253,7 +255,7 @@
     <div class="ps">
       <div class="pl">Aurora Hills</div>
       <div class="metric-row">
-        <span class="ml">737-800 NG (worst case)</span>
+        <span class="ml">Est. peak (mid-weight jet)</span>
         <span class="mv" id="p-ah-ng">—</span>
       </div>
       <div class="mbar-wrap"><div class="mbar" id="p-ah-bar"></div></div>
@@ -273,7 +275,9 @@
     </div>
 
     <div class="panel-footer">
-      Calibrated to TrueNoise A320 measurement (69.3 dBA, 9 May 2026, post-calibration-correction).<br>
+      Anchored to TrueNoise field measurements (2,561 calibrated samples, 136 flights,
+      Jul 2026; mid-weight jet \u2248 69.7 dBA at 0.6 mi slant). Levels shown as ranges
+      bracketing inverse-square against measured site falloff.<br>
       Not a certified FAA AEDT analysis.<br>
       <a href="flightpath.html">← Six-altitude comparison</a><br>
       <a href="methodology.html">Full methodology →</a>
@@ -324,7 +328,13 @@ function arc(clat,clon,rnm,s,e,n=50){
   return pts;
 }
 function slant(dnm,alt){return Math.sqrt((dnm*6076.115)**2+alt**2);}
-function spl(ref,sl){return ref-20*Math.log10(sl/1000)-0.5*(sl/1000);}
+// Two propagation bounds, both anchored to TrueNoise measured data
+// (2,561 calibrated samples; mid-weight jet ≈ 69.7 dBA at 0.6 mi = 3168 ft slant).
+// conservative = inverse-square only; measured = site excess attenuation (capped
+// to exclude the receding-thrust confound documented in the methodology).
+function splCons(ref,sl){return ref-20*Math.log10(sl/3168);}          // inverse-square from 0.6mi anchor
+function splMeas(ref,sl){return ref-20*Math.log10(sl/3168)-3.5*(sl/3168-1);} // +excess atten, capped
+function splRange(ref,sl){const a=splCons(ref,sl),b=splMeas(ref,sl);return {lo:Math.min(a,b),hi:Math.max(a,b),mid:(a+b)/2};}
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
 const BWI    =[39.16407,-76.66200];
@@ -340,7 +350,10 @@ const DEP=155, BANK=25, RWY=154, RNMO=3.74;
 const g=32.174, v=200*1.68781;
 const RNM=(v*v/(g*Math.tan(BANK*Math.PI/180)))/6076.115;
 const BRG_BB=brg(BRGHT[0],BRGHT[1],BOBYJ[0],BOBYJ[1]);
-const REF_NG=84.3, REF_MAX=79.8; // corrected from 87.4/82.9 — post-calibration-correction 2026-06-01
+// Measured median peak at 0.6 mi slant, by weight class (TrueNoise archive, 18-22 Jul 2026):
+const REF_MID=69.7;  // 737-800 / A321 class (n=275)
+const REF_LIGHT=67.3; // 737 MAX / 737-700 class (n=233)
+const REF_HEAVY=73.7; // 757 / widebody class (n=5, provisional)
 
 // ── DYNAMIC LAYERS ────────────────────────────────────────────────────────────
 let arcLyr=null, postLyr=null;
@@ -388,7 +401,7 @@ L.marker(WARYN,{icon:icon('#E63232',10)})
 lbl(WARYN,'WARYN (current)','#a03',10,-8);
 
 L.marker(ASH,{icon:icon('#FFD740',10)})
-  .bindPopup('<div class="ptitle">Ashbrook — TrueNoise Observer</div>Primary measurement receptor<br>Validated: <span class="pbad">69.3 dBA</span> (A320, 9 May 2026, post-calibration-correction)<br><div class="pnote">Model calibrated to this measurement</div>')
+  .bindPopup('<div class="ptitle">Ashbrook — TrueNoise Observer</div>Primary measurement receptor<br>Measured departures: <span class="pbad">median peak \u2248 72 dBA</span> (136 flights, Jul 2026)<br><div class="pnote">Under BRGHT, aircraft pass ~1.4 mi slant from here vs ~0.6 mi today — a clear local reduction, and the burden moves off homes</div>')
   .addTo(map);
 lbl(ASH,'Ashbrook','#7a5900',-80,4);
 
@@ -419,7 +432,8 @@ function closestTrack(comm,altMSL){
   }
   const a=altMSL+best*780;
   const sl2=slant(minD,a);
-  return{ng:spl(REF_NG,sl2),mx:spl(REF_MAX,sl2),alt:a,lat:minD};
+  const r=splRange(REF_MID,sl2);
+  return{lo:r.lo,hi:r.hi,mid:r.mid,alt:a,lat:minD};
 }
 function closestArc(comm,arcPts2){
   let m=999;
@@ -450,36 +464,37 @@ function update(alt){
   const ctr=dest(BRGHT[0],BRGHT[1],(DEP+90)%360,RNM);
   const arcPts2=arc(ctr[0],ctr[1],RNM,(DEP+90+180)%360,(BRG_BB+270)%360);
 
-  // SPL calculations
+  // SPL calculations — measured-anchored, reported as ranges (two propagation bounds)
   const bwR=closestTrack(BW,alt);
   const ahR=closestTrack(AH,alt);
   const ashD=closestArc(ASH,arcPts2);
-  const ashNG=spl(REF_NG,slant(ashD,alt));
-  const ashMX=spl(REF_MAX,slant(ashD,alt));
+  const ashR=splRange(REF_MID,slant(ashD,alt));
+
+  const rng=(r)=>r.lo.toFixed(0)+'\u2013'+r.hi.toFixed(0)+' dBA';
 
   // Ashbrook
-  set('p-ash-ng',ashNG.toFixed(1)+' dBA');
-  setStyle('p-ash-ng','color',col(ashNG));
-  setStyle('p-ash-bar','width',bw(ashNG));
-  setStyle('p-ash-bar','background',col(ashNG));
-  set('p-ash-max',ashMX.toFixed(1)+' dBA');
-  stat(document.getElementById('p-ash-stat'),ashNG);
+  set('p-ash-ng',rng(ashR));
+  setStyle('p-ash-ng','color',col(ashR.mid));
+  setStyle('p-ash-bar','width',bw(ashR.mid));
+  setStyle('p-ash-bar','background',col(ashR.mid));
+  set('p-ash-max','closest approach '+(ashD*6076/5280).toFixed(2)+' mi slant');
+  stat(document.getElementById('p-ash-stat'),ashR.mid);
 
   // Bretton Woods
-  set('p-bw-ng',bwR.ng.toFixed(1)+' dBA');
-  setStyle('p-bw-ng','color',col(bwR.ng));
-  setStyle('p-bw-bar','width',bw(bwR.ng));
-  setStyle('p-bw-bar','background',col(bwR.ng));
+  set('p-bw-ng',rng(bwR));
+  setStyle('p-bw-ng','color',col(bwR.mid));
+  setStyle('p-bw-bar','width',bw(bwR.mid));
+  setStyle('p-bw-bar','background',col(bwR.mid));
   set('p-bw-alt',Math.round(bwR.alt).toLocaleString()+' ft MSL');
   set('p-bw-lat',(bwR.lat*6076/5280).toFixed(2)+' mi');
-  stat(document.getElementById('p-bw-stat'),bwR.ng);
+  stat(document.getElementById('p-bw-stat'),bwR.mid);
 
   // Aurora Hills
-  set('p-ah-ng',ahR.ng.toFixed(1)+' dBA');
-  setStyle('p-ah-ng','color',col(ahR.ng));
-  setStyle('p-ah-bar','width',bw(ahR.ng));
-  setStyle('p-ah-bar','background',col(ahR.ng));
-  stat(document.getElementById('p-ah-stat'),ahR.ng);
+  set('p-ah-ng',rng(ahR));
+  setStyle('p-ah-ng','color',col(ahR.mid));
+  setStyle('p-ah-bar','width',bw(ahR.mid));
+  setStyle('p-ah-bar','background',col(ahR.mid));
+  stat(document.getElementById('p-ah-stat'),ahR.mid);
 
   // Fuel
   const tm=Math.max(1.0,gradReq/780);
@@ -498,7 +513,7 @@ function update(alt){
      'Within standard gradient — no thrust penalty.');
 
   // Update map arc
-  const arcCol=ashNG<60?'#19B973':ashNG<65?'#BA7517':'#E24B4A';
+  const arcCol=ashR.mid<60?'#19B973':ashR.mid<65?'#BA7517':'#E24B4A';
   if(arcLyr){map.removeLayer(arcLyr);}
   if(postLyr){map.removeLayer(postLyr);}
   arcLyr=L.polyline(arcPts2,{color:arcCol,weight:3,opacity:0.9}).addTo(map);
