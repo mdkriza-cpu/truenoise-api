@@ -119,6 +119,23 @@
     .mobile-nav-bar { display:flex; }
     .topbar { display:none; }
   }
+
+  .zone-key { display:flex; flex-direction:column; gap:3px; margin-top:8px; }
+  .zk { font-size:10.5px; font-family:'DM Mono',monospace; padding:2px 6px; border-radius:3px; }
+  .zk-cur { background:var(--red-light); color:var(--red); }
+  .zk-std { background:var(--teal-light); color:var(--teal-dark); }
+  .zk-ask { background:var(--amber-light); color:var(--amber); }
+  .reduction-box { margin-top:10px; padding:8px 10px; background:var(--teal-light);
+    border:1px solid var(--teal); border-radius:5px; font-size:12px; color:var(--teal-dark);
+    font-weight:500; line-height:1.4; }
+  .reduction-box.ask { background:var(--amber-light); border-color:var(--amber); color:var(--amber); }
+  .climb-box { margin-top:8px; padding:8px 10px; border-radius:5px; font-size:11.5px;
+    line-height:1.45; border:1px solid var(--border-mid); background:var(--gray-50);
+    color:var(--text-muted); }
+  .climb-box .cr { font-family:'DM Mono',monospace; font-weight:500; }
+  .climb-box.ok { background:var(--teal-light); border-color:var(--teal); color:var(--teal-dark); }
+  .climb-box.edge { background:var(--amber-light); border-color:var(--amber); color:var(--amber); }
+  .climb-box.geo { background:#EEF2FB; border-color:#5B7FC7; color:#2F4A82; }
 </style>
 </head>
 <body>
@@ -182,7 +199,7 @@
   <p>
     The <a href="flightpath.html">flight path comparison</a> shows that altitude restrictions
     below 1,200 ft produce no meaningful relief for Severn communities. This tool explores the
-    BRGHT waypoint proposal in detail: drag the slider to vary the turn altitude from 3,000 to
+    BRGHT waypoint proposal in detail: drag the slider to vary the turn altitude from the measured current turn (~2,300 ft) to
     5,000 ft and see the effect on <strong>Ashbrook</strong>, <strong>Aurora Hills</strong>, and
     <strong>Bretton Woods</strong> (south of Severn Run), alongside the <strong>fuel cost</strong>.
     Anchored to TrueNoise field measurements, the model shows every receptor already well below
@@ -211,10 +228,17 @@
     <div class="ps">
       <div class="pl">BRGHT turn altitude</div>
       <div class="alt-val" id="p-alt">3,000 ft</div>
-      <div class="grad-note" id="p-grad">762 ft/NM gradient</div>
-      <input type="range" id="p-slider" min="3000" max="5000" step="100" value="3000"
+      <div class="grad-note" id="p-grad">gradient</div>
+      <input type="range" id="p-slider" min="1800" max="4000" step="100" value="3000"
              oninput="update(+this.value)">
-      <div class="slider-limits"><span>3,000 ft</span><span>5,000 ft</span></div>
+      <div class="slider-limits"><span>1,800 ft</span><span>4,000 ft</span></div>
+      <div class="zone-key">
+        <span class="zk zk-cur">1,800&ndash;2,300 ft &mdash; measured today (WARYN turn)</span>
+        <span class="zk zk-std">2,600&ndash;3,000 ft &mdash; ANP standard profile / achievable</span>
+        <span class="zk zk-ask">&gt;3,000 ft &mdash; requires deferring the turn (geometry, not climb)</span>
+      </div>
+      <div class="reduction-box" id="p-reduction">&mdash;</div>
+      <div class="climb-box" id="p-climbimpl">&mdash;</div>
     </div>
 
     <!-- ASHBROOK -->
@@ -347,13 +371,23 @@ const AH     =[39.086,-76.649];
 const EWBLVD =[39.10623,-76.60828];
 
 const DEP=155, BANK=25, RWY=154, RNMO=3.74;
+// VERIFIED (bwi_tracks.db, n=70-87): turn initiates ~1,800 ft @2.03nm, completes ~2,300 ft
+// @3.05nm; 75% begin turn <2,000 ft, 41% <1,700 ft. Baseline = current measured state.
+const CUR_TURN_ALT=2300;
+// Climb-rate implications (measured geometry): turn-start ~1,800 ft @2.03nm; BRGHT @3.47nm.
+// Remaining straight track to climb in before BRGHT = 1.66 sm; at ~217 kt = 0.40 min.
+// Required climb rate to reach target alt = (target-1800)/0.40 min.
+// Measured benchmarks: suppressed-turn ~1,300 fpm; demonstrated post-turn ~2,000 fpm; max obs ~3,000 fpm.
+const CR_TURNSTART_ALT=1800, CR_TIME_MIN=0.40;
+const CR_DEMO=2050, CR_MAXOBS=3000;
+function reqClimb(alt){ return (alt-CR_TURNSTART_ALT)/CR_TIME_MIN; }
 const g=32.174, v=200*1.68781;
 const RNM=(v*v/(g*Math.tan(BANK*Math.PI/180)))/6076.115;
 const BRG_BB=brg(BRGHT[0],BRGHT[1],BOBYJ[0],BOBYJ[1]);
 // Measured median peak at 0.6 mi slant, by weight class (TrueNoise archive, 18-22 Jul 2026):
-const REF_MID=69.7;  // 737-800 / A321 class (n=275)
-const REF_LIGHT=67.3; // 737 MAX / 737-700 class (n=233)
-const REF_HEAVY=73.7; // 757 / widebody class (n=5, provisional)
+const REF_MID=72.0;  // 737-800/739/A321 class, measured per-pass peak median
+const REF_LIGHT=70.4; // 737 MAX/-700 class, measured per-pass peak median
+const REF_HEAVY=73.6; // 739/widebody class, measured (provisional)
 
 // ── DYNAMIC LAYERS ────────────────────────────────────────────────────────────
 let arcLyr=null, postLyr=null;
@@ -455,10 +489,12 @@ function update(alt){
 
   // Slider labels
   set('p-alt',alt.toLocaleString()+' ft');
-  const gradOk=gradReq<=780;
-  document.getElementById('p-grad').textContent=
-    gradReq.toFixed(0)+' ft/NM'+(gradOk?' ✓ within minimum':' ⚠ above published minimum');
-  setStyle('p-grad','color',gradReq>1000?'var(--red)':gradReq>780?'var(--amber)':'var(--text-dim)');
+  let zone = alt<=2300 ? 'current' : alt<=3000 ? 'standard' : 'geo';
+  document.getElementById('p-grad').textContent =
+    zone==='current' ? 'at/below the measured current turn altitude'
+    : zone==='standard' ? 'ANP standard profile altitude — reachable by climb and/or turn deferral'
+    : 'reachable by deferring the turn (geometry), not by climbing harder';
+  setStyle('p-grad','color', zone==='geo'?'#2F4A82':zone==='current'?'var(--red)':'var(--teal-dark)');
 
   // Arc
   const ctr=dest(BRGHT[0],BRGHT[1],(DEP+90)%360,RNM);
@@ -477,6 +513,51 @@ function update(alt){
   setStyle('p-ash-ng','color',col(ashR.mid));
   setStyle('p-ash-bar','width',bw(ashR.mid));
   setStyle('p-ash-bar','background',col(ashR.mid));
+  const ashCurD = closestArc(ASH, arc(dest(BRGHT[0],BRGHT[1],(DEP+90)%360,RNM)[0],
+                    dest(BRGHT[0],BRGHT[1],(DEP+90)%360,RNM)[1], RNM,
+                    (DEP+90+180)%360,(BRG_BB+270)%360));
+  const ashCur = splRange(REF_MID, slant(ashCurD, CUR_TURN_ALT));
+  const reduction = ashCur.mid - ashR.mid;
+  const rbox=document.getElementById('p-reduction');
+  if(rbox){
+    if(alt<=2300){
+      rbox.className='reduction-box'; rbox.style.background='var(--red-light)';
+      rbox.style.borderColor='var(--red)'; rbox.style.color='var(--red)';
+      rbox.innerHTML='This is at or below today\u2019s measured turn altitude \u2014 no relief.';
+    } else {
+      const askNote = alt>3000 ? ' <em>(above the ANP standard \u2014 an additional ask)</em>' : '';
+      rbox.className='reduction-box'+(alt>3000?' ask':'');
+      if(alt<=3000){rbox.style.background='';rbox.style.borderColor='';rbox.style.color='';}
+      rbox.innerHTML='\u2248 <strong>'+reduction.toFixed(1)+' dBA lower</strong> at Ashbrook vs today\u2019s '
+        +'measured ~2,300 ft turn (turning at '+alt.toLocaleString()+' ft).'+askNote;
+    }
+  }
+  // Climb-rate implications for turning at this altitude AT the current BRGHT geometry
+  const cbox=document.getElementById('p-climbimpl');
+  if(cbox){
+    const req=reqClimb(alt);
+    if(alt<=2300){
+      cbox.className='climb-box';
+      cbox.innerHTML='Turning here needs <span class="cr">~'+Math.round(req/50)*50+' fpm</span> \u2014 within '
+        +'the suppressed climb rate aircraft already fly during today\u2019s low turn.';
+    } else if(req<=CR_DEMO){
+      cbox.className='climb-box ok';
+      cbox.innerHTML='Reachable at <span class="cr">~'+Math.round(req/50)*50+' fpm</span> \u2014 within the '
+        +'<strong>demonstrated</strong> post-turn climb rate the fleet already achieves (~2,000 fpm). '
+        +'Achievable at the current BRGHT geometry.';
+    } else if(req<=CR_MAXOBS){
+      cbox.className='climb-box edge';
+      cbox.innerHTML='Needs <span class="cr">~'+Math.round(req/50)*50+' fpm</span> at the current geometry \u2014 '
+        +'near the <strong>maximum observed</strong> climb (~3,000 fpm). A real performance ask, '
+        +'<em>or</em> defer the turn-start further out so aircraft reach this altitude at normal climb rates.';
+    } else {
+      cbox.className='climb-box geo';
+      cbox.innerHTML='At the current turn geometry this needs <span class="cr">~'+Math.round(req/100)*100+' fpm</span> '
+        +'\u2014 beyond any transport jet at this weight. This altitude is <strong>not reached by climbing harder</strong>; '
+        +'it requires <strong>deferring the turn-start</strong> so aircraft climb at normal rates over a longer straight '
+        +'segment first \u2014 the ANP-standard \u201cclimb to altitude, then turn\u201d profile.';
+    }
+  }
   set('p-ash-max','closest approach '+(ashD*6076/5280).toFixed(2)+' mi slant');
   stat(document.getElementById('p-ash-stat'),ashR.mid);
 
