@@ -489,12 +489,12 @@ function update(alt){
 
   // Slider labels
   set('p-alt',alt.toLocaleString()+' ft');
-  let zone = alt<=2300 ? 'current' : alt<=3000 ? 'standard' : 'geo';
+  let zone = alt<=TURN_TODAY_ALT ? 'current' : alt<=ALT_AT_BRGHT ? 'measured' : 'beyond';
   document.getElementById('p-grad').textContent =
-    zone==='current' ? 'at/below the measured current turn altitude'
-    : zone==='standard' ? 'ANP standard profile altitude — reachable by climb and/or turn deferral'
-    : 'reachable by deferring the turn (geometry), not by climbing harder';
-  setStyle('p-grad','color', zone==='geo'?'#2F4A82':zone==='current'?'var(--red)':'var(--teal-dark)');
+    zone==='current' ? "today's turn altitude (3.03 nm)"
+    : zone==='measured' ? 'altitude aircraft already reach by BRGHT — defer the turn to capture it'
+    : 'beyond the measured altitude at BRGHT';
+  setStyle('p-grad','color', zone==='beyond'?'var(--amber)':zone==='current'?'var(--red)':'var(--teal-dark)');
 
   // Arc
   const ctr=dest(BRGHT[0],BRGHT[1],(DEP+90)%360,RNM);
