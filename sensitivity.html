@@ -374,13 +374,16 @@ const DEP=155, BANK=25, RWY=154, RNMO=3.74;
 // VERIFIED (bwi_tracks.db, n=70-87): turn initiates ~1,800 ft @2.03nm, completes ~2,300 ft
 // @3.05nm; 75% begin turn <2,000 ft, 41% <1,700 ft. Baseline = current measured state.
 const CUR_TURN_ALT=2300;
-// Climb-rate implications (measured geometry): turn-start ~1,800 ft @2.03nm; BRGHT @3.47nm.
-// Remaining straight track to climb in before BRGHT = 1.66 sm; at ~217 kt = 0.40 min.
-// Required climb rate to reach target alt = (target-1800)/0.40 min.
-// Measured benchmarks: suppressed-turn ~1,300 fpm; demonstrated post-turn ~2,000 fpm; max obs ~3,000 fpm.
-const CR_TURNSTART_ALT=1800, CR_TIME_MIN=0.40;
-const CR_DEMO=2050, CR_MAXOBS=3000;
-function reqClimb(alt){ return (alt-CR_TURNSTART_ALT)/CR_TIME_MIN; }
+// MEASURED turn-deferral relationship (73 clean 15R departures, bwi_tracks.db):
+// Today the turn occurs at 3.03 nm / ~2,275 ft, but aircraft are ALREADY at ~4,288 ft by the
+// BRGHT waypoint distance (3.47 nm) — they climb steeply the moment the turn completes. So a
+// given turn altitude is achieved by DEFERRING the turn to where aircraft already are that high.
+const TURN_TODAY_NM=3.03, TURN_TODAY_ALT=2275, BRGHT_NM=3.47, ALT_AT_BRGHT=4288;
+function deferralFor(alt){
+  if(alt<=TURN_TODAY_ALT) return 0;
+  const slope=(ALT_AT_BRGHT-TURN_TODAY_ALT)/(BRGHT_NM-TURN_TODAY_NM);
+  return (alt-TURN_TODAY_ALT)/slope;
+}
 const g=32.174, v=200*1.68781;
 const RNM=(v*v/(g*Math.tan(BANK*Math.PI/180)))/6076.115;
 const BRG_BB=brg(BRGHT[0],BRGHT[1],BOBYJ[0],BOBYJ[1]);
@@ -532,30 +535,24 @@ function update(alt){
         +'measured ~2,300 ft turn (turning at '+alt.toLocaleString()+' ft).'+askNote;
     }
   }
-  // Climb-rate implications for turning at this altitude AT the current BRGHT geometry
+  // Turn-deferral implication (measured): altitude is achieved by turning later, not climbing harder
   const cbox=document.getElementById('p-climbimpl');
   if(cbox){
-    const req=reqClimb(alt);
-    if(alt<=2300){
+    const defer=deferralFor(alt);
+    if(alt<=TURN_TODAY_ALT){
       cbox.className='climb-box';
-      cbox.innerHTML='Turning here needs <span class="cr">~'+Math.round(req/50)*50+' fpm</span> \u2014 within '
-        +'the suppressed climb rate aircraft already fly during today\u2019s low turn.';
-    } else if(req<=CR_DEMO){
+      cbox.innerHTML='This is today\u2019s turn altitude (~2,275 ft at 3.03 nm). No deferral, no relief.';
+    } else if(alt<=ALT_AT_BRGHT){
       cbox.className='climb-box ok';
-      cbox.innerHTML='Reachable at <span class="cr">~'+Math.round(req/50)*50+' fpm</span> \u2014 within the '
-        +'<strong>demonstrated</strong> post-turn climb rate the fleet already achieves (~2,000 fpm). '
-        +'Achievable at the current BRGHT geometry.';
-    } else if(req<=CR_MAXOBS){
-      cbox.className='climb-box edge';
-      cbox.innerHTML='Needs <span class="cr">~'+Math.round(req/50)*50+' fpm</span> at the current geometry \u2014 '
-        +'near the <strong>maximum observed</strong> climb (~3,000 fpm). A real performance ask, '
-        +'<em>or</em> defer the turn-start further out so aircraft reach this altitude at normal climb rates.';
+      cbox.innerHTML='Achieved by deferring the turn <span class="cr">~'+defer.toFixed(2)+' nm</span> '
+        +'(turn moves to ~'+(TURN_TODAY_NM+defer).toFixed(2)+' nm). <strong>No faster climb required</strong> \u2014 '
+        +'aircraft already reach this altitude here today; they are measured at ~4,288 ft by the BRGHT '
+        +'waypoint (3.47 nm). The turn is simply placed too early.';
     } else {
-      cbox.className='climb-box geo';
-      cbox.innerHTML='At the current turn geometry this needs <span class="cr">~'+Math.round(req/100)*100+' fpm</span> '
-        +'\u2014 beyond any transport jet at this weight. This altitude is <strong>not reached by climbing harder</strong>; '
-        +'it requires <strong>deferring the turn-start</strong> so aircraft climb at normal rates over a longer straight '
-        +'segment first \u2014 the ANP-standard \u201cclimb to altitude, then turn\u201d profile.';
+      cbox.className='climb-box edge';
+      cbox.innerHTML='Above ~4,288 ft \u2014 beyond the altitude aircraft currently reach at the BRGHT '
+        +'waypoint. Would require deferring the turn past BRGHT and/or added climb; treat as an '
+        +'extension beyond the measured basis.';
     }
   }
   set('p-ash-max','closest approach '+(ashD*6076/5280).toFixed(2)+' mi slant');
