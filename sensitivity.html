@@ -136,6 +136,13 @@
   .climb-box.ok { background:var(--teal-light); border-color:var(--teal); color:var(--teal-dark); }
   .climb-box.edge { background:var(--amber-light); border-color:var(--amber); color:var(--amber); }
   .climb-box.geo { background:#EEF2FB; border-color:#5B7FC7; color:#2F4A82; }
+  .measured-box { margin-top:8px; padding:8px 10px; border-radius:5px; font-size:11px;
+    line-height:1.5; background:var(--teal-light); border:1px solid var(--teal);
+    color:var(--teal-dark); }
+  .measured-box .mtag { font-family:'DM Mono',monospace; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.04em; font-size:9.5px; display:block;
+    margin-bottom:3px; }
+  .measured-box .mnote { color:#4a6b5f; font-size:10px; display:block; margin-top:4px; }
 </style>
 </head>
 <body>
@@ -190,7 +197,7 @@
       <a href="data.html">Data</a>
       <a href="about.html">About</a>
     </nav>
-    <span class="badge">THEORETICAL MODEL</span>
+    <span class="badge">MODEL &middot; MEASURED-VALIDATED</span>
   </div>
 </div>
 
@@ -254,6 +261,7 @@
         <span class="mv" id="p-ash-max" style="font-size:14px;">—</span>
       </div>
       <div class="mstat" id="p-ash-stat">—</div>
+      <div class="measured-box" id="p-measured" style="display:none;"></div>
     </div>
 
     <!-- BRETTON WOODS -->
@@ -557,6 +565,28 @@ function update(alt){
   }
   set('p-ash-max','closest approach '+(ashD*6076/5280).toFixed(2)+' mi slant');
   stat(document.getElementById('p-ash-stat'),ashR.mid);
+
+  // MEASURED VALIDATION MARKER — shown when the slider is in the BRGHT-altitude band,
+  // where the 15 Aug 2026 runway-closure passes provide a direct measurement.
+  // The model is unchanged; this reports where the measurement fell relative to it.
+  const mbox=document.getElementById('p-measured');
+  if(mbox){
+    if(alt>=3600 && alt<=5200){
+      mbox.style.display='block';
+      mbox.innerHTML='<span class="mtag">\u25C9 Measured 15 Aug 2026</span>'
+        +'Six departures crossed the receptor at this altitude band during a BWI runway '
+        +'closure (33L departures turning south) and were measured at <strong>~54 dBA</strong> '
+        +'(central; ~1.9 mi slant, west side). Corrected inward to BRGHT\u2019s own geometry '
+        +'(~1.5 mi) that implies <strong>high-50s dBA</strong> \u2014 landing at the '
+        +'<strong>excess-attenuation (lower) bound</strong> of the modeled range above, and '
+        +'well below N65.'
+        +'<span class="mnote">Corroborates the model rather than re-anchoring it: one '
+        +'opportunistic session, six west-side passes, \u00b1~2 dB. On-corridor passes would '
+        +'convert the small slant correction from estimate to direct measurement.</span>';
+    } else {
+      mbox.style.display='none';
+    }
+  }
 
   // Bretton Woods
   set('p-bw-ng',rng(bwR));
