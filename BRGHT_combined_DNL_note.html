@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"/><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Combined WARYN-BRGHT / 33L DNL &mdash; committee note &middot; TrueNoise</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+ :root{--paper:#F7F5F0;--ink:#14201C;--teal:#1D9E75;--teald:#0F6E56;--amber:#BA7517;--clay:#B4472F;--slate:#6B7A72;--line:#DDD8CC}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.6}
+ .wrap{max-width:780px;margin:0 auto;padding:52px 26px 90px}
+ .back{display:inline-block;font-family:DM Mono,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teald);text-decoration:none;margin-bottom:26px}
+ .back:hover{text-decoration:underline}
+ .brand{font-family:DM Mono,monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--teald);margin-bottom:10px}
+ h2{font-family:Archivo,sans-serif;font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.08;letter-spacing:-.01em;margin:0 0 20px}
+ h3{font-family:Archivo,sans-serif;font-weight:700;font-size:20px;margin:30px 0 10px;color:var(--teald)}
+ p{font-size:15.5px;color:#2c3833;max-width:680px}
+ ul,ol{font-size:15.5px;color:#2c3833;max-width:680px;padding-left:24px}
+ li{margin:7px 0}
+ b{color:var(--ink)}
+ blockquote{border-left:3px solid var(--teal);margin:16px 0;padding:12px 20px;background:#fff;border-radius:0 8px 8px 0;
+   font-family:DM Mono,monospace;font-size:14px;color:var(--ink)}
+ table{border-collapse:collapse;margin:18px 0;font-size:14.5px;width:100%;max-width:580px}
+ th{background:var(--teald);color:#fff;text-align:left;padding:9px 14px;font-weight:600}
+ td{padding:8px 14px;border-bottom:1px solid var(--line)}
+ tr:last-child td{border-bottom:none}
+ tbody tr:nth-child(even){background:#fff}
+ footer{margin-top:44px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--slate);line-height:1.7}
+</style></head>
+<body><div class="wrap">
+ <a class="back" href="sensitivity.html">&larr; Back to the analysis</a>
+ <div class="brand">TrueNoise.org &middot; technical committee note</div>
+<h2>Does BRGHT/WARYN added departure burden change combined DNL where 33L arrivals already land?</h2>
+<h3>The question</h3>
+<p>Looking at the WARYN-BRGHT map, some neighborhoods show additional peak-noise burden.</p>
+<p>Does that added BRGHT departure burden change their DNL when combined with the noise they</p>
+<p>already receive from 33L arrivals?</p>
+<h3>Short answer</h3>
+<p>**Yes, their combined DNL rises &mdash; but no home crosses the 65 DNL significance</p>
+<p>threshold. A subset (443 homes) does cross a <i>reportable</i> increase threshold, which is a</p>
+<p>disclosure-level regulatory event.**</p>
+<h3>What was computed</h3>
+<p>For every residence, we formed the total DNL from the two operations that dominate the</p>
+<p>corridor, before and after the change:</p>
+<ul><li><b>Before:</b> today's 15R departures <b>+</b> today's 33L arrivals</li><li><b>After:</b> WARYN-BRGHT departures <b>+</b> the <i>same</i> 33L arrivals</li></ul>
+<p>Arrivals appear on both sides, so the comparison isolates what the departure change does to</p>
+<p>each home's total burden &mdash; it does not create false relief by dropping arrivals from one side.</p>
+<p>All values use the measured Sound Exposure Level basis and the measured distance attenuation</p>
+<p>(K &#8776; 1.2), aggregated to DNL with published BWI operation counts.</p>
+<h3>How the levels combine (the math)</h3>
+<p>Decibels are logarithmic, so noise levels <b>cannot be added directly</b> &mdash; 51 dB + 50 dB is not</p>
+<p>101 dB. Two DNL values combine by converting each back to the sound energy it represents, adding</p>
+<p>the energies, and converting back:</p>
+<blockquote><b>DNL_total = 10 &middot; log&#8321;&#8320; ( 10^(DNL&#8321;/10) + 10^(DNL&#8322;/10) )</b></blockquote>
+<p><b>Worked example</b> &mdash; a home with departure DNL 51 and arrival DNL 50:</p>
+<ol><li>Convert to energy: 10^(51/10) = 125,893 and 10^(50/10) = 100,000</li><li>Add the energies: 125,893 + 100,000 = 225,893</li><li>Convert back: 10 &middot; log&#8321;&#8320;(225,893) = <b>53.5 DNL</b></li></ol>
+<p>So 51 and 50 combine to <b>53.5</b>, not 101. When two sources are close in level, the total is at</p>
+<p>most ~3 dB above the louder one (two equal sources = exactly +3 dB); when one source is much</p>
+<p>louder, the quieter one barely moves the total. A home's combined DNL is therefore dominated by</p>
+<p>whichever source is loudest.</p>
+<p><b>The before/after change</b> is two such combinations, then a subtraction:</p>
+<ul><li>Before = combine(current-departure DNL, arrival DNL)</li><li>After = combine(WARYN-departure DNL, arrival DNL)</li><li>Change = After &minus; Before</li></ul>
+<p>The arrival term is identical on both sides. It does not cancel algebraically (it sits inside the</p>
+<p>logarithms), but it <b>damps</b> the change: the louder the shared arrival noise, the less a departure</p>
+<p>change moves the combined total. This is why stacking arrivals underneath <i>reduces</i> the apparent</p>
+<p>effect of the departure change rather than inflating it &mdash; the physically correct behavior.</p>
+<p><b>Where each per-source DNL comes from</b>, one level up, is the same energy-under-a-logarithm</p>
+<p>construction applied to the daily flights:</p>
+<blockquote><b>DNL = mean SEL + 10 &middot; log&#8321;&#8320;(N_day + 10 &middot; N_night) &minus; 10 &middot; log&#8321;&#8320;(86,400)</b></blockquote>
+<p>where mean SEL is the average sound-energy-per-overflight, N is the daily count of events (night</p>
+<p>events, 10 pm&ndash;7 am, weighted &times;10 for the penalty), and 86,400 is the number of seconds in a day.</p>
+<p>The full chain for a home is: measured single events &rarr; SEL per event &rarr; per-source DNL &rarr; combine</p>
+<p>departure and arrival energies &rarr; total DNL. Nothing is ever added in raw decibels.</p>
+<p><i>Note on the peak-dBA maps:</i> peak levels are not strictly energy-additive (two 70 dB peaks at</p>
+<p>different moments do not stack into one louder instant), so the peak "combination" shown on the</p>
+<p>peak maps is an approximation for visualization only. The DNL/SEL combination above &mdash; used for the</p>
+<p>regulatory answer &mdash; is the physically defensible one.</p>
+<h3>Result</h3>
+<p>For the ~2,559 homes that see added peak burden under WARYN:</p>
+<table><thead><tr><th>Measure</th><th>Value</th></tr></thead><tbody><tr><td>Combined DNL before (median)</td><td>~51</td></tr><tr><td>Combined DNL after (median)</td><td>~54</td></tr><tr><td>Median DNL increase</td><td><b>+2.7 dB</b></td></tr><tr><td>Largest DNL increase (single home)</td><td>+7.6 dB</td></tr><tr><td>Corridor maximum combined DNL, after</td><td><b>62.7</b></td></tr><tr><td>Homes tripping a reportable increase</td><td><b>443</b></td></tr><tr><td><b>Homes reaching or crossing DNL 65</b></td><td><b>0</b></td></tr></tbody></table>
+<p>So the added departure burden is <b>not negligible</b> in DNL terms &mdash; it moves the combined</p>
+<p>contour up by a median of nearly 3 dB, stacking on the existing arrival noise. But because the</p>
+<p>corridor's highest combined DNL peaks near 63, **no residence reaches the 65 dB significance</p>
+<p>threshold**, even with arrivals fully included.</p>
+<h3>The regulatory reading (FAA Order 1050.1G)</h3>
+<p>Two things are true at once, and they are distinct:</p>
+<ol><li><b>No significant impact by the DNL test.</b> A significant noise impact requires a 1.5 dB or</li></ol>
+<p>greater increase for an area at or above DNL 65 (or brought to 65 by the action). No home</p>
+<p>reaches 65, so this threshold is not met anywhere in the corridor.</p>
+<ol><li><b>443 homes trip a <i>reportable</i> increase.</b> These homes sit in the DNL 45&ndash;60 band and</li></ol>
+<p>receive a 5 dB or greater increase &mdash; the reportable-increase trigger for that band. "Reportable"</p>
+<p>means the increase is large enough to be <b>disclosed</b> in an environmental analysis; it does not</p>
+<p>by itself constitute a significant impact or require mitigation. It is a transparency threshold,</p>
+<p>not a blocking one.</p>
+<p>The honest one-sentence version: **the added burden raises combined DNL for the</p>
+<p>affected neighborhoods and pushes 443 homes across a disclosure threshold, but it does not push</p>
+<p>any home across the significance threshold.**</p>
+<h3>Caveats a technical reviewer should have</h3>
+<ul><li><b>Per-source, not all-operations.</b> Combined DNL here counts 15R departures and 33L arrivals</li></ul>
+<p>only. A home's true total DNL from <i>all</i> BWI runways and directions would be somewhat higher &mdash;</p>
+<p>though all measured evidence still places it below 65. A full all-operations figure is AEDT</p>
+<p>territory.</p>
+<ul><li><b>Arrival slope is borrowed.</b> Clean arrival measurements all occurred near touchdown, so the</li></ul>
+<p>arrival distance-falloff borrows the departure-measured slope. Arrival levels far from the</p>
+<p>approach are the softer part of the estimate, which propagates into the 443 count.</p>
+<ul><li><b>Notional post-turn path.</b> The BRGHT/WARYN segment past the turn is modeled, as no flown</li></ul>
+<p>examples exist.</p>
+<ul><li><b>Measured screening, not an AEDT model.</b> This is independent community analysis intended to</li></ul>
+<p>inform, not to substitute for the FAA's official modeling.</p>
+<h3>Bottom line for the committee</h3>
+<p>Arrival noise and the added departure burden do</p>
+<p>combine, and the combination <i>does</i> move these homes' DNL &mdash; by a median of about 3 dB and surfaces 443 homes at a reportable-disclosure level. But even with arrivals stacked</p>
+<p>underneath, the combined DNL stays below the 65 dB line the FAA uses to find significance.</p>
+ <footer>Independent community research &middot; a measured screening, not an official FAA (AEDT)
+   noise model &middot; not affiliated with or endorsed by the FAA. &middot; TrueNoise.org</footer>
+</div></body></html>
