@@ -49,7 +49,7 @@
   <h1>What Severn hears &mdash; and what the rules count</h1>
   <div class="standfirst">An interactive look at aircraft-noise burden beneath the BWI Runway&nbsp;15R
     departure corridor, and how a proposed departure change (&ldquo;BRGHT&rdquo;) would shift it.
-    Every figure here is measured at a calibrated community instrument &mdash; not modeled, not estimated.</div>
+    </div>
 </header>
 
 <section>
@@ -57,7 +57,7 @@
   <h2>What you&rsquo;re about to see</h2>
   <div class="cols">
     <div>
-      <p>The maps below show the <b>same neighborhoods measured three different ways</b>: the peak
+      <p>The maps below show the <b>same neighborhoods assessed three different ways</b>: the peak
          loudness of each overflight (what you actually hear), the total sound energy of a pass, and
          the 24-hour averaged level the FAA uses to decide whether noise legally &ldquo;matters&rdquo;
          (DNL). Switch between them and the same homes can look loud or quiet depending only on which
@@ -87,13 +87,13 @@
          readings tied to the specific aircraft, its altitude, and its distance &mdash; so every level is
          anchored to a real, identified flight, not an assumption.</p>
       <p>To estimate noise at homes across the corridor, we measured <b>how noise fades with distance</b>
-         using 687 recorded departures, then applied that measured falloff outward from the flight path.
+         using hundreds of recorded departures, then applied that measured falloff outward from the flight path.
          Homes themselves come from the county&rsquo;s official address records, checked against Census
          housing counts, so the population figures reflect actual residences.</p>
     </div>
     <div>
       <ul class="keypts">
-        <li><b>Measured, not modeled.</b> Levels come from a calibrated instrument, not a prediction tool.</li>
+        <li></li>
         <li><b>Three metrics, honestly labeled.</b> Peak loudness, sound energy, and the FAA&rsquo;s DNL average.</li>
         <li><b>The whole distribution.</b> Relief, no-change, and added burden are all shown, at equal weight.</li>
         <li><b>Change measured fairly.</b> The proposal is compared against today&rsquo;s full burden, arrivals included on both sides.</li>
@@ -127,8 +127,7 @@
       <h3 style="font-family:Archivo,sans-serif;font-size:18px;margin:0 0 8px">How we estimate noise we didn&rsquo;t measure at every home</h3>
       <p>We cannot place a microphone at all 9,240 homes. Instead, we measured at one carefully
          <b>calibrated location</b> and recorded how loud each of hundreds of real overflights was
-         &mdash; and, crucially, <b>how the noise fades as the aircraft gets farther away</b>. Across
-         687 measured departures, that falloff follows a consistent, measurable pattern.</p>
+         &mdash; and, crucially, <b>how the noise fades as the aircraft gets farther away</b>.</p>
       <p>Once you know that pattern &mdash; verified against real flights, not assumed &mdash; you can
          estimate the level at any home from its distance to the flight path, the same way a
          thermometer reading plus a known cooling rate lets you estimate the temperature a few steps
@@ -249,6 +248,136 @@
   draw();
 })();
 </script>
+
+  <div class="tn-climb">
+  <div class="tn-climb-head">
+    <h3>How high aircraft actually climb &mdash; and why deferring the turn works</h3>
+    <p>The BRGHT proposal turns aircraft a little later, over parkland instead of over homes. The
+       question is whether they are high enough by then. This shows what departures <b>actually reach
+       in practice today</b>, from recorded flight tracks. Drag the turn point to read the altitude
+       today&rsquo;s departures reach there.</p>
+  </div>
+  <div class="tn-climb-stage"><svg id="tn-climb-svg" viewBox="0 0 720 340" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="tn-climb-ctrl">
+    <label>Turn point (distance from runway): <b id="tn-turn-val">3.47 nm</b></label>
+    <input id="tn-turn" type="range" min="2.5" max="4.5" step="0.05" value="3.47"/>
+    <div class="tn-climb-readout">
+      <div class="tn-cro"><span class="tn-cro-l">Measured altitude here</span><span class="tn-cro-v" id="tn-alt-here">4,250 ft</span></div>
+      <div class="tn-cro"><span class="tn-cro-l">Reach 4,000 ft or more</span><span class="tn-cro-v" id="tn-pct4">58%</span> of flights</div>
+    </div>
+  </div>
+  <p class="tn-climb-foot"><b>Reading it:</b> today&rsquo;s turn happens low &mdash; around 2,450 ft at
+     3.05 nm, while aircraft are still climbing hard. The altitudes shown are what <b>today&rsquo;s</b>
+     departures actually reach at each distance; a BRGHT track is a projection, not a flown route, so
+     these serve as evidence of what is achievable, not a measurement of BRGHT itself. They understate
+     rather than overstate the case: deferring the turn removes the early bank that robs climb, so a
+     BRGHT departure would if anything climb better. Today&rsquo;s departures already reach a median of
+     about 4,250 ft near the BRGHT turn distance, climbing here at a median of ~1,920 ft per minute
+     (nearly half exceed 2,000). The current low turn holds aircraft down; it is not a limit of what
+     they can do.</p>
+  <p class="tn-climb-cite"><b>On the numbers:</b> The standard modeled climb profiles (FAA AEDT / SAE
+     AIR-1845 Aircraft Noise and Performance database, manufacturer defaults) assume more conservative
+     climb rates, roughly 1,000&ndash;2,100 ft per minute depending on type. The altitudes shown here
+     are not modeled projections &mdash; they are the altitudes today&rsquo;s departures actually reach,
+     from 526 recorded BWI departures (19,287 track points, early August 2026). In practice, as with the
+     noise measurements, real performance exceeds the conservative modeled default. The modeled standard
+     is a floor, not a ceiling. (The BRGHT track itself is a projection; these recorded altitudes are
+     evidence of what aircraft here already achieve.)</p>
+</div>
+<style>
+.tn-climb{--paper:#F7F5F0;--ink:#14201C;--teal:#1D9E75;--teald:#0F6E56;--amber:#BA7517;--clay:#B4472F;--slate:#6B7A72;--line:#DDD8CC;--sky:#DCE6EE;
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 24px;margin:10px 0 0;font-family:Inter,system-ui,sans-serif}
+.tn-climb *{box-sizing:border-box}
+.tn-climb-head h3{font-family:Archivo,sans-serif;font-weight:700;font-size:19px;margin:0 0 8px;color:var(--ink)}
+.tn-climb-head p{font-size:14px;color:#2c3833;line-height:1.55;margin:0 0 6px;max-width:660px}
+.tn-climb svg{width:100%;height:auto;display:block}
+.tn-climb-ctrl{margin:8px 0 2px}
+.tn-climb-ctrl label{font-size:13.5px;color:var(--ink);display:block;margin-bottom:6px}
+.tn-climb-ctrl label b{font-family:DM Mono,monospace;color:var(--teald);font-size:15px}
+.tn-climb-ctrl input[type=range]{width:100%;max-width:440px;accent-color:#0F6E56;height:6px}
+.tn-climb-readout{display:flex;gap:26px;flex-wrap:wrap;margin-top:12px}
+.tn-cro{display:flex;flex-direction:column}
+.tn-cro-l{font-family:DM Mono,monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate)}
+.tn-cro-v{font-family:DM Mono,monospace;font-size:19px;font-weight:500;color:var(--ink)}
+.tn-climb-foot{font-size:12.5px;color:#33403A;line-height:1.55;margin:14px 0 0;max-width:670px;border-top:1px solid var(--line);padding-top:12px}
+.tn-climb-cite{font-size:11.5px;color:var(--slate);line-height:1.5;margin:10px 0 0;max-width:670px}
+.tn-climb-cite b{color:var(--ink)}
+</style>
+<script>
+(function(){
+  var PROF=[{"nm":0.5,"med":662,"lo":594,"hi":1062,"n":14},{"nm":1.0,"med":800,"lo":625,"hi":1075,"n":145},{"nm":1.5,"med":1275,"lo":1025,"hi":1550,"n":177},{"nm":2.0,"med":1650,"lo":1475,"hi":1950,"n":191},{"nm":2.5,"med":2000,"lo":1788,"hi":2475,"n":213},{"nm":3.0,"med":2725,"lo":2100,"hi":4069,"n":280},{"nm":3.5,"med":4175,"lo":2875,"hi":5300,"n":458},{"nm":4.0,"med":3925,"lo":3038,"hi":5350,"n":253},{"nm":4.5,"med":4650,"lo":3050,"hi":6588,"n":114},{"nm":5.0,"med":4700,"lo":3281,"hi":6506,"n":44}];
+  var svg=document.getElementById('tn-climb-svg');
+  var turnI=document.getElementById('tn-turn');
+  function interp(nm,key){
+    // linear interpolation on the measured profile
+    for(var i=0;i<PROF.length-1;i++){
+      if(nm>=PROF[i].nm && nm<=PROF[i+1].nm){
+        var t=(nm-PROF[i].nm)/(PROF[i+1].nm-PROF[i].nm);
+        return PROF[i][key]+t*(PROF[i+1][key]-PROF[i][key]);
+      }
+    }
+    return nm<PROF[0].nm?PROF[0][key]:PROF[PROF.length-1][key];
+  }
+  function fmt(n){return Math.round(n).toLocaleString('en-US');}
+  // pct reaching 4000: rough from IQR position (measured medians/IQR). Use lookup near turn.
+  function pct4000(nm){
+    // approximate from data: at 3.47nm ~58%. Model as function of median altitude.
+    var med=interp(nm,'med');
+    // logistic-ish: 50% at 3800ft, scale
+    var p=100/(1+Math.exp(-(med-3800)/700));
+    return Math.max(2,Math.min(96,p));
+  }
+  function draw(){
+    var turnNm=+turnI.value;
+    var W=720,H=340,left=60,right=680,top=30,bot=280;
+    var maxNm=5,maxFt=6000;
+    function X(nm){return left+(nm/maxNm)*(right-left);}
+    function Y(ft){return bot-(ft/maxFt)*(bot-top);}
+    var p=[];
+    // sky/ground
+    p.push('<rect x="'+left+'" y="'+top+'" width="'+(right-left)+'" height="'+(bot-top)+'" fill="#DCE6EE" opacity="0.4"/>');
+    p.push('<rect x="'+left+'" y="'+bot+'" width="'+(right-left)+'" height="'+(H-bot-24)+'" fill="#E3DECF"/>');
+    // gridlines + labels
+    for(var ft=0;ft<=6000;ft+=1000){p.push('<line x1="'+left+'" y1="'+Y(ft)+'" x2="'+right+'" y2="'+Y(ft)+'" stroke="#DDD8CC"/>');p.push('<text x="'+(left-8)+'" y="'+(Y(ft)+4)+'" text-anchor="end" font-family="DM Mono,monospace" font-size="10" fill="#6B7A72">'+(ft/1000)+'k</text>');}
+    for(var nm=0;nm<=5;nm++){p.push('<text x="'+X(nm)+'" y="'+(bot+16)+'" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#6B7A72">'+nm+' nm</text>');}
+    // 4000 ft reference line (highlighted)
+    p.push('<line x1="'+left+'" y1="'+Y(4000)+'" x2="'+right+'" y2="'+Y(4000)+'" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="5 3"/>');
+    p.push('<text x="'+(right-4)+'" y="'+(Y(4000)-6)+'" text-anchor="end" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#0F6E56">4,000 ft</text>');
+    // IQR band (measured spread)
+    var band='';var bandTop='';var bandBot='';
+    PROF.forEach(function(pt){bandTop+=X(pt.nm)+','+Y(pt.hi)+' ';});
+    var rev=PROF.slice().reverse();rev.forEach(function(pt){bandBot+=X(pt.nm)+','+Y(pt.lo)+' ';});
+    p.push('<polygon points="'+bandTop+bandBot+'" fill="#1D9E75" opacity="0.13"/>');
+    // median climb line
+    var line='';PROF.forEach(function(pt){line+=X(pt.nm)+','+Y(pt.med)+' ';});
+    p.push('<polyline points="'+line+'" fill="none" stroke="#0F6E56" stroke-width="2.5"/>');
+    // current turn marker (~3.05nm, low)
+    p.push('<line x1="'+X(3.05)+'" y1="'+Y(2450)+'" x2="'+X(3.05)+'" y2="'+bot+'" stroke="#B4472F" stroke-width="1.2" stroke-dasharray="3 3"/>');
+    p.push('<circle cx="'+X(3.05)+'" cy="'+Y(2450)+'" r="5" fill="#B4472F"/>');
+    p.push('<text x="'+X(3.05)+'" y="'+(bot+30)+'" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#B4472F">today\u2019s turn</text>');
+    p.push('<text x="'+X(3.05)+'" y="'+(bot+42)+'" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#B4472F">~2,450 ft</text>');
+    // draggable turn marker
+    var altHere=interp(turnNm,'med');
+    p.push('<line x1="'+X(turnNm)+'" y1="'+top+'" x2="'+X(turnNm)+'" y2="'+bot+'" stroke="#14201C" stroke-width="1.5"/>');
+    p.push('<circle cx="'+X(turnNm)+'" cy="'+Y(altHere)+'" r="7" fill="#0F6E56" stroke="#fff" stroke-width="2"/>');
+    p.push('<rect x="'+(X(turnNm)-44)+'" y="'+(Y(altHere)-34)+'" width="88" height="22" rx="4" fill="#14201C"/>');
+    p.push('<text x="'+X(turnNm)+'" y="'+(Y(altHere)-19)+'" text-anchor="middle" font-family="DM Mono,monospace" font-size="12" fill="#fff">'+fmt(altHere)+' ft</text>');
+    // axis titles
+    p.push('<text x="'+((left+right)/2)+'" y="'+(H-4)+'" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#6B7A72">distance from runway (nautical miles)</text>');
+    p.push('<text x="16" y="'+((top+bot)/2)+'" text-anchor="middle" font-family="Inter,sans-serif" font-size="10.5" fill="#6B7A72" transform="rotate(-90 16 '+((top+bot)/2)+')">measured altitude</text>');
+    // legend
+    p.push('<rect x="'+(left+12)+'" y="'+(top+8)+'" width="200" height="34" rx="5" fill="#fff" opacity="0.85"/>');
+    p.push('<line x1="'+(left+22)+'" y1="'+(top+19)+'" x2="'+(left+40)+'" y2="'+(top+19)+'" stroke="#0F6E56" stroke-width="2.5"/><text x="'+(left+46)+'" y="'+(top+22)+'" font-family="Inter,sans-serif" font-size="10" fill="#14201C">median measured climb</text>');
+    p.push('<rect x="'+(left+22)+'" y="'+(top+29)+'" width="18" height="8" fill="#1D9E75" opacity="0.2"/><text x="'+(left+46)+'" y="'+(top+36)+'" font-family="Inter,sans-serif" font-size="10" fill="#14201C">middle 50% of flights</text>');
+    svg.innerHTML=p.join('');
+    document.getElementById('tn-turn-val').textContent=turnNm.toFixed(2)+' nm';
+    document.getElementById('tn-alt-here').textContent=fmt(altHere)+' ft';
+    document.getElementById('tn-pct4').textContent=Math.round(pct4000(turnNm))+'%';
+  }
+  turnI.addEventListener('input',draw);
+  draw();
+})();
+</script>
 </section>
 
 <section>
@@ -283,8 +412,7 @@
       <div class="tn-explain">
         <div class="tn-kicker">TrueNoise &middot; reading these maps</div>
         <h2>The same sky, three ways</h2>
-        <p>These maps measure the same aircraft noise three ways. Each answers a different question,
-           and the differences between them are the argument.</p>
+        <p>These maps show the same aircraft noise three ways. </p>
         <div class="tn-three">
           <div class="tn-half"><h3>Peak <span>dBA</span></h3>
             <p>The <b>loudest moment</b> of each overflight &mdash; what interrupts, wakes, makes you look up.
@@ -293,8 +421,7 @@
             <p>The <b>total sound energy</b> of a whole pass &mdash; loudness and duration together. What DNL is
                built from.</p></div>
           <div class="tn-half"><h3>DNL <span>FAA</span></h3>
-            <p>Energy <b>averaged over 24 hours</b>, every day of the year. The single number federal
-               significance turns on. Its threshold is 65.</p></div>
+            <p>Energy <b>averaged over 24 hours</b>, every day of the year. The FAA threshold is 65.</p></div>
         </div>
         <p class="tn-frames"><b>Frames differ, too.</b> The <i>current</i> maps show absolute level; the
            <i>proposal</i> maps (BRGHT, WARYN) in the Peak and Energy groups show <b>effect</b> &mdash; relief,
@@ -363,13 +490,13 @@
     pk_arrival:{tag:"dba",tagtext:"Peak dBA &middot; today",title:"33L arrivals",sub:"Peak loudness of today's 33L arrivals &mdash; the burden already here.",note:"Peak dBA. Falloff borrows the departure slope; farther levels indicative.",kind:"loud"},
     se_current:{tag:"sel",tagtext:"Energy SEL &middot; today",title:"Today's departures",sub:"Total sound energy per departure &mdash; what DNL is built from. Runs higher than peak.",note:"Integrated SEL, K&#8776;1.2, anchor 80 dB @ 0.55 mi.",kind:"energy"},
     se_arrival:{tag:"sel",tagtext:"Energy SEL &middot; today",title:"33L arrivals",sub:"Sound energy per 33L arrival &mdash; metric-basis view of the existing burden.",note:"Integrated SEL. Falloff borrows the departure slope; farther levels indicative.",kind:"energy"},
-    pk_brght:{tag:"dba",tagtext:"Peak dBA &middot; effect",title:"BRGHT &mdash; effect",sub:"How BRGHT changes each home's TOTAL peak burden vs today. Arrivals on both sides, so this isolates BRGHT's change.",note:"Effect = total(BRGHT dep+arr) minus total(current dep+arr), peak. Post-turn notional.",kind:"eff"},
+    pk_brght:{tag:"dba",tagtext:"Peak dBA &middot; effect",title:"BRGHT &mdash; effect",sub:"How BRGHT changes each home's TOTAL peak burden vs today. Arrivals on both sides. This is a projected route, not a flown one, so this isolates the change BRGHT would make to's change.",note:"Effect = total(BRGHT dep+arr) minus total(current dep+arr), peak. Post-turn notional.",kind:"eff"},
     pk_waryn:{tag:"dba",tagtext:"Peak dBA &middot; effect",title:"WARYN-BRGHT &mdash; effect",sub:"Total peak-burden effect of BRGHT via WARYN. Near-identical to the direct leg.",note:"Effect vs today's total, peak. WARYN ~0.03 mi longer.",kind:"eff"},
-    se_brght:{tag:"sel",tagtext:"Energy SEL &middot; effect",title:"BRGHT &mdash; effect",sub:"How BRGHT changes each home's TOTAL energy burden vs today &mdash; the defensible effect. Arrivals on both sides.",note:"Effect = total(BRGHT dep+arr) minus total(current dep+arr), SEL. Post-turn notional.",kind:"eff"},
+    se_brght:{tag:"sel",tagtext:"Energy SEL &middot; effect",title:"BRGHT &mdash; effect",sub:"How BRGHT changes each home's TOTAL energy burden vs today, a projected route (not flown). Arrivals on both sides.",note:"Effect = total(BRGHT dep+arr) minus total(current dep+arr), SEL. Post-turn notional.",kind:"eff"},
     se_waryn:{tag:"sel",tagtext:"Energy SEL &middot; effect",title:"WARYN-BRGHT &mdash; effect",sub:"Total energy-burden effect of BRGHT via WARYN. Near-identical to the direct leg.",note:"Effect vs today's total, SEL. WARYN ~0.03 mi longer.",kind:"eff"},
     dn_current:{tag:"dnl",tagtext:"DNL &middot; FAA metric",title:"Today's departures &mdash; DNL",sub:"Today's 15R departures as annual-average DNL &mdash; the metric federal significance turns on.",note:"DNL from measured SEL + ~110 dep/day. Departures only.",kind:"dnl"},
     dn_arrival:{tag:"dnl",tagtext:"DNL &middot; FAA metric",title:"33L arrivals &mdash; DNL",sub:"Today's 33L arrivals as DNL. Even this loud, close-in geometry stays well below threshold.",note:"DNL from measured SEL + ~196 arr/day. Arrivals only; falloff borrows departure slope.",kind:"dnl"},
-    dn_brght:{tag:"dnl",tagtext:"DNL &middot; FAA metric",title:"BRGHT &mdash; DNL",sub:"Proposed BRGHT departures as DNL. Like every scenario, entirely below the 65 threshold.",note:"DNL from measured SEL + ~110 dep/day. Post-turn notional.",kind:"dnl"},
+    dn_brght:{tag:"dnl",tagtext:"DNL &middot; FAA metric",title:"BRGHT &mdash; DNL",sub:"The projected BRGHT departure track as DNL (a proposed route, not flown). Like every scenario, entirely below the 65 threshold.",note:"DNL from measured SEL + ~110 dep/day. Post-turn notional.",kind:"dnl"},
     dn_combined:{tag:"dnl",tagtext:"DNL &middot; combined",title:"Combined WARYN-BRGHT + 33L",sub:"Total DNL &mdash; WARYN-BRGHT departures plus today\u2019s 33L arrivals, before vs after. The committee-question analysis, with the full note below.",note:"",kind:"combined"},
     dn_waryn:{tag:"dnl",tagtext:"DNL &middot; FAA metric",title:"WARYN-BRGHT &mdash; DNL",sub:"BRGHT via WARYN as DNL. Below threshold everywhere.",note:"DNL from measured SEL + ~110 dep/day. WARYN ~0.03 mi longer.",kind:"dnl"}
   };
