@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"/><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BRGHT against FAA PBN design criteria (8260.58D) &middot; TrueNoise</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+ :root{--paper:#F7F5F0;--ink:#14201C;--teal:#1D9E75;--teald:#0F6E56;--amber:#BA7517;--clay:#B4472F;--slate:#6B7A72;--line:#DDD8CC;--blue:#2E6FB0}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.6}
+ .wrap{max-width:780px;margin:0 auto;padding:52px 26px 90px}
+ .back{display:inline-block;font-family:DM Mono,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teald);text-decoration:none;margin-bottom:26px}
+ .back:hover{text-decoration:underline}
+ .brand{font-family:DM Mono,monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--teald);margin-bottom:10px}
+ h1{font-family:Archivo,sans-serif;font-weight:800;font-size:clamp(26px,4vw,36px);line-height:1.08;letter-spacing:-.01em;margin:0 0 8px}
+ .subtitle{font-size:15px;color:var(--slate);margin-bottom:26px}
+ h3{font-family:Archivo,sans-serif;font-weight:700;font-size:18px;margin:28px 0 10px;color:var(--teald)}
+ p{font-size:15px;color:#2c3833;max-width:680px}
+ ul{font-size:15px;color:#2c3833;max-width:680px;padding-left:22px}
+ li{margin:9px 0}
+ b{color:var(--ink)}
+ blockquote{border-left:3px solid var(--blue);margin:16px 0;padding:12px 20px;background:#fff;border-radius:0 8px 8px 0;font-size:14.5px;color:var(--ink);font-style:italic}
+ footer{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--slate);line-height:1.7}
+</style></head>
+<body><div class="wrap">
+ <a class="back" href="sensitivity.html">&larr; Back to the analysis</a>
+ <div class="brand">TrueNoise.org &middot; reference note</div>
+ <h1>BRGHT against the FAA&rsquo;s own PBN design criteria</h1>
+ <div class="subtitle">FAA Order 8260.58D &mdash; United States Standard for Performance Based Navigation (PBN) Instrument Procedure Design</div>
+<h3>WHY THIS NOTE EXISTS</h3>
+<p>A recurring question about the proposed BRGHT departure is whether it asks anything unusual of aircraft or of the airspace. It does not. The FAA publishes the standard by which all area-navigation (RNAV/RNP) instrument flight procedures in the United States are designed: FAA Order 8260.58D, "United States Standard for Performance Based Navigation (PBN) Instrument Procedure Design" (current edition; it superseded 8260.58C dated 09/15/2022). The order is public and downloadable from the FAA website.</p>
+<p>This note walks through the specific design criteria a procedure like BRGHT must satisfy, and shows &mdash; using the order's own numbers &mdash; that BRGHT sits comfortably within them. The point is narrow and honest: BRGHT is a designable, standards-compliant procedure, not an exotic request. It is not a claim that any particular ground track is already obstacle-clear (see LIMITATIONS below).</p>
+<h3>1. THE DESIGN CLIMB GRADIENT</h3>
+<p>For departure legs, Order 8260.58D (paragraph 1-2-5.c(1)4) specifies the design vertical path as the higher of:</p>
+<ul><li>500 ft/NM below 10,000 ft MSL, and/or    - 350 ft/NM at 10,000 ft MSL and above (CAT A-E),    - or the specified climb gradient in effect at that point.</li></ul>
+<p>Separately, the standard (minimum) climb gradient for obstacle clearance is 200 ft/NM (paragraph 1-3-1.g(2)).</p>
+<p><b>WHAT THIS MEANS FOR BRGHT:</b> the FAA designs departures on the assumption that aircraft climb at least 500 ft/NM below 10,000 feet. Recorded BWI departures in this corridor climb at a median of roughly 1,920 feet per minute; at a typical climb ground speed near 200 knots, that is on the order of 575 ft/NM &mdash; above the design gradient the standard itself uses. BRGHT's altitude at the turn is therefore consistent with both the published design assumption and observed practice. (Climb rates and altitudes are drawn from recorded track data; see the interactive climb explainer on this site.)</p>
+<h3>2. NAVIGATION TOLERANCE (HOW TIGHTLY THE TRACK IS HELD)</h3>
+<p>For a PBN departure, the standard navigation specification is RNAV 1, which carries a Cross-Track Tolerance (XTT) of 1.00 NM (Table 1-2-1). The design assumes aircraft remain within that tolerance of the published centerline; the obstacle evaluation area is built as a primary area 2 x XTT either side of course, with a secondary area 1 x XTT beyond that (paragraph 1-2-5.b(2)).</p>
+<p><b>WHAT THIS MEANS FOR BRGHT:</b> a modern RNAV departure is a tightly held, repeatable ground track by design &mdash; which is exactly the concentration observed in the measured arrival streams at this airport. BRGHT relies on nothing more than the standard RNAV 1 performance already in routine use.</p>
+<h3>3. TURN GEOMETRY AND THE ALTITUDE OF THE TURN</h3>
+<p>The order constructs turns from bank angle, ground speed, tailwind, and the assumed altitude at the turn (paragraphs 1-2-5.c and 1-2-5.d; formulas 1-2-9 and 1-2-10). The bank angles are specified by altitude band:</p>
+<ul><li>Below 500 ft above airport elevation: bank-limited turns, 3 degrees.    - From 500 ft above airport elevation up to FL195: 25.49 degrees for legs      with XTT &gt;= 1.00 (paragraph 1-2-5.c(3)).    - Above FL195: 5 degrees.</li></ul>
+<p><b>WHAT THIS MEANS FOR BRGHT:</b> turn geometry is a function of altitude at the turn. A turn deferred to a higher altitude &mdash; the essence of the BRGHT proposal &mdash; is handled squarely within the standard's ordinary turn construction. It is not an exception or a waiver case.</p>
+<h3>4. THE STANDARD ASSUMES A HIGH TURN, NOT A LOW ONE</h3>
+<p>This is the criterion most directly relevant to the community's concern. Paragraph 1-2-5.c(1) requires that the altitude used for turn construction be the HIGHEST anticipated altitude at the turn fix, and states plainly:</p>
+<blockquote>"Use of the highest anticipated altitude is required even when obstacle clearance is assured for flyability, path repeatability, and airspace/route separation."</blockquote>
+<p><b>WHAT THIS MEANS FOR BRGHT:</b> the FAA's own design process assumes aircraft turn at the high end of their achievable altitude. That is consistent with what recorded departures actually do in this corridor, and it is consistent with the BRGHT premise &mdash; complete the climb before the turn. A procedure that turns aircraft low, while they are still climbing hard, is the departure from this assumption; deferring the turn moves the procedure toward it.</p>
+<h3>5. DESIGN AIRSPEEDS AT THE TURN</h3>
+<p>Table 1-2-2 gives the indicated airspeeds (KIAS) used in the design math. For a departure below 10,000 ft MSL: CAT A 110, CAT B 150, CAT C 240, CAT D 265, CAT E 310. These are the FAA's own assumed speeds; any analysis of BRGHT's turn radius or climb-to-turn distance can cite them rather than an outside assumption.</p>
+<h3>HOW THE PIECES FIT TOGETHER</h3>
+<p>Taken together, the criteria say that BRGHT is buildable to standard: a tightly held RNAV 1 track (Section 2), climbing at or above the design gradient (Section 1), turning at an altitude the standard already assumes to be high (Sections 3 and 4), at the standard's own design speeds (Section 5). None of this requires special authorization or performance beyond what BWI departures already demonstrate.</p>
+<h3>WHAT THIS NOTE DOES NOT CLAIM (LIMITATIONS)</h3>
+<ul><li>Design criteria are not selection criteria. Order 8260.58D governs how a   compliant procedure is built. It does not contain, and this note does not   provide, the criteria for why one ground track over one community rather   than another is selected. That routing decision is made through   environmental review (FAA Order 1050.1 and the DNL analysis) and a   discretionary airport / airline / air-traffic-control process. The absence   of a published, objective routing-selection checklist is itself part of the   community's concern.</li></ul>
+<ul><li>This is not an obstacle evaluation. Whether a specific BRGHT ground track   clears every real obstacle along the corridor requires running the actual   Obstacle Evaluation Area construction (8260.58D, Chapter 5) against current   terrain and structure data using the FAA's procedure-design tools. That is   a procedure designer's task. The defensible claim here is that BRGHT can be   designed to these published criteria &mdash; not that a particular track has been   shown obstacle-clear.</li></ul>
+<ul><li>Figures cited are from Order 8260.58D as read at the time of writing.   Orders are periodically revised; confirm paragraph, table, and numeric   references against the current published edition before formal use.</li></ul>
+<h3>SOURCE</h3>
+<p>FAA Order 8260.58D, "United States Standard for Performance Based Navigation (PBN) Instrument Procedure Design." U.S. Department of Transportation, Federal Aviation Administration. Available from the FAA website. Related orders referenced within it: 8260.3 (TERPS), 8260.19 (Flight Procedures and Airspace), and 8260.46 (Departure Procedures Program).</p>
+<p>This is independent community research. It is not affiliated with or endorsed by the FAA. &mdash; TrueNoise.org</p>
+</div></body></html>
