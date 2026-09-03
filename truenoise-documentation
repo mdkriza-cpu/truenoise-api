@@ -1,11 +1,19 @@
 TRUENOISE — SYSTEM DOCUMENTATION
 =================================
-Generated May 2026
+Generated May 2026 · Updated September 2026
 For: Marty Krizan, truenoise.org
 
 This document describes every system, service, and file that makes up the
 TrueNoise platform. It is written for someone who understands the project
 but may not remember every technical detail six months from now.
+
+September 2026 update: the website has grown from four pages to nine, and a
+substantial BRGHT departure-noise analysis was added (the sensitivity page and
+its linked documents). The backend infrastructure — Render, Supabase, GitHub
+Pages, GoDaddy DNS, Formspree, UptimeRobot — is unchanged except for one item:
+main.py was extended to add wind, temperature, and humidity columns to the
+observations table. Backend account details and endpoints below reflect the
+original setup; re-verify against the live services if ever in doubt.
 
 ═══════════════════════════════════════════════════════════════════════════
 PART 1: THE SEVEN SYSTEMS
@@ -15,17 +23,24 @@ PART 1: THE SEVEN SYSTEMS
 ─────────────────────
 Role: Design, development, and documentation partner.
 
-Claude was used to design and build the entire TrueNoise backend and website
-from scratch — the FastAPI backend, the Supabase database schema, all four
-website pages (index, about, methodology, data), the contact form integration,
-and this documentation. Claude also produced the DEPLOY.md handoff document
-for Xcode Claude and the WAV_PROCESSING_BRIEF.md for future development.
+Claude was used to design and build the TrueNoise backend and website
+from scratch — the FastAPI backend, the Supabase database schema, the website
+pages, the contact form integration, and this documentation. Claude also
+produced the DEPLOY.md handoff document for Xcode Claude and the
+WAV_PROCESSING_BRIEF.md for future development.
+
+Since mid-2026, Claude also produced the BRGHT departure-noise analysis that
+now lives on the sensitivity page: the interactive map module, two interactive
+explainer widgets (slant-range and climb), the cited methodology paper (PDF),
+and two technical notes (combined WARYN-BRGHT/33L DNL, and BRGHT against FAA
+PBN design criteria). See the sensitivity.html entry in Part 2 and the BRGHT
+files list.
 
 Claude is not a running service — it does not host anything or run any code.
 It is a tool used during development. You return to Claude when you need to
 build new features, fix bugs, update pages, or generate new documentation.
 
-Current model: Claude Sonnet 4.6 (claude.ai)
+Current model: Claude Opus 4.6 (claude.ai)  [was Sonnet 4.6 at May 2026]
 Xcode integration: Claude Code (separate instance, used inside Xcode for
 iOS app development)
 
@@ -97,6 +112,8 @@ The database has two tables:
   observations — one row per measurement (entry or track event). Every
     column from the app CSV is stored here, including psychoacoustic
     metrics, aircraft identifiers, GPS coordinates, and health impact labels.
+    (Updated ~July 2026: main.py was extended to add wind, temperature, and
+    humidity columns to the observations table.)
   sessions — one row per uploaded session with pre-computed summary
     statistics (N65, N70, N80, recovery deficit, event density, peak values).
 
@@ -183,6 +200,12 @@ PART 2: GITHUB REPOSITORY FILES
 Repository: https://github.com/mdkriza-cpu/truenoise-api
 All files are in the main branch root unless noted.
 
+LIVE PAGES (as of September 2026): the public site now has nine pages, up from
+the four at May 2026. Navigation groups them as Data (dashboard) and Research
+(briefing, flightpath, sensitivity, measurement-gap, methodology, data, about).
+The homepage (index.html) routes visitors by audience. New since May:
+dashboard, briefing, flightpath, sensitivity, measurement-gap, causal-chain.
+
 ──────────────────────────────────────────────────────────────────────────
 CNAME
 ──────────────────────────────────────────────────────────────────────────
@@ -246,6 +269,92 @@ bar chart. Falls back to sample data if the API is unreachable. Fully
 responsive with hamburger navigation on mobile.
 
 ──────────────────────────────────────────────────────────────────────────
+dashboard.html
+──────────────────────────────────────────────────────────────────────────
+The health dashboard at truenoise.org/dashboard.html (the site's data hub;
+the homepage now routes visitors here). Displays live measurements mapped to
+health research, an aircraft breakdown, and time-pattern views (reachable via
+the #aircraft and #time anchors). Added ~mid-2026.
+
+──────────────────────────────────────────────────────────────────────────
+briefing.html
+──────────────────────────────────────────────────────────────────────────
+The health briefing at truenoise.org/briefing.html — a plain-language summary
+of what the noise is doing to the body, aimed at neighbors and community
+members. Added ~mid-2026. (Note: a "briefing 1.html" also exists in the repo,
+an earlier or duplicate upload.)
+
+──────────────────────────────────────────────────────────────────────────
+flightpath.html
+──────────────────────────────────────────────────────────────────────────
+The flight path analysis at truenoise.org/flightpath.html. Added ~mid-2026;
+last updated ~July 2026.
+
+──────────────────────────────────────────────────────────────────────────
+sensitivity.html
+──────────────────────────────────────────────────────────────────────────
+The BRGHT departure-noise analysis at truenoise.org/sensitivity.html — the
+most substantial page added since May. Titled "What Severn hears — and what
+the rules count." It presents the proposed BRGHT Runway 15R departure and its
+noise burden three ways (peak dBA, sound energy SEL, and FAA DNL), with an
+interactive map module, an orientation section, a plain-language method
+summary, a boundary/estimation explainer, and two interactive widgets
+(altitude/slant-range, and measured climb). Embeds BRGHT_maps_module.html
+inline. Links to three documents in a "Read further" section: the methodology
+paper (PDF), the combined WARYN-BRGHT/33L DNL note, and the PBN design-criteria
+note. Self-contained (all map data embedded inline; ~2.6 MB). Uses keyless
+OpenStreetMap tiles. Last updated September 2026.
+
+──────────────────────────────────────────────────────────────────────────
+measurement-gap.html
+──────────────────────────────────────────────────────────────────────────
+"The measurement gap" at truenoise.org/measurement-gap.html — presents the
+distinction between measured single-event experience and the averaged metrics
+that govern regulation. Added ~mid-2026.
+
+──────────────────────────────────────────────────────────────────────────
+causal-chain.html
+──────────────────────────────────────────────────────────────────────────
+Present in the repo (causal-chain.html), added ~mid-2026. Covers the causal
+chain from noise event to health effect. Not in the primary top navigation;
+linked contextually.
+
+──────────────────────────────────────────────────────────────────────────
+BRGHT_maps_module.html
+──────────────────────────────────────────────────────────────────────────
+The interactive map module embedded into sensitivity.html. A self-contained,
+scoped module (all styles under .tn-mod) presenting 13 map views across three
+metric groups (Peak dBA, Energy SEL, DNL) plus a "How to read" explainer and a
+combined WARYN-BRGHT/33L DNL view. Built with Leaflet; all home-level data
+(9,240 addresses) embedded inline. Present in the repo as a standalone file and
+also embedded within sensitivity.html.
+
+──────────────────────────────────────────────────────────────────────────
+BRGHT_methodology_paper.pdf
+──────────────────────────────────────────────────────────────────────────
+The 11-page technical methodology paper (PDF) linked from sensitivity.html.
+Documents the full method — parcels, addresses, geocoding, Census demographics,
+flight-path reconstruction, empirical measurement, and the power-law
+propagation model — with embedded figures and 16 cited references. Editable
+source is a .docx kept off-site; this PDF is the web-published version.
+
+──────────────────────────────────────────────────────────────────────────
+BRGHT_combined_DNL_note.html
+──────────────────────────────────────────────────────────────────────────
+A technical committee note (styled HTML page) answering how BRGHT/WARYN
+departure noise combines with existing 33L arrival noise in DNL terms. Includes
+the combination math, a results table, the regulatory reading, and caveats.
+Linked from sensitivity.html "Read further."
+
+──────────────────────────────────────────────────────────────────────────
+BRGHT_PBN_design_criteria_note.html
+──────────────────────────────────────────────────────────────────────────
+A reference note (styled HTML page) laying out BRGHT against the FAA's PBN
+instrument-procedure design standard, FAA Order 8260.58D — climb gradient,
+navigation tolerance, turn geometry, and design airspeeds, with citations.
+Linked from sensitivity.html "Read further."
+
+──────────────────────────────────────────────────────────────────────────
 main.py
 ──────────────────────────────────────────────────────────────────────────
 The FastAPI Python backend application that runs on Render. Handles all
@@ -256,7 +365,8 @@ recovery deficit, event density), and serving the dashboard API endpoints.
 Uses psycopg (version 3) for PostgreSQL connectivity. This is the file
 you edit when changing API behavior, adding new endpoints, or modifying
 how data is stored or aggregated. After editing, commit to GitHub and
-trigger a Manual Deploy on Render.
+trigger a Manual Deploy on Render. (A ~July 2026 update added wind,
+temperature, and humidity columns to the observations table.)
 
 ──────────────────────────────────────────────────────────────────────────
 methodology.html
@@ -302,15 +412,15 @@ If Render continues to ignore this file (as it did during setup), the
 Python version can also be set in Render's dashboard settings.
 
 ──────────────────────────────────────────────────────────────────────────
-upload-test.html
+Other repo files
 ──────────────────────────────────────────────────────────────────────────
-A simple developer utility page used to manually test CSV uploads to the
-Render API without needing the iOS app. Presents a file picker and an
-"Upload to API" button. Used during development to confirm the upload
-endpoint was working correctly and to seed the database with real session
-data. Not linked from the public website but remains accessible at
-truenoise.org/upload-test.html. Can be used anytime you want to manually
-upload a session CSV.
+  sitemap.xml (and an earlier "sitemap 1.xml") — search-engine sitemap.
+  google480dadb53a8a1a1b.html — Google Search Console domain-verification file.
+  static/ — static assets directory.
+  truenoise-documentation — this document (repo copy).
+
+  Note: upload-test.html (documented in the May 2026 version) is no longer
+  present in the repository.
 
 
 ═══════════════════════════════════════════════════════════════════════════
@@ -378,9 +488,18 @@ NEXT DEVELOPMENT PRIORITIES:
   4. Security hardening: API key authentication, rate limiting
   5. Expanded validation dataset (more TA657A comparison measurements)
 
+  BRGHT / sensitivity page follow-ups (noted during Sept 2026 work):
+  6. Move the sensitivity map module's inline data (~2.6 MB) to an external
+     JSON the page fetches, rather than embedded, before heavier public traffic.
+  7. Add site navigation into the sensitivity page (currently a standalone
+     full-page layout without the site's shared nav/header).
+  8. Optional: a careful-language pass on the methodology paper and the two
+     BRGHT notes to match the public page's measured-vs-projected wording.
+
 
 ═══════════════════════════════════════════════════════════════════════════
 END OF DOCUMENTATION
-Generated by Claude Sonnet 4.6 in collaboration with Marty Krizan
-truenoise.org · May 2026
+Generated by Claude (Sonnet 4.6) May 2026; updated by Claude (Opus 4.6)
+September 2026, in collaboration with Marty Krizan
+truenoise.org · May 2026, rev. September 2026
 ═══════════════════════════════════════════════════════════════════════════
