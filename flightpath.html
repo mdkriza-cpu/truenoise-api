@@ -247,7 +247,8 @@
         conducting a feasibility study. This analysis models the MAA's proposed range
         (800–1,200 ft) alongside a community-proposed alternative: a new waypoint
         designated <strong>BRGHT</strong> at the Brightview Drive/Route 97 overpass,
-        with a turn altitude of 3,000–5,000 ft.
+        with a turn altitude of about 4,030 ft — the altitude departing aircraft already
+        reach at that point.
       </p>
 
       <div class="elements">
@@ -265,7 +266,7 @@
         <div class="element">
           <div class="element-head">
             <div class="el-swatch" style="background:#19B973;"></div>
-            <span class="element-label">3,000 ft BRGHT</span>
+            <span class="element-label">WARYN-BRGHT (4,030 ft)</span>
           </div>
           <div class="element-desc">Community-proposed alternative. A new geographic waypoint at Brightview Dr/Route 97, 3.74 nm from the runway. All aircraft converge on this point — no performance-based dispersion.</div>
         </div>
@@ -355,9 +356,9 @@
             <span class="alt-spl" style="color:#8CBE1E;">over homes</span>
           </div>
           <div class="alt-row">
-            <input type="checkbox" id="cb3000" checked onchange="toggleAlt(3000)">
+            <input type="checkbox" id="cb4030" checked onchange="toggleAlt(4030)">
             <div class="alt-swatch" style="background:#19B973;"></div>
-            <span class="alt-label">3,000 ft (BRGHT)</span>
+            <span class="alt-label">WARYN-BRGHT (4,030 ft)</span>
             <span class="alt-spl" style="color:#19B973;">over parkland</span>
           </div>
           <div style="font-size:10px;color:var(--text-dim);margin-top:6px;font-family:'DM Mono',monospace;">
@@ -386,12 +387,12 @@
               All turn within ~1.3 nm — near the current WARYN geometry. These options relocate the low-altitude overflight <em>among</em> residential neighborhoods; they do not remove it. Aircraft remain low and close to homes.
             </div>
             <div style="margin-bottom:8px;">
-              <span style="color:var(--teal);font-weight:500;">BRGHT 3,000 ft:</span>
+              <span style="color:var(--teal);font-weight:500;">WARYN-BRGHT (4,030 ft):</span>
               Turn at 3.74 nm — the arc sweeps over the uninhabited Severn Run Nature Area, holding aircraft high until past the homes. This is the distributional case: the concentrated departure burden moves off residences onto parkland. Modeled peak at Ashbrook falls into the low-to-mid 60s dBA, from low 70s under the low-altitude turns.
             </div>
             <div>
               <span style="color:var(--text);font-weight:500;">Fuel delta:</span>
-              ~4 gallons per flight at 3,000 ft — 0.1% of total fuel load. Commercially immaterial.
+              ~4 gallons per flight — about 0.1% of total fuel load. The turn point (BRGHT, 3.74 nm) is unchanged, and 4,030 ft is the altitude aircraft already reach there, so the delta is the same and commercially immaterial.
             </div>
           </div>
         </div>
@@ -521,13 +522,13 @@ const altConfig={
     community:'Residential Severn near the airport perimeter — modest southward shift, still concentrated over homes.'},
   1200:{color:'#8CBE1E',lw:2,
     community:'Residential Severn — still well short of clearing the residential grid.'},
-  3000:{color:'#19B973',lw:3,
+  4030:{color:'#19B973',lw:3,
     community:'Severn Run Natural Environment Area — largely uninhabited. The arc clears the residential communities entirely and holds aircraft high until past the homes. This is the distributional case: the burden moves off residences onto parkland.'}
 };
 
 // ── LAYER GROUPS ──────────────────────────────────────────────────────────────
 const layerGroups={};
-for(const alt of [800,900,1000,1100,1200,3000]) layerGroups[alt]=L.layerGroup();
+for(const alt of [800,900,1000,1100,1200,4030]) layerGroups[alt]=L.layerGroup();
 
 // ── BUILD TRACKS ──────────────────────────────────────────────────────────────
 function buildTracks() {
@@ -542,7 +543,7 @@ function buildTracks() {
 
     for(const ac of aircraft) {
       let tlat,tlon;
-      if(alt===3000){
+      if(alt===4030){
         tlat=BRGHT[0]; tlon=BRGHT[1];
       } else {
         const tp=destination(BWI[0],BWI[1],DEP_HDG,(alt-RWY_ELEV)/ac.climb);
@@ -560,7 +561,7 @@ function buildTracks() {
       }
       const fullTrack=depLeg.concat(arc);
       // Altitude along the track: climb at ac.climb (ft/nm) to the turn, then hold/slow-climb.
-      const turnGdNm=alt===3000?haversineNm(BWI[0],BWI[1],BRGHT[0],BRGHT[1]):(alt-RWY_ELEV)/ac.climb;
+      const turnGdNm=alt===4030?haversineNm(BWI[0],BWI[1],BRGHT[0],BRGHT[1]):(alt-RWY_ELEV)/ac.climb;
       const altAt=(idx)=>{
         if(idx<depLeg.length){
           const f=idx/(depLeg.length-1);
@@ -576,12 +577,12 @@ function buildTracks() {
       const splLo=Math.min(loBenefit,hiBenefit), splHi=Math.max(loBenefit,hiBenefit);
       const splMid=((splLo+splHi)/2);
       const splClass=splMid>=70?'pop-bad':(splMid>=65?'pop-warn':'pop-good');
-      const distStr=alt===3000?'BRGHT waypoint — 3.74 nm (fixed for all aircraft)':
+      const distStr=alt===4030?'BRGHT waypoint — 3.74 nm (fixed for all aircraft)':
         turnGdNm.toFixed(2)+' nm (performance-dependent)';
       const acLabel=ac.climb>=900?'Light/fast climber':'Heavy/slow climber';
 
       const popup=`<div class="pop-title">`+
-        `Turn at ${alt===3000?'3,000 ft (BRGHT)':alt+' ft'} — ${acLabel}</div>`+
+        `Turn at ${alt===4030?'4,030 ft (WARYN-BRGHT)':alt+' ft'} — ${acLabel}</div>`+
         `<div>Turn initiation: ${distStr}</div>`+
         `<div>Closest approach to Ashbrook: ${slantMi.toFixed(2)} mi slant</div>`+
         `<div>Est. peak at Ashbrook: <span class="${splClass}">${splLo.toFixed(0)}\u2013${splHi.toFixed(0)} dBA</span></div>`+
@@ -590,7 +591,12 @@ function buildTracks() {
       const opts={color:cfg.color,weight:cfg.lw,opacity:0.85,dashArray:ac.dash?'6 5':null};
 
       // Departure segment → turn point
-      L.polyline([[BWI[0],BWI[1]],[tlat,tlon]],opts).bindPopup(popup).addTo(grp);
+      // The BRGHT (green) track bends through WARYN before continuing to BRGHT;
+      // all other altitudes keep the original straight departure leg.
+      const depDrawn = (alt===4030)
+        ? [[BWI[0],BWI[1]],[WARYN[0],WARYN[1]],[tlat,tlon]]
+        : [[BWI[0],BWI[1]],[tlat,tlon]];
+      L.polyline(depDrawn,opts).bindPopup(popup).addTo(grp);
       // Arc
       L.polyline(arc,opts).bindPopup(popup).addTo(grp);
       // Post-turn stub
@@ -643,7 +649,7 @@ L.marker(BRGHT,{icon:makeIcon('#19B973',14)})
     `Brightview Drive / Route 97 overpass, Severn MD<br>`+
     `3.74 nm from runway threshold<br>`+
     `Altitude at 780 ft/NM gradient: 3,067 ft MSL<br>`+
-    `Proposed turn altitude: 3,000 ft MSL<br>`+
+    `Proposed turn altitude: 4,030 ft MSL (measured median climb at this point)<br>`+
     `Turn angle to BOBYJ: 155.1° (identical to WARYN)<br>`+
     `<div class="pop-note pop-good">All aircraft converge on this point — no performance-based dispersion. `+
     `Turn arc sweeps over Severn Run Natural Environment Area.</div>`)
@@ -690,7 +696,7 @@ L.marker(AURORA,{icon:makeIcon('#8888cc',8)})
   .bindPopup(`<div class="pop-title">Aurora Hills</div>`+
     `39.086°N, 76.649°W · South of Severn Run<br>`+
     `Community south of Severn Run Natural Environment Area<br>`+
-    `<div class="pop-note pop-warn">Modeled peak in the low 60s dBA at 3,000 ft turn altitude. `+
+    `<div class="pop-note pop-warn">Modeled peak in the low 60s dBA at 4,030 ft turn altitude. `+
     `Lateral distance from track: 1.68 nm. Moderate impact — below N65 at all altitudes. `+
     `Burden-shifting standard satisfied.</div>`)
   .addTo(map);
@@ -743,12 +749,13 @@ buildTracks();
     <p class="prose" style="max-width:640px;margin-bottom:20px;">
       The six-altitude comparison above shows that 800&ndash;1,200 ft restrictions relocate the
       low-altitude burden among residential neighborhoods rather than removing it. The
-      sensitivity tool lets you vary the BRGHT turn altitude from 3,000 to 5,000 ft and see
+      sensitivity tool lets you vary the BRGHT turn altitude and see
       the effect at Ashbrook, Aurora Hills, and Bretton Woods, alongside the fuel-cost
       tradeoff. Higher turn altitudes increase the aircraft&rsquo;s slant range from every
       receptor and lower the modeled peak; the practical question is the altitude at which
       the concentrated burden clears the residential grid onto the Severn Run parkland, which
-      the BRGHT geometry achieves at 3,000 ft and above. Exact receptor-by-receptor decibel
+      the BRGHT geometry achieves at about 4,030 ft — the altitude aircraft already reach at
+      that point. Exact receptor-by-receptor decibel
       values await the formal FAA modeling this proposal has not yet received.
     </p>
     <a href="sensitivity.html" style="display:inline-flex;align-items:center;gap:8px;
