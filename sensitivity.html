@@ -599,6 +599,59 @@ body{background:#fff}
 
 <section>
   <style>
+  .tn-cmp-wrap{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:6px}
+  @media(max-width:780px){.tn-cmp-wrap{grid-template-columns:1fr;gap:22px}}
+  .tn-cmptbl{width:100%;border-collapse:collapse;font-size:14px;margin:2px 0 6px}
+  .tn-cmptbl caption{text-align:left;font-family:Archivo,sans-serif;font-weight:700;font-size:15px;color:var(--ink);padding:0 0 3px}
+  .tn-cmptbl th{text-align:left;font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--teald);border-bottom:2px solid var(--ink);padding:6px 10px;vertical-align:bottom}
+  .tn-cmptbl td{padding:7px 10px;border-bottom:1px solid var(--line);color:#2c3833}
+  .tn-cmptbl th:not(:first-child),.tn-cmptbl td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+  .tn-cmptbl td.diff{font-weight:600;color:var(--ink)}
+  .tn-cmptbl tfoot td{font-weight:700;color:var(--ink);border-top:2px solid var(--ink);border-bottom:none}
+  .tn-cmptbl tr.pivot td{background:#f4f1ea}
+  .tn-capsub{font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--slate);margin:0 0 8px}
+  .tn-cmp-note{font-size:12.5px;color:var(--slate);line-height:1.55;margin-top:14px;max-width:760px}
+  </style>
+  <div class="eyebrow">The comparison in counts</div>
+  <h2>The two maps, as numbers</h2>
+  <p>The maps above show the same <b>33,206 homes</b> twice &mdash; once under today&rsquo;s 15R departures, once under WARYN-BRGHT, on one dBA scale. These two tables state that comparison numerically, so the arithmetic is done for you. The first counts how many homes fall in each peak-level band under each procedure. The second groups homes by how much their <i>own</i> single-event peak changes between the two.</p>
+  <div class="tn-cmp-wrap">
+    <div>
+      <table class="tn-cmptbl">
+        <caption>Homes at each peak level</caption>
+        <thead><tr><th>Single-event peak</th><th>Today</th><th>WARYN-BRGHT</th><th>Difference</th></tr></thead>
+        <tbody>
+          <tr><td>&lt;55 dBA</td><td>879</td><td>4,501</td><td class="diff">+3,622</td></tr>
+          <tr><td>55&ndash;60</td><td>3,492</td><td>5,317</td><td class="diff">+1,825</td></tr>
+          <tr><td>60&ndash;65</td><td>10,019</td><td>11,627</td><td class="diff">+1,608</td></tr>
+          <tr><td>65&ndash;70</td><td>14,512</td><td>7,210</td><td class="diff">&minus;7,302</td></tr>
+          <tr><td>&ge;70 dBA</td><td>4,304</td><td>4,551</td><td class="diff">+247</td></tr>
+        </tbody>
+        <tfoot><tr><td>Total</td><td>33,206</td><td>33,206</td><td>&mdash;</td></tr></tfoot>
+      </table>
+    </div>
+    <div>
+      <table class="tn-cmptbl">
+        <caption>Change in each home&rsquo;s own peak</caption>
+        <thead><tr><th>Change (WARYN-BRGHT &minus; today)</th><th>Homes</th><th>Share</th></tr></thead>
+        <tbody>
+          <tr><td>&minus;10 dB or more</td><td>6,717</td><td>20%</td></tr>
+          <tr><td>&minus;10 to &minus;5</td><td>6,134</td><td>18%</td></tr>
+          <tr><td>&minus;5 to &minus;1.5</td><td>3,921</td><td>12%</td></tr>
+          <tr class="pivot"><td>within &plusmn;1.5</td><td>7,256</td><td>22%</td></tr>
+          <tr><td>+1.5 to +5</td><td>2,652</td><td>8%</td></tr>
+          <tr><td>+5 to +10</td><td>5,068</td><td>15%</td></tr>
+          <tr><td>+10 dB or more</td><td>1,458</td><td>4%</td></tr>
+        </tbody>
+        <tfoot><tr><td>Total</td><td>33,206</td><td>100%</td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+  <p class="tn-cmp-note"><b>Reading the change column.</b> Change is the single-event peak under WARYN-BRGHT minus the peak today, in decibels: a <b>negative</b> value is a lower peak level under WARYN-BRGHT, a <b>positive</b> value is higher. In all, 21,533 homes sit at a lower peak and 11,673 at a higher one; the median change is &minus;1.75&nbsp;dB. Figures are the full modeled corridor, screening-level (&plusmn;7&nbsp;dB, 95%); the two procedures share the runway segment, so near-in levels are identical by construction.</p>
+</section>
+
+<section>
+  <style>
   .tn-schooltbl{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 10px}
   .tn-schooltbl th{text-align:left;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--teald);border-bottom:2px solid var(--ink);padding:6px 9px}
   .tn-schooltbl td{padding:8px 9px;border-bottom:1px solid var(--line);color:#2c3833}
