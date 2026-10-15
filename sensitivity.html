@@ -555,8 +555,8 @@ body{background:#fff}
   var LOUDC=["#C9CFC7","#E8C79A","#D98A4E","#B4472F","#7A1E12"];
   var LOUDL={loud:["<55 dBA","55&ndash;60","60&ndash;65","65&ndash;70","&ge;70 dBA"],energy:["<62 SEL","62&ndash;67","67&ndash;72","72&ndash;77","&ge;77 SEL"]};
   var root=document.querySelector('.tn-mod'), stage=root.querySelector('.tn-stage'), maps={};
-  function tiles(map){L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
-    setTimeout(function(){var tp=map.getContainer().querySelector('.leaflet-tile-pane');if(tp)tp.style.filter='grayscale(0.55) brightness(1.08) contrast(0.92)';},50);}
+  function tiles(map){L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,maxNativeZoom:16,attribution:'Tiles &copy; Esri, HERE, Garmin, FAO, NOAA, USGS &mdash; &copy; OpenStreetMap contributors'}).addTo(map);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,maxNativeZoom:16,opacity:0.85}).addTo(map);}
   function buildView(key){
     var meta=META[key],D=PAYLOAD.data[key];
     var view=document.createElement('div');view.className='tn-view';view.setAttribute('data-view',key);
