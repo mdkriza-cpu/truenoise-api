@@ -280,6 +280,7 @@ A = 66.54   B = -24.37</code></pre>
      </tbody>
     </table>
     <p class="module-note">This also sets the stakes for proposals that turn aircraft lower: on the measured falloff, dropping the turn from ~2,300&nbsp;ft to ~1,000&nbsp;ft adds on the order of 6&nbsp;dB to the peak directly beneath it.</p>
+    <p class="module-note"><strong>Altitude convention.</strong> These figures use the logging convention in place through 2026-10-19. From 2026-10-20 the measurement app references altitude to mean sea level (GNSS geoid / barometric-QNH correction), which reads about 100&nbsp;ft higher for the same aircraft; figures recomputed on new-convention data will sit correspondingly higher, and old and new logs must not be pooled. The new datum (WGS-84 ellipsoid) is pending confirmation against a live reference-track measurement.</p>
    </div>
   </div>
 </section>
@@ -353,7 +354,7 @@ A = 66.54   B = -24.37</code></pre>
 <section>
   <div class="eyebrow">Instruments</div>
   <h2>Equipment and its limits</h2>
-  <p>Measurements come from an <b>IEC&nbsp;61672 Class&nbsp;2</b> monitor and a co-located airnoise.io device. Class&nbsp;2 is the right grade here for two reasons. First, the analysis is <b>comparative</b> &mdash; today's procedure against a proposed one at the same homes &mdash; so any fixed instrument offset applies to both and cancels in the difference. Second, the instrument has been checked against a <b>calibrated meter</b> and found within ~0.8&nbsp;dB, well inside the &plusmn;7&nbsp;dB screening band. This is a measured community screening, <b>not a certified Class&nbsp;1 network and not an FAA AEDT model</b>; where a regulatory-grade number is required, these figures show <i>where</i> to look, not the final certified value.</p>
+  <p>Measurements come from an <b>IEC&nbsp;61672 Class&nbsp;2</b> monitor and a co-located airnoise.io device. Class&nbsp;2 is the right grade here for two reasons. First, the analysis is <b>comparative</b> &mdash; today's procedure against a proposed one at the same homes &mdash; so any fixed instrument offset applies to both and cancels in the difference. Second, the instrument has been checked against a <b>calibrated meter</b> and found within ~0.8&nbsp;dB, well inside the &plusmn;7&nbsp;dB screening band. This is a measured community screening, <b>not a certified Class&nbsp;1 network and not an FAA AEDT model</b>; where a regulatory-grade number is required, these figures show <i>where</i> to look, not the final certified value. The measurement app’s full signal chain &mdash; A-weighting, SPL computation, calibration, psychoacoustic analysis, and ADS-B correlation &mdash; is documented in the <a href="aircraft_noise_tracker_brief.html">Aircraft Noise Tracker technical brief</a>.</p>
 </section>
 
 <section>

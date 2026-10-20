@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aircraft Noise Tracker — Technical Brief · TrueNoise.org</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:#1D9E75; --teal-light:#E1F5EE; --teal-dark:#0F6E56;
+    --red:#E24B4A; --red-light:#FCEBEB;
+    --amber:#BA7517; --amber-light:#FAEEDA;
+    --gray-50:#F8F7F4; --gray-100:#F1EFE8;
+    --text:#1a1a18; --text-muted:#5F5E5A; --text-dim:#888780;
+    --border:rgba(0,0,0,0.09); --border-mid:rgba(0,0,0,0.14);
+  }
+  * { box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fff; color:var(--text);
+         margin:0; line-height:1.6; }
+  .topbar { padding:12px 28px; border-bottom:1px solid var(--border); background:#fff;
+            display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:10; }
+  .logo-name { font-size:16px; font-weight:600; }
+  .logo-name span { color:var(--teal); }
+  .topbar-div { width:1px; height:26px; background:var(--border-mid); }
+  .topbar-title { font-size:13px; font-weight:500; }
+  .topbar-sub { font-size:11px; color:var(--text-dim); }
+  .badge { font-size:10px; background:var(--amber-light); color:var(--amber);
+           border:1px solid var(--amber); padding:2px 7px; border-radius:4px;
+           font-family:'DM Mono',monospace; margin-left:auto; }
+
+  .wrap { max-width:860px; margin:0 auto; padding:0 28px 80px; }
+
+  .hero { padding:40px 0 22px; border-bottom:2px solid var(--teal); margin-bottom:8px; }
+  .hero h1 { font-size:30px; font-weight:700; margin:0 0 6px; color:var(--text); letter-spacing:-0.01em; }
+  .hero .sub { font-size:15px; color:var(--text-muted); }
+  .hero .meta { font-size:12px; color:var(--text-dim); font-family:'DM Mono',monospace;
+                margin-top:10px; }
+
+  h2 { font-size:20px; font-weight:600; color:var(--teal-dark); margin:38px 0 6px;
+       padding-bottom:6px; border-bottom:1px solid var(--border); }
+  h2 .num { color:var(--teal); font-family:'DM Mono',monospace; font-size:15px; margin-right:8px; }
+  h3 { font-size:15px; font-weight:600; color:var(--text); margin:22px 0 6px; }
+  p { font-size:14.5px; color:#2c2b28; margin:10px 0; }
+  strong { font-weight:600; color:var(--text); }
+  code { font-family:'DM Mono',monospace; font-size:12.5px; background:var(--gray-100);
+         padding:1px 5px; border-radius:3px; color:var(--teal-dark); }
+
+  ul { margin:10px 0; padding-left:4px; list-style:none; }
+  ul li { font-size:14px; color:#2c2b28; margin:7px 0; padding-left:20px; position:relative; }
+  ul li::before { content:'→'; position:absolute; left:0; color:var(--teal); font-weight:600; }
+  ol { margin:10px 0; padding-left:22px; }
+  ol li { font-size:14px; color:#2c2b28; margin:6px 0; }
+
+  table { border-collapse:collapse; width:100%; margin:16px 0; font-size:13px; }
+  th,td { border:1px solid var(--border-mid); padding:7px 11px; text-align:left; vertical-align:top; }
+  th { background:var(--teal-dark); color:#fff; font-weight:600; font-size:12px; }
+  tr:nth-child(even) td { background:var(--gray-50); }
+  td code { font-size:11.5px; }
+
+  .eq { text-align:center; background:var(--gray-50); border:1px solid var(--border);
+        border-radius:6px; padding:12px; margin:14px 0; font-family:'DM Mono',monospace;
+        font-size:14px; color:var(--teal-dark); }
+
+  .callout { background:var(--teal-light); border-left:3px solid var(--teal);
+             padding:12px 16px; border-radius:0 5px 5px 0; margin:16px 0; }
+  .callout .lbl { font-size:10px; text-transform:uppercase; letter-spacing:0.1em;
+                  font-family:'DM Mono',monospace; color:var(--teal-dark); font-weight:500; }
+  .callout p { margin:5px 0 0; font-size:13.5px; }
+
+  .note-band { background:var(--amber-light); border:1px solid var(--amber); border-radius:6px;
+               padding:12px 16px; margin:20px 0; font-size:13px; color:#6b4410; }
+  .note-band strong { color:var(--amber); }
+
+  .foot { margin-top:40px; padding-top:16px; border-top:1px solid var(--border);
+          font-size:12px; color:var(--text-dim); }
+  .rule { text-align:center; color:var(--border-mid); margin:30px 0 6px; font-size:14px; letter-spacing:6px; }
+
+  /* footnotes */
+  sup.fn { color:var(--teal); font-weight:600; font-size:0.72em; cursor:default; }
+  .footnote { background:var(--gray-50); border:1px solid var(--border); border-radius:6px;
+              padding:12px 16px 12px 18px; margin:16px 0; font-size:12.5px; color:var(--text-muted);
+              line-height:1.6; position:relative; }
+  .footnote .fnum { font-family:'DM Mono',monospace; color:var(--teal-dark); font-weight:500;
+                    font-size:11px; letter-spacing:0.05em; text-transform:uppercase;
+                    display:block; margin-bottom:4px; }
+  .footnote em { color:var(--text); font-style:italic; }
+  /* diagrams */
+  .diagram { margin:20px 0; padding:18px 10px 10px; background:var(--gray-50);
+             border:1px solid var(--border); border-radius:8px; overflow-x:auto; }
+  .diagram-title { font-size:11px; font-family:'DM Mono',monospace; color:var(--text-dim);
+                   text-transform:uppercase; letter-spacing:0.1em; text-align:center;
+                   margin-bottom:10px; }
+  .diagram svg { display:block; margin:0 auto; max-width:100%; height:auto; }
+</style></head><body>
+
+<div class="topbar">
+  <div class="logo-name">True<span>Noise</span>.org</div>
+  <div class="topbar-div"></div>
+  <div>
+    <div class="topbar-title">Aircraft Noise Tracker — Technical Brief</div>
+    <div class="topbar-sub">iOS measurement application · community acoustic instrument</div>
+  </div>
+  <div class="badge">UPDATED · OCT 2026</div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>Aircraft Noise Tracker</h1>
+    <div class="sub">Technical Brief — the iOS instrument behind the TrueNoise community measurement effort</div>
+    <div class="meta">Prepared for the MAA Roundtable Technical Committee · August 2026; revised 2026-10-20 (OpenSky migration, altitude-reference fix, ground-traffic log)</div>
+  </div>
+
+    <div class="callout"><div class="lbl">Companion document</div><p>This brief covers how each overflight is <em>measured</em>. For how those measurements become the per-home noise comparison on the sensitivity map, see the <a href="methodology.html">peak-dBA model methodology</a>.</p></div>
+
+  <h2><span class="num">1</span>Project Goals</h2>
+  <p><strong>Aircraft Noise Tracker</strong> is an iOS application designed to produce community-grade acoustic measurements of aircraft overflights that are defensible, reproducible, and linked to specific flight operations. The core thesis is that aviation-noise regulation depends almost entirely on modeled, averaged L<sub>eq</sub> metrics (DNL, CNEL) that systematically undercount event exposure. The app addresses this by generating per-event, per-aircraft observational records correlated with ADS-B flight data.</p>
+  <p>The specific objectives are:</p>
+  <ul>
+    <li><strong>Event-level measurement:</strong> capture peak dBA for every aircraft that passes within a defined proximity zone, linked to the aircraft's callsign, type, altitude, and geometry at the moment of measurement.</li>
+    <li><strong>Psychoacoustic characterization:</strong> decompose the noise into perceptual dimensions (loudness, sharpness, annoyance) that map to specific health outcomes, going beyond what dBA alone conveys.</li>
+    <li><strong>Evidentiary data quality:</strong> produce records with known uncertainty bounds, validated against a calibrated Type 2 sound-level meter, suitable for regulatory submission.</li>
+    <li><strong>Community scale:</strong> provide a low-cost instrument deployable at multiple receptor sites simultaneously, enabling spatial coverage that fixed airport monitors cannot provide.</li>
+    <li><strong>Subjective-effects correlation:</strong> link measured acoustic events to real-time annoyance reports from observers, connecting the physical stimulus to the experienced burden.</li>
+  </ul>
+
+  <h2><span class="num">2</span>Code Architecture</h2>
+  <p>The app is written in Swift using the SwiftUI framework for iOS. It follows an <code>ObservableObject</code> architecture with six principal components that communicate through shared state:</p>
+  <table>
+    <tr><th>Component</th><th>File</th><th>Role</th></tr>
+    <tr><td><code>AudioManager</code></td><td><code>ContentView.swift</code></td><td>Audio session, signal processing, A/C weighting, psychoacoustics</td></tr>
+    <tr><td><code>AircraftService</code></td><td><code>AircraftService.swift</code></td><td>ADS-B polling, geometry computation, aircraft identification</td></tr>
+    <tr><td><code>NoiseEventLogger</code></td><td><code>NoiseEventLogger.swift</code></td><td>Event correlation, persistence, CSV/JSON export, baseline statistics</td></tr>
+    <tr><td><code>PsychoacousticAnalyzer</code></td><td><code>PsychoacousticAnalyzer.swift</code></td><td>FFT, 1/3-octave band decomposition, Zwicker loudness, sharpness</td></tr>
+    <tr><td><code>SeatLogger</code></td><td><code>SeatLogger.swift</code></td><td>Subjective Effects Assessment Tool — annoyance taps and survey</td></tr>
+    <tr><td><code>UploadService</code></td><td><code>UploadService.swift</code></td><td>Session and SEAT event upload to the truenoise.org backend</td></tr>
+  </table>
+  <div class="callout"><div class="lbl">Data flow</div>
+    <p><code>AudioManager</code> produces SPL readings every 2 s → <code>AircraftService</code> produces aircraft position fixes every 10 s → <code>NoiseEventLogger</code> correlates them and writes structured observations → <code>UploadService</code> posts data to the backend.</p></div>
+
+  <h2><span class="num">3</span>Audio Processing<sup class="fn">1</sup></h2>
+  <div class="footnote">
+    <span class="fnum">Footnote 1 · On the legitimacy of a smartphone as an acoustic front end</span>
+    Skepticism that a phone could yield defensible acoustic data is reasonable but dated. Modern iPhones carry a dedicated audio subsystem that has matured over more than a decade: purpose-built analog-to-digital conversion, multiple MEMS microphones with characterized frequency response, and a signal path engineered for low self-noise and wide dynamic range to serve professional audio and video capture. Critically, sound processing runs on a dedicated low-power audio digital-signal-processor and the device's Neural/DSP blocks rather than contending for the main CPU, so continuous real-time filtering (weighting cascades, FFTs) executes deterministically without dropouts. Apple's <em>Core Audio</em> and <em>AVAudioEngine</em> frameworks expose this hardware with sample-accurate buffer delivery and documented latency. The result is a front end whose raw acoustic capture is well within the fidelity needed for A-weighted level metering — the discipline that remains is <em>calibration and uncertainty characterization</em> (Section 5), not raw hardware capability. This application does not claim IEC 61672 certification; it claims a validated, uncertainty-bounded measurement built on a hardware path that is, by any reasonable engineering standard, acoustically capable.
+  </div>
+  <h3>Signal Chain</h3>
+  <p>The app uses <code>AVAudioEngine</code> with a tap installed on the audio input node. The tap delivers 1024-frame PCM buffers continuously at the device's native sample rate (typically 44,100 Hz or 48,000 Hz). The signal is processed in real time, with peak values accumulated over 2-second windows before being recorded as a single SPL sample.</p>
+  <div class="diagram">
+    <div class="diagram-title">Figure 1 · Signal Chain — microphone to logged SPL sample</div>
+    <svg viewBox="0 0 900 150" xmlns="http://www.w3.org/2000/svg" font-family="DM Mono, monospace">
+      <defs>
+        <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="#0F6E56"/>
+        </marker>
+      </defs>
+      <!-- blocks -->
+      <g>
+        <rect x="8"   y="45" width="120" height="60" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+        <text x="68"  y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#0F6E56">Microphone</text>
+        <text x="68"  y="87" text-anchor="middle" font-size="9.5" fill="#5F5E5A">int / ext / lav</text>
+
+        <rect x="168" y="45" width="130" height="60" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+        <text x="233" y="66" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F6E56">AVAudioEngine</text>
+        <text x="233" y="82" text-anchor="middle" font-size="9.5" fill="#5F5E5A">input tap</text>
+        <text x="233" y="94" text-anchor="middle" font-size="9" fill="#888780">1024-frame PCM</text>
+
+        <rect x="338" y="45" width="130" height="60" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+        <text x="403" y="66" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F6E56">A / C weighting</text>
+        <text x="403" y="82" text-anchor="middle" font-size="9.5" fill="#5F5E5A">biquad IIR cascade</text>
+        <text x="403" y="94" text-anchor="middle" font-size="9" fill="#888780">per-sample</text>
+
+        <rect x="508" y="45" width="130" height="60" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+        <text x="573" y="66" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0F6E56">RMS → dB</text>
+        <text x="573" y="82" text-anchor="middle" font-size="9.5" fill="#5F5E5A">+ calibration</text>
+        <text x="573" y="94" text-anchor="middle" font-size="9" fill="#888780">offset</text>
+
+        <rect x="678" y="45" width="130" height="60" rx="7" fill="#0F6E56" stroke="#0F6E56"/>
+        <text x="743" y="66" text-anchor="middle" font-size="11.5" font-weight="600" fill="#fff">2-s peak</text>
+        <text x="743" y="82" text-anchor="middle" font-size="9.5" fill="#CDEBE0">window → SPL</text>
+        <text x="743" y="94" text-anchor="middle" font-size="9" fill="#9FD4C2">sample logged</text>
+      </g>
+      <!-- arrows -->
+      <line x1="128" y1="75" x2="166" y2="75" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar)"/>
+      <line x1="298" y1="75" x2="336" y2="75" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar)"/>
+      <line x1="468" y1="75" x2="506" y2="75" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar)"/>
+      <line x1="638" y1="75" x2="676" y2="75" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar)"/>
+    </svg>
+  </div>
+  <h3>A-Weighting (IEC 61672)</h3>
+  <p>A-weighting is implemented as three cascaded biquad IIR filter sections, derived from the analog IEC 61672 prototype via bilinear transform. The poles correspond to the four standard A-weighting characteristic frequencies (f₁ = 20.6 Hz, f₂ = 107.7 Hz, f₃ = 737.9 Hz, f₄ = 12,194 Hz). The cascade is normalized so the gain at 1 kHz equals 0 dB — the digital equivalent of a hardware A-weighting network, computed sample-by-sample in the audio callback.</p>
+  <p>C-weighting uses the same architecture but with only two biquad sections (the f₁ and f₄ poles, omitting the mid-band section), giving the characteristic flat response with low- and high-frequency rolloff.</p>
+  <div class="diagram">
+    <div class="diagram-title">Figure 2 · A-weighting and C-weighting filter cascades (IEC 61672)</div>
+    <svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg" font-family="DM Mono, monospace">
+      <defs>
+        <marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="#0F6E56"/>
+        </marker>
+      </defs>
+      <!-- input -->
+      <rect x="8" y="95" width="96" height="56" rx="7" fill="#F1EFE8" stroke="#888780"/>
+      <text x="56" y="118" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1a18">PCM in</text>
+      <text x="56" y="133" text-anchor="middle" font-size="9" fill="#5F5E5A">bilinear xform</text>
+
+      <!-- A-weighting row -->
+      <text x="150" y="42" font-size="10.5" font-weight="600" fill="#0F6E56">A-WEIGHTING — 3 cascaded biquad sections</text>
+      <g>
+        <rect x="150" y="52" width="150" height="52" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+        <text x="225" y="73" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0F6E56">Section 1</text>
+        <text x="225" y="90" text-anchor="middle" font-size="9" fill="#5F5E5A">f&#8321;=20.6 · f&#8324;=12194 Hz</text>
+
+        <rect x="330" y="52" width="150" height="52" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+        <text x="405" y="73" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0F6E56">Section 2</text>
+        <text x="405" y="90" text-anchor="middle" font-size="9" fill="#5F5E5A">f&#8322;=107.7 Hz</text>
+
+        <rect x="510" y="52" width="150" height="52" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+        <text x="585" y="73" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0F6E56">Section 3</text>
+        <text x="585" y="90" text-anchor="middle" font-size="9" fill="#5F5E5A">f&#8323;=737.9 Hz</text>
+
+        <rect x="690" y="52" width="150" height="52" rx="7" fill="#0F6E56" stroke="#0F6E56"/>
+        <text x="765" y="73" text-anchor="middle" font-size="10.5" font-weight="600" fill="#fff">Normalize</text>
+        <text x="765" y="90" text-anchor="middle" font-size="9" fill="#9FD4C2">0 dB @ 1 kHz → dBA</text>
+      </g>
+      <!-- A arrows -->
+      <line x1="300" y1="78" x2="328" y2="78" stroke="#0F6E56" stroke-width="1.4" marker-end="url(#ar2)"/>
+      <line x1="480" y1="78" x2="508" y2="78" stroke="#0F6E56" stroke-width="1.4" marker-end="url(#ar2)"/>
+      <line x1="660" y1="78" x2="688" y2="78" stroke="#0F6E56" stroke-width="1.4" marker-end="url(#ar2)"/>
+
+      <!-- C-weighting row -->
+      <text x="150" y="170" font-size="10.5" font-weight="600" fill="#BA7517">C-WEIGHTING — 2 biquad sections (mid-band omitted)</text>
+      <g>
+        <rect x="150" y="180" width="200" height="52" rx="7" fill="#FAEEDA" stroke="#BA7517"/>
+        <text x="250" y="201" text-anchor="middle" font-size="10.5" font-weight="600" fill="#BA7517">Section 1</text>
+        <text x="250" y="218" text-anchor="middle" font-size="9" fill="#6b4410">f&#8321;=20.6 · f&#8324;=12194 Hz</text>
+
+        <rect x="380" y="180" width="200" height="52" rx="7" fill="#BA7517" stroke="#BA7517"/>
+        <text x="480" y="201" text-anchor="middle" font-size="10.5" font-weight="600" fill="#fff">Normalize → dBC</text>
+        <text x="480" y="218" text-anchor="middle" font-size="9" fill="#F5E0C0">flat mid, LF/HF rolloff</text>
+      </g>
+      <line x1="350" y1="206" x2="378" y2="206" stroke="#BA7517" stroke-width="1.4" marker-end="url(#ar2)"/>
+
+      <!-- input splits to both -->
+      <path d="M104,120 L127,120 L127,78 L148,78" fill="none" stroke="#0F6E56" stroke-width="1.4" marker-end="url(#ar2)"/>
+      <path d="M104,128 L127,128 L127,206 L148,206" fill="none" stroke="#BA7517" stroke-width="1.4" marker-end="url(#ar2)"/>
+    </svg>
+  </div>
+  <h3>SPL Computation</h3>
+  <p>For each buffer, the RMS amplitude is computed across the frame:</p>
+  <div class="eq">dBA = 20 · log₁₀(RMS) + calibration offset</div>
+  <p>The 2-second peak window captures the maximum instantaneous reading across all buffers within the window. This is conservative — it represents the highest sound level heard during the window rather than an energy average. The C–A delta (difference between C-weighted and A-weighted readings) is tracked simultaneously as a wind-contamination indicator.</p>
+  <h3>Psychoacoustic Analysis<sup class="fn">2</sup></h3>
+  <p>Independently of the SPL chain, raw PCM samples accumulate in a 4096-sample buffer. When full, the buffer is dispatched to a background analysis queue running <code>PsychoacousticAnalyzer</code>:</p>
+  <div class="diagram">
+    <div class="diagram-title">Figure 3 · Psychoacoustic analysis sequence — PCM buffer to perceptual metrics</div>
+    <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" font-family="DM Mono, monospace">
+      <defs>
+        <marker id="ar3" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+          <path d="M0,0 L9,4.5 L0,9 z" fill="#0F6E56"/>
+        </marker>
+      </defs>
+      <!-- top row: buffer -> FFT -> bands -->
+      <rect x="8" y="20" width="150" height="58" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+      <text x="83" y="43" text-anchor="middle" font-size="11" font-weight="600" fill="#0F6E56">4096-sample</text>
+      <text x="83" y="59" text-anchor="middle" font-size="10" fill="#0F6E56">buffer</text>
+      <text x="83" y="72" text-anchor="middle" font-size="8.5" fill="#888780">background queue</text>
+
+      <rect x="198" y="20" width="150" height="58" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+      <text x="273" y="43" text-anchor="middle" font-size="11" font-weight="600" fill="#0F6E56">Hann FFT</text>
+      <text x="273" y="59" text-anchor="middle" font-size="9" fill="#5F5E5A">vDSP radix-2</text>
+
+      <rect x="388" y="20" width="170" height="58" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+      <text x="473" y="43" text-anchor="middle" font-size="11" font-weight="600" fill="#0F6E56">28 1/3-octave bands</text>
+      <text x="473" y="59" text-anchor="middle" font-size="9" fill="#5F5E5A">25 Hz – 12.5 kHz</text>
+      <text x="473" y="71" text-anchor="middle" font-size="8.5" fill="#888780">Bark critical bands</text>
+
+      <line x1="158" y1="49" x2="196" y2="49" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar3)"/>
+      <line x1="348" y1="49" x2="386" y2="49" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar3)"/>
+
+      <!-- down into loudness -->
+      <rect x="388" y="116" width="170" height="70" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+      <text x="473" y="136" text-anchor="middle" font-size="11" font-weight="600" fill="#0F6E56">Zwicker Loudness</text>
+      <text x="473" y="151" text-anchor="middle" font-size="9" fill="#5F5E5A">ISO 532-1 · threshold model</text>
+      <text x="473" y="164" text-anchor="middle" font-size="8.5" fill="#888780">specific loudness / Bark</text>
+      <text x="473" y="176" text-anchor="middle" font-size="8.5" fill="#888780">&#8594; sone, phon</text>
+      <path d="M473,78 L473,118" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar3)"/>
+
+      <!-- loudness -> sharpness -->
+      <rect x="598" y="120" width="150" height="60" rx="7" fill="#E1F5EE" stroke="#1D9E75"/>
+      <text x="673" y="143" text-anchor="middle" font-size="11" font-weight="600" fill="#0F6E56">Sharpness</text>
+      <text x="673" y="159" text-anchor="middle" font-size="9" fill="#5F5E5A">DIN 45692 · upper-Bark</text>
+      <text x="673" y="171" text-anchor="middle" font-size="8.5" fill="#888780">weighting → acum</text>
+      <line x1="558" y1="150" x2="596" y2="150" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar3)"/>
+
+      <!-- both -> annoyance -->
+      <rect x="493" y="222" width="180" height="60" rx="7" fill="#0F6E56" stroke="#0F6E56"/>
+      <text x="583" y="245" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">Psychoacoustic Annoyance</text>
+      <text x="583" y="261" text-anchor="middle" font-size="9" fill="#CDEBE0">Zwicker &amp; Fastl composite</text>
+      <text x="583" y="273" text-anchor="middle" font-size="8.5" fill="#9FD4C2">sharpness penalty &gt; 1.75 acum</text>
+      <path d="M473,186 L473,205 L560,205 L560,220" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar3)"/>
+      <path d="M673,180 L673,205 L606,205 L606,220" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#ar3)"/>
+
+      <!-- separate: onset rate (from SPL series, not FFT) -->
+      <rect x="8" y="222" width="200" height="60" rx="7" fill="#FAEEDA" stroke="#BA7517"/>
+      <text x="108" y="245" text-anchor="middle" font-size="11" font-weight="600" fill="#BA7517">Onset Rate</text>
+      <text x="108" y="261" text-anchor="middle" font-size="9" fill="#6b4410">from last five 2-s SPL samples</text>
+      <text x="108" y="273" text-anchor="middle" font-size="8.5" fill="#9a6a20">max dB/s rise</text>
+      <text x="108" y="200" text-anchor="middle" font-size="8.5" fill="#888780" font-style="italic">(parallel path, from SPL series)</text>
+    </svg>
+  </div>
+
+  <div class="footnote">
+    <span class="fnum">Footnote 2 · Why psychoacoustics matters for noise assessment</span>
+    Psychoacoustics emerged in the twentieth century from a simple observation: the ear is not a sound-level meter. Two sounds of identical A-weighted level can be experienced very differently depending on their spectral content, temporal structure, and tonal character. The field was built to quantify that gap — Fletcher and Munson's equal-loudness contours, Zwicker and Fastl's models of loudness, sharpness, roughness, and fluctuation strength, and the ISO/DIN standards that followed — precisely because single-number energy metrics such as L<sub>eq</sub> and DNL were found to correlate only loosely with how communities actually rate noise as disturbing. Aviation is a case in point: modern high-bypass turbofans can be <em>lower</em> in dBA than the engines they replaced while introducing tonal or high-frequency "sharp" components that listeners find more intrusive. Psychoacoustic descriptors capture that character. It is important to state the epistemic status plainly: the relationships between these descriptors and human outcomes are an active research area, and this application treats them as <em>hypotheses</em> — for example, that sharper or more rapidly-onset events may be more strongly associated with self-reported annoyance and stress-response measures than dBA alone would predict. The app measures the descriptors and pairs them with subjective reports (the SEAT survey) so those hypotheses can be examined against real data; it does not assert a causal health effect.
+  </div>
+  <ul>
+    <li><strong>1/3-Octave Band Analysis:</strong> a Hann-windowed FFT (vDSP framework, radix-2) decomposes the signal into 28 bands from 25 Hz to 12.5 kHz, corresponding to the Bark critical-band centers. Band power is summed from FFT bins within each 1/3-octave boundary and converted to dB SPL using the calibration offset.</li>
+    <li><strong>Zwicker Loudness (ISO 532-1):</strong> each band level is compared to the threshold in quiet (ISO-standardized per band). A simplified excitation model converts band levels above threshold to specific loudness in sone per Bark; total loudness integrates across the Bark scale. Output in sone (perceptual loudness) and phon (equivalent loudness level) — the most physiologically grounded single-number descriptor of perceived noise.</li>
+    <li><strong>Sharpness (DIN 45692):</strong> specific loudness is weighted by a frequency-dependent factor emphasizing the upper Bark bands (above ~16 Bark), capturing the "piercing" or "bright" character of turbine noise. Output in acum. Turbine whine scores significantly higher than broadband propeller noise at the same dBA — the 737 MAX vs. NG difference is detectable in this metric.</li>
+    <li><strong>Psychoacoustic Annoyance (Zwicker &amp; Fastl):</strong> a composite index combining total loudness and sharpness; sharpness contributes a multiplicative penalty when it exceeds 1.75 acum.</li>
+    <li><strong>Onset Rate:</strong> computed from the last five 2-second SPL samples as the maximum rate of increase in dB/s. Captures the startle character of rapid noise onset.</li>
+  </ul>
+
+  <h2><span class="num">4</span>Interface Overview</h2>
+  <p>The app is organized into four tabs plus settings:</p>
+  <ul>
+    <li><strong>Monitor tab:</strong> live dBA readout with A-weighting and psychoacoustic indicators (loudness, sharpness, annoyance, onset rate), a scrolling SPL time-series chart, and a live aircraft list showing nearby traffic with geometry (callsign, type, slant range, altitude, bearing, flight phase). Monitoring is started and stopped explicitly; the 2-second peak window updates continuously while active.</li>
+    <li><strong>Radar / Map view:</strong> a compass-oriented display showing aircraft positions relative to the observer's GPS location. Aircraft are sized and labeled by proximity.</li>
+    <li><strong>Assess tab (SEAT):</strong> when an aircraft enters the 1.5-mile proximity gate, a Low / Medium / High annoyance tap becomes active, confirmed with a second tap. When the aircraft exits the gate, a 3-question ISO 15666-aligned survey appears — the activity disrupted, degree of interference, and any physical effects experienced. Responses are logged to a separate SEAT CSV and uploaded to the backend.</li>
+    <li><strong>Log tab:</strong> chronological list of all observations with per-aircraft summary statistics — peak dBA, slant range, altitude, psychoacoustic readings, flight phase. Includes a session summary showing N65/N70/N80 event counts, event density, inter-event interval statistics, and a recovery-deficit count (intervals shorter than 15 minutes — the cortisol recovery threshold).</li>
+    <li><strong>Settings:</strong> microphone-profile selection (internal / external / custom), windshield correction (none / foam / fur), measurement type and position description, calibration interface, monitoring schedule, and slant-range gate.</li>
+  </ul>
+
+  <h2><span class="num">5</span>Calibration and Offsets</h2>
+  <p>The app applies a single SPL offset (dBA) to all readings, converting raw ADC-scaled dB to approximate absolute SPL. The offset is stored per microphone profile in <code>UserDefaults</code> and applied throughout the signal chain.</p>
+  <h3>Manual Calibration Offset</h3>
+  <p>The offset is set by comparing the app reading against a known source (calibrated tone, reference meter, or known aircraft). The user enters the target SPL and the app computes the correction. An initial +96 dBA offset was established for the Pop lavalier microphone, derived from known-level test signals and validated against overflights.</p>
+  <h3>Auto-Calibration (Two-Phase Transfer)</h3>
+  <p>Auto-calibration uses the iPhone's built-in microphone as a stable transfer reference to characterize an external microphone's offset relative to it. Phase 1 (90 s) captures the internal mic's LA50 in ambient conditions; Phase 2 (60 s, after switching to the external mic in the same acoustic environment) captures the external mic's LA50. The difference determines the offset correction. This procedure needs no calibration source; it assumes the internal mic's response is consistent across sessions, confirmed across multiple test sessions.</p>
+  <h3>Windshield Correction</h3>
+  <p>Three windshield types are supported — none, foam ball, and fur windscreen — each applying an additive correction to logged values, compensating for the acoustic insertion loss of the material. This is logged to every CSV row for traceability.</p>
+  <h3>C–A Delta Wind-Contamination Detection</h3>
+  <p>The C–A delta (dBC − dBA) is computed in real time alongside the A-weighted reading. High C–A values indicate disproportionate low-frequency energy — the acoustic signature of wind turbulence at the diaphragm rather than aircraft noise. The app flags observations as "possible" or "likely" wind-contaminated when dBA ≥ 55 and C–A ≥ 15 or ≥ 25 respectively. Flags are written to the CSV, but values are not auto-excluded; the observer makes the final call.</p>
+    <h3>Altitude Reference</h3>
+  <p>Aircraft altitude drives the slant-range geometry, so its vertical datum matters. As of 2026-10-20 the app resolves altitude to height above mean sea level: GNSS altitude from the position feed is corrected to MSL using the geoid offset the iPhone measures at the observer's location (removing a roughly 100 ft error near BWI), and where only barometric altitude is available it is corrected with the local air pressure (QNH) from Open-Meteo. A new <strong>Altitude Source</strong> field records the method per row &mdash; <code>GNSS</code>, <code>Baro+QNH</code>, <code>Baro (uncorrected)</code>, or <code>GNSS (no geoid corr.)</code> when the device lacks a good altitude fix.</p>
+  <div class="note-band"><strong>Data continuity.</strong> Logs from 2026-10-20 onward read about 100 ft higher for the same aircraft than earlier logs, and near-field slant ranges are slightly longer. Rows before that date carry a blank Altitude Source, so old and new data stay distinguishable and must not be pooled without accounting for the shift. The GNSS datum is taken as the WGS-84 ellipsoid (the ADS-B standard); final confirmation is pending a live measurement checked against a reference flight track.</div>
+  <h3>Measurement Typology</h3>
+  <p>Every session is tagged with a measurement type from a five-category framework:</p>
+  <table>
+    <tr><th>Type</th><th>Description</th></tr>
+    <tr><td>Standardized Receptor</td><td>1.5 m microphone height, ≥ 1 m from reflective surfaces</td></tr>
+    <tr><td>Community Receptor</td><td>Fixed residential location, labeled position</td></tr>
+    <tr><td>Façade Receptor</td><td>Within 1 m of building face</td></tr>
+    <tr><td>Field Receptor</td><td>Field setup with documented geometry</td></tr>
+    <tr><td>Hand-held</td><td>Free-hand measurement, highest uncertainty</td></tr>
+  </table>
+  <p>The type and a free-text position description are logged to every CSV row, allowing downstream analysis to group or weight observations by receptor methodology.</p>
+  <h3>Field Validation</h3>
+  <p>Multiple validation sessions against a calibrated AZ8930 Type 2 sound-level meter:</p>
+  <ul>
+    <li>11-aircraft post-correction comparison: SR-position mean residual −0.1 dB, Façade mean −0.78 dB (both conservative).</li>
+    <li>33-departure session (2026-07-31): mean residual −0.09 dB, SD 1.76 dB after the NG/MAX aircraft-type split was applied.</li>
+    <li>Single-point check (2026-08-06): B767 at 0.6 mi / 2,490 ft — app 75.8 dBA, freshly calibrated SLM 76.0 dBA (delta 0.2 dB).</li>
+  </ul>
+  <div class="callout"><div class="lbl">Stated precision</div>
+    <p>±1.76 dB SD, zero mean bias for departure overflights. Approach phase pending additional validation data. Honest uncertainty label: <strong>±5 dB</strong> for all displayed estimates.</p></div>
+
+  <h2><span class="num">6</span>Data Sharing and Upload</h2>
+  <h3>On-Device Persistence</h3>
+  <p>Observations are stored in two formats simultaneously:</p>
+  <ul>
+    <li><strong>JSON</strong> (<code>aircraft_observations.json</code>): structured array with the full field set, used for in-app display and reimport.</li>
+    <li><strong>CSV</strong> (<code>aircraft_log_YYYY-MM-DD.csv</code>): 41-column flat file, one row per observation, plus an appended summary-statistics section.</li>
+  </ul>
+  <p>The CSV includes: timestamp, observation type (entry/track), dBA level, all psychoacoustic metrics with plain-language health labels, complete aircraft geometry (callsign, ICAO24, type code, type name, registration, operator, flight phase, ground distance, slant range, altitude, bearing, elevation angle, speed, vertical rate), observer GPS coordinates, windshield configuration and correction, measurement type, position description, C–A delta, wind speed and direction, temperature, relative humidity, altitude source, and an exclusion flag.</p>
+  <p>A companion reference file (<code>aircraft_noise_reference.txt</code>) is generated alongside the CSV with column definitions, health-scale descriptions, and source citations — suitable for submission alongside data to regulators or researchers.</p>
+    <h3>Ground-Traffic Log</h3>
+  <p>At near-field sites within about 1.5 mi of the airport, taxiing and parked aircraft are logged separately to <code>aircraft_ground_log_YYYY-MM-DD.csv</code> &mdash; one row per second while an airborne aircraft is being tracked, each carrying the measured dBA at that instant, so a ground-source peak (a taxiing jet) can be told apart from an overflight peak. It is isolated: it is not uploaded to truenoise.org, and it does not affect the on-screen aircraft list, SEAT prompts, the N65/N70/N80 counts, the charts, or the website data. At receptors farther from the field (such as the porch monitor) the file is normally not created. It is included in Export when present and removed by Clear Log along with the main log.</p>
+  <h3>Upload to truenoise.org</h3>
+  <p>The user initiates upload from the app. <code>UploadService</code> packages the current day's CSV as a <code>multipart/form-data</code> POST to the truenoise.org API (<code>/api/v1/upload-session</code>), authenticated with an API key. Before upload, a preprocessing step:</p>
+  <ol>
+    <li>Strips the summary-statistics section (sends only observation rows).</li>
+    <li>Removes any rows flagged <code>Excluded=Yes</code>.</li>
+  </ol>
+  <p>The backend responds with a summary: session ID, observation count inserted, N65/N70/N80 event counts, recovery-deficit count, and unique aircraft count. Failed uploads are queued locally and retried on the next attempt.</p>
+  <h3>SEAT Data Upload</h3>
+  <p>When a user completes a subjective-effects survey, <code>SeatLogger</code> passes the completed event to <code>UploadService.uploadSeatEvent()</code>, which POSTs a JSON payload to <code>/api/v1/seat/assessment</code>. The payload includes source identifier (<code>ios_app</code>), timestamp, annoyance level, callsign, observer GPS coordinates, and the three survey responses. Upload is fire-and-forget — a failure is logged but does not surface to the user, since the primary record is already in the local SEAT CSV.</p>
+  <h3>External Data Sources</h3>
+  <ul>
+    <li><strong>Aircraft positions:</strong> OpenSky Network REST API &mdash; <code>/states/all</code> bounding box around the observer, OAuth2 client-credentials auth, ~10&ndash;15 s poll, state vectors as positional metric arrays converted on device. Migrated from airplanes.live in August 2026 after that service closed its free API.</li>
+    <li><strong>Aircraft details</strong> (type code, type name, registration, operator): hexdb.io (per-aircraft lookup keyed on ICAO24, cached in memory). The type code now comes from this lookup, since the OpenSky state vector carries only a coarse category.</li>
+    <li><strong>Weather &amp; pressure</strong> (wind speed/direction, temperature, humidity, and the local air pressure used to correct barometric altitude): Open-Meteo (free, no key required).</li>
+  </ul>
+
+  <h2><span class="num">7</span>Summary of Measurement Capabilities</h2>
+  <table>
+    <tr><th>Metric</th><th>Standard</th><th>Status</th></tr>
+    <tr><td>A-weighted SPL</td><td>IEC 61672</td><td>Implemented; validated</td></tr>
+    <tr><td>C-weighted SPL</td><td>IEC 61672</td><td>Implemented</td></tr>
+    <tr><td>Zwicker Loudness</td><td>ISO 532-1</td><td>Implemented (simplified)</td></tr>
+    <tr><td>Sharpness</td><td>DIN 45692</td><td>Implemented</td></tr>
+    <tr><td>Psychoacoustic Annoyance</td><td>Zwicker &amp; Fastl</td><td>Implemented</td></tr>
+    <tr><td>N65 / N70 / N80 event counts</td><td>FAA standard</td><td>Implemented</td></tr>
+    <tr><td>LA10 / LA50 / LA90 / LA95 baselines</td><td>UK standard</td><td>Implemented</td></tr>
+    <tr><td>LAeq approximation</td><td>IEC / ISO</td><td>Implemented</td></tr>
+    <tr><td>ADS-B flight correlation</td><td>—</td><td>Implemented</td></tr>
+    <tr><td>ISO 15666-aligned annoyance survey</td><td>Informative</td><td>Implemented</td></tr>
+    <tr><td>Absolute accuracy (validated)</td><td>—</td><td>±1.76 dB SD (departure); ±5 dB stated</td></tr>
+  </table>
+
+  <div class="note-band">
+    <strong>Instrument status.</strong> Aircraft Noise Tracker is an independent community measurement tool. It is <strong>not</strong> a Type 1 or Type 2 certified sound-level meter under IEC 61672. Results are suitable for community monitoring, trend analysis, and regulatory advocacy. All measurements should be reported with the uncertainty figures stated above.
+  </div>
+
+  <div class="foot">
+    TrueNoise.org · Aircraft Noise Tracker technical brief · companion to the calibrated community aircraft-noise observatory. Prepared for the MAA Roundtable Technical Committee, August 2026; revised 2026-10-20. See also the <a href="methodology.html">peak-dBA model methodology</a> &mdash; how these measurements become the per-home noise map.
+  </div>
+
+</div>
+</body></html>
