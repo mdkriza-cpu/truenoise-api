@@ -1,200 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Methodology — TrueNoise</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://truenoise.org/methodology.html">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --teal:       #1D9E75;
-    --teal-light: #E1F5EE;
-    --teal-dark:  #0F6E56;
-    --red:        #E24B4A;
-    --red-light:  #FCEBEB;
-    --amber:      #BA7517;
-    --amber-light:#FAEEDA;
-    --gray-50:    #F8F7F4;
-    --gray-100:   #F1EFE8;
-    --gray-200:   #D3D1C7;
-    --text:       #1a1a18;
-    --text-muted: #5F5E5A;
-    --text-dim:   #888780;
-    --border:     rgba(0,0,0,0.09);
-    --border-mid: rgba(0,0,0,0.14);
-  }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: #fff;
-    color: var(--text);
-    line-height: 1.6;
-    min-height: 100vh;
-  }
-
-  a { color: var(--teal); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  .app { display: flex; min-height: 100vh; }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: 220px; min-width: 220px;
-    border-right: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    position: sticky; top: 0; height: 100vh;
-    overflow-y: auto; background: #fff;
-  }
-  .logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); }
-  .logo-mark { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-  .logo-wave svg { width: 30px; height: 22px; }
-  .logo-name { font-size: 18px; font-weight: 600; letter-spacing: -0.4px; color: var(--text); }
-  .logo-name span { color: var(--teal); }
-  .logo-tagline { font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
-  .nav { padding: 16px 12px; flex: 1; }
-  .nav-group { margin-bottom: 20px; }
-  .nav-group-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px; }
-  .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; font-size: 13px; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; }
-  .nav-item:hover { background: var(--gray-100); color: var(--text); text-decoration: none; }
-  .nav-item.active { background: var(--teal-light); color: var(--teal-dark); font-weight: 500; }
-  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
-  .sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-dim); line-height: 1.5; }
-  .sidebar-footer a { color: var(--text-dim); }
-  .sidebar-footer a:hover { color: var(--teal); }
-
-  /* ── SECTION NAV (sticky on desktop) ── */
-  .section-nav {
-    width: 180px; min-width: 180px;
-    border-left: 1px solid var(--border);
-    padding: 24px 16px;
-    position: sticky; top: 0; height: 100vh;
-    overflow-y: auto;
-    font-size: 12px;
-  }
-  .section-nav-label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; font-family: 'DM Mono', monospace; }
-  .section-nav a { display: block; color: var(--text-dim); padding: 4px 0; border-left: 2px solid transparent; padding-left: 8px; margin-bottom: 2px; font-size: 12px; }
-  .section-nav a:hover { color: var(--teal); text-decoration: none; border-left-color: var(--teal); }
-
-  /* ── MAIN ── */
-  .main { flex: 1; min-width: 0; }
-
-  .topbar {
-    padding: 14px 40px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    background: #fff; position: sticky; top: 0; z-index: 10;
-  }
-  .topbar-title { font-size: 14px; font-weight: 500; }
-  .topbar-sub { font-size: 12px; color: var(--text-dim); margin-top: 1px; }
-
-  /* ── CONTENT ── */
-  .content { padding: 48px 40px; max-width: 780px; }
-
-  .page-eyebrow { font-size: 11px; color: var(--teal); letter-spacing: 0.12em; text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 12px; }
-  .page-title { font-family: 'DM Serif Display', serif; font-size: 2.2rem; font-weight: 400; line-height: 1.2; color: var(--text); margin-bottom: 16px; }
-  .page-intro { font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 40px; max-width: 680px; }
-
-  /* Bottom line box */
-  .bottom-line {
-    background: var(--teal-light);
-    border: 1px solid var(--teal);
-    border-radius: 8px;
-    padding: 20px 24px;
-    margin-bottom: 48px;
-  }
-  .bottom-line-label { font-size: 10px; color: var(--teal-dark); letter-spacing: 0.12em; text-transform: uppercase; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
-  .bottom-line p { font-size: 14px; color: var(--text); line-height: 1.7; }
-  .bottom-line p + p { margin-top: 10px; }
-
-  /* Sections */
-  .method-section { margin-bottom: 52px; padding-top: 8px; }
-  .method-section-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
-  .method-section h2 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 400; color: var(--text); margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-
-  .prose { font-size: 14px; color: var(--text-muted); line-height: 1.8; margin-bottom: 16px; }
-  .prose strong { color: var(--text); font-weight: 500; }
-  .prose em { font-style: italic; }
-  .prose code { font-family: 'DM Mono', monospace; font-size: 12px; background: var(--gray-100); padding: 1px 5px; border-radius: 3px; color: var(--text); }
-
-  /* Spec list */
-  .spec-list { list-style: none; margin: 12px 0 20px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-  .spec-list li { display: flex; gap: 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .spec-list li:last-child { border-bottom: none; }
-  .spec-key { width: 220px; min-width: 220px; padding: 9px 14px; background: var(--gray-50); color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 12px; }
-  .spec-val { padding: 9px 14px; color: var(--text); flex: 1; line-height: 1.5; }
-
-  /* Validation table */
-  .val-table { width: 100%; border-collapse: collapse; margin: 16px 0 20px; font-size: 13px; }
-  .val-table th { text-align: left; font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 400; padding: 8px 12px; border-bottom: 1px solid var(--border-mid); font-family: 'DM Mono', monospace; }
-  .val-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  .val-table tr:last-child td { border-bottom: none; font-weight: 500; background: var(--gray-50); }
-
-  /* Limitation items */
-  .limitation { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
-  .limitation:last-child { border-bottom: none; }
-  .limitation-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); min-width: 24px; padding-top: 2px; }
-  .limitation-body { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
-  .limitation-body strong { color: var(--text); font-weight: 500; }
-
-  /* Closing box */
-  .closing-box { background: var(--gray-50); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-top: 48px; }
-  .closing-box p { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
-  .closing-box p + p { margin-top: 12px; }
-  .closing-box em { font-style: italic; color: var(--text); }
-
-  /* Divider */
-  .divider { height: 1px; background: var(--border); margin: 0 0 48px; }
-
-  /* Reference list */
-  .ref-list { list-style: none; }
-  .ref-list li { font-size: 13px; color: var(--text-muted); padding: 6px 0; border-bottom: 1px solid var(--border); line-height: 1.6; font-family: 'DM Mono', monospace; font-size: 12px; }
-  .ref-list li:last-child { border-bottom: none; }
-
-  /* MOBILE NAV */
-  .mobile-nav { display: none; position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid var(--border); padding: 12px 16px; align-items: center; justify-content: space-between; }
-  .mobile-logo { font-size: 16px; font-weight: 600; color: var(--text); }
-  .mobile-logo span { color: var(--teal); }
-  .hamburger { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 16px; color: var(--text-muted); }
-  .mobile-menu { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 100; }
-  .mobile-menu.open { display: block; }
-  .mobile-menu-panel { background: #fff; width: 260px; height: 100%; padding: 20px 16px; overflow-y: auto; }
-  .mobile-menu-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted); margin-bottom: 16px; display: block; }
-
-  @media (max-width: 1100px) { .section-nav { display: none; } }
-  @media (max-width: 768px) {
-    .app { flex-direction: column; }
-    .sidebar { display: none; }
-    .mobile-nav { display: flex; }
-    .topbar { padding: 12px 16px; }
-    .content { padding: 28px 16px; }
-    .spec-key { width: 140px; min-width: 140px; }
-    .page-title { font-size: 1.7rem; }
-  }
+ :root{--paper:#F7F5F0;--ink:#14201C;--teal:#1D9E75;--teald:#0F6E56;--amber:#BA7517;--clay:#B4472F;--slate:#6B7A72;--line:#DDD8CC;--blue:#2E6FB0}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+ .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+ /* header */
+ header{padding:56px 0 30px;border-bottom:2px solid var(--ink)}
+ .brand{font-family:DM Mono,monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--teald);margin-bottom:18px}
+ h1{font-family:Archivo,sans-serif;font-weight:800;font-size:clamp(30px,5vw,50px);line-height:1.04;letter-spacing:-.02em;margin:0 0 16px;max-width:900px}
+ .standfirst{font-size:18px;color:#33403A;max-width:720px}
+ /* sections */
+ section{padding:38px 0;border-bottom:1px solid var(--line)}
+ .eyebrow{font-family:DM Mono,monospace;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--teald);margin-bottom:10px}
+ h2{font-family:Archivo,sans-serif;font-weight:700;font-size:clamp(22px,3vw,30px);line-height:1.12;letter-spacing:-.01em;margin:0 0 16px}
+ .cols{display:grid;grid-template-columns:1fr 1fr;gap:34px;max-width:960px}
+ @media(max-width:760px){.cols{grid-template-columns:1fr;gap:8px}}
+ p{font-size:15.5px;color:#2c3833;max-width:680px}
+ p b{color:var(--ink)}
+ .keypts{list-style:none;padding:0;margin:14px 0 0;max-width:680px}
+ .keypts li{position:relative;padding:8px 0 8px 26px;font-size:15px;color:#2c3833;border-top:1px solid var(--line)}
+ .keypts li:before{content:"";position:absolute;left:0;top:15px;width:10px;height:10px;border-radius:50%;background:var(--teal)}
+ .keypts li b{color:var(--ink)}
+ /* module host */
+ .module-host{height:82vh;min-height:640px;margin:10px 0 0}
+ .module-note{font-size:13px;color:var(--slate);margin:14px 0 0;max-width:760px}
+ /* links */
+ .doclinks{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+ .doclink{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:10px;
+   padding:16px 20px;text-decoration:none;color:var(--ink);transition:all .15s;max-width:420px}
+ .doclink:hover{border-color:var(--teal);box-shadow:0 2px 12px rgba(15,110,86,.08)}
+ .doclink .ic{width:38px;height:38px;border-radius:8px;background:rgba(46,111,176,.12);color:var(--blue);
+   display:flex;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:12px;font-weight:500;flex:none}
+ .doclink .t{font-weight:600;font-size:15px}
+ .doclink .s{font-size:12.5px;color:var(--slate)}
+ footer{padding:34px 0 70px;font-size:12.5px;color:var(--slate);line-height:1.7;max-width:820px}
+ footer b{color:var(--ink)}
+</style>
+<!-- ===== site shell (matches flightpath + rest of site) ===== -->
+<style>
+:root{--teal-light:#E1F5EE;--teal-dark:#0F6E56;--gray-50:#F8F7F4;--gray-100:#F1EFE8;--border:rgba(0,0,0,.09);--text:#14201C;--text-muted:#5F5E5A;--text-dim:#888780}
+body{background:#fff}
+.app{display:flex;min-height:100vh}
+.sidebar{width:220px;min-width:220px;border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;background:#fff}
+.logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.logo-mark{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.logo-name{font-size:18px;font-weight:600;letter-spacing:-.4px;color:var(--text);font-family:Inter,sans-serif}
+.logo-name span{color:var(--teal)}
+.logo-tagline{font-size:10px;color:var(--text-dim);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+.nav{padding:16px 12px;flex:1}
+.nav-group{margin-bottom:20px}
+.nav-group-label{font-size:10px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;padding:0 8px;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;font-size:13px;color:var(--text-muted);text-decoration:none;transition:background .15s,color .15s}
+.nav-item:hover{background:var(--gray-100);color:var(--text);text-decoration:none}
+.nav-item.active{background:var(--teal-light);color:var(--teal-dark);font-weight:500}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dim);line-height:1.5}
+.sidebar-footer a{color:var(--text-dim)} .sidebar-footer a:hover{color:var(--teal)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{padding:14px 40px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fff;position:sticky;top:0;z-index:30}
+.topbar-title{font-size:14px;font-weight:500;font-family:Inter,sans-serif}
+.topbar-sub{font-size:12px;color:var(--text-dim);margin-top:1px}
+.badge{font-size:10px;background:#FAEEDA;color:var(--amber);border:1px solid var(--amber);padding:3px 8px;border-radius:4px;letter-spacing:.06em;font-family:'DM Mono',monospace}
+/* fit the page content into the narrower frame + match site type */
+.main .wrap{max-width:1000px;padding:0 40px}
+.main header{padding:30px 0 26px;border-bottom:1px solid var(--line)}
+.main h1{font-family:'DM Serif Display',serif;font-weight:400}
+.main h2{font-family:'DM Serif Display',serif;font-weight:400}
+/* mobile nav */
+.mobile-nav{display:none;position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid var(--border);padding:12px 16px;align-items:center;justify-content:space-between}
+.mobile-logo{font-size:16px;font-weight:600;color:var(--text)} .mobile-logo span{color:var(--teal)}
+.hamburger{background:none;border:1px solid var(--border);border-radius:6px;padding:6px 8px;cursor:pointer;font-size:16px;color:var(--text-muted)}
+.mobile-menu{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100}
+.mobile-menu.open{display:block}
+.mobile-menu-panel{background:#fff;width:260px;height:100%;padding:20px 16px;overflow-y:auto}
+.mobile-menu-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);margin-bottom:16px;display:block}
+@media(max-width:900px){.sidebar{display:none}.mobile-nav{display:flex}.topbar{padding:12px 16px}.main .wrap{padding:0 16px}}
+</style>
+<style>
+.main table{border-collapse:collapse;width:100%;max-width:860px;margin:16px 0;font-size:14px}
+.main th{background:var(--teald);color:#fff;text-align:left;padding:7px 10px;font-family:Inter,sans-serif;font-weight:600;font-size:12.5px}
+.main td{padding:6px 10px;border-bottom:1px solid var(--line);color:#2c3833}
+.main tbody tr:nth-child(even) td{background:var(--gray-50)}
+.main h3{font-family:Archivo,sans-serif;font-weight:700;font-size:16px;margin:18px 0 6px;color:var(--ink)}
+.main code{background:var(--gray-100);padding:1px 5px;border-radius:3px;font-family:'DM Mono',monospace;font-size:13px}
+.main pre{background:var(--gray-100);padding:12px 14px;border-radius:6px;border-left:3px solid var(--teald);overflow-x:auto;max-width:860px;font-size:13.5px;color:var(--ink)}
+.main pre code{background:none;padding:0}
+.main .mbasis{background:var(--teal-light);border:1px solid #BFE6D8;border-left:4px solid var(--teald);border-radius:10px;padding:18px 22px;margin:8px 0 4px;max-width:900px}
+.main .mbasis p{max-width:860px}
+.main .mbasis ul{margin:10px 0 0;padding-left:20px;max-width:860px}
+.main .mbasis li{font-size:15px;color:#2c3833;margin:7px 0}
+.main .mbasis .small{font-size:13px;color:var(--slate);margin-top:12px;max-width:860px}
+.main .lead{font-size:16px}
+.main .miscon{background:#FBF4E6;border:1px solid #EAD9B6;border-radius:10px;padding:4px 20px 12px;margin:14px 0;max-width:860px}
+.main .miscon h3{color:var(--amber);font-family:Archivo,sans-serif}
+.main .miscon p{max-width:820px}
 </style>
 </head>
 <body>
 
 <div class="mobile-nav">
   <a href="index.html" style="text-decoration:none;"><div class="mobile-logo">True<span>Noise</span></div></a>
-  <button class="hamburger" onclick="openMenu()" aria-label="Open navigation">☰</button>
+  <button class="hamburger" onclick="openMenu()">☰</button>
 </div>
-
 <div class="mobile-menu" id="mobileMenu" onclick="closeMenuOutside(event)">
   <div class="mobile-menu-panel">
     <button class="mobile-menu-close" onclick="closeMenu()">✕</button>
-    <div style="font-size:16px; font-weight:600; color:var(--text); margin-bottom:20px;">True<span style="color:var(--teal)">Noise</span></div>
-    <div style="font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Data</div>
-    <a href="dashboard.html" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Health dashboard</a>
-    <a href="dashboard.html#aircraft" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Aircraft analysis</a>
-    <a href="dashboard.html#time" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Time patterns</a>
-    <div style="font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin:16px 0 8px;">Research</div>
-    <a href="briefing.html" class="nav-item" style="display:flex; margin-bottom:2px; background:var(--teal-light); color:var(--teal-dark); font-weight:500;">❤ Health briefing</a>
-    <a href="flightpath.html" class="nav-item" style="display:flex; margin-bottom:2px;">🗺 Flight path analysis</a>
-    <a href="sensitivity.html" class="nav-item" style="display:flex; margin-bottom:2px;">🎚 Altitude sensitivity</a>
-    <a href="methodology.html" class="nav-item active" style="display:flex; margin-bottom:2px;">Methodology</a>
-    <a href="data.html" class="nav-item" style="display:flex; margin-bottom:2px;">Download data</a>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:20px;">True<span style="color:var(--teal)">Noise</span></div>
+    <a href="dashboard.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Health dashboard</a>
+    <a href="flightpath.html" class="nav-item" style="display:flex;margin-bottom:2px;">Flight path analysis</a>
+    <a href="sensitivity.html" class="nav-item" style="display:flex;margin-bottom:2px;">Altitude sensitivity</a>
+    <a href="methodology.html" class="nav-item active" style="display:flex;margin-bottom:2px;">Methodology</a>
+    <a href="data.html" class="nav-item" style="display:flex;margin-bottom:2px;">Download data</a>
     <a href="about.html" class="nav-item" style="display:flex;">About &amp; Contact</a>
   </div>
 </div>
@@ -202,16 +124,14 @@
 <div class="app">
   <aside class="sidebar">
     <div class="logo">
-      <a href="index.html" style="text-decoration:none; display:block;">
-      <div class="logo-mark">
-        <div class="logo-wave">
+      <a href="index.html" style="text-decoration:none;display:block;">
+        <div class="logo-mark">
           <svg viewBox="0 0 42 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:38px;height:26px;">
             <path d="M2 14 Q7 3 12 14 Q17 25 22 14 Q27 3 32 14 Q37 25 42 14" stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" fill="none"/>
           </svg>
+          <div><div class="logo-name">True<span>Noise</span></div></div>
         </div>
-        <div><div class="logo-name">True<span>Noise</span></div></div>
-      </div>
-      <div class="logo-tagline">Environmental noise research</div>
+        <div class="logo-tagline">Environmental noise research</div>
       </a>
     </div>
     <nav class="nav">
@@ -223,1184 +143,243 @@
       </div>
       <div class="nav-group">
         <div class="nav-group-label">Research</div>
-                <a href="flightpath.html" class="nav-item"><span class="nav-icon">🗺</span> Flight path analysis</a>
+        <a href="briefing.html" class="nav-item"><span class="nav-icon">❤</span> Health briefing</a>
+        <a href="flightpath.html" class="nav-item"><span class="nav-icon">🗺</span> Flight path analysis</a>
         <a href="sensitivity.html" class="nav-item"><span class="nav-icon">🎚</span> Altitude sensitivity</a>
-        <a href="measurement-gap.html" class="nav-item"><span class="nav-icon">📐</span> The measurement gap</a>
         <a href="methodology.html" class="nav-item active"><span class="nav-icon">🔬</span> Methodology</a>
         <a href="data.html" class="nav-item"><span class="nav-icon">⬇</span> Download data</a>
         <a href="about.html" class="nav-item"><span class="nav-icon">ℹ</span> About &amp; Contact</a>
       </div>
     </nav>
     <div class="sidebar-footer">
-      Independent community monitoring.<br>
-      Not affiliated with any airport,<br>airline, or government agency.<br><br>
-      <a href="data.html">Download data</a> · <a href="about.html">About</a>
+      Independent community monitoring.<br>Not affiliated with any airport,<br>airline, or government agency.<br><br>
+      <a href="methodology.html">Methodology</a> · <a href="about.html">About</a>
     </div>
   </aside>
 
   <main class="main">
     <div class="topbar">
       <div>
-        <div class="topbar-title">Measurement methodology</div>
-        <div class="topbar-sub">How TrueNoise data is collected and validated</div>
+        <div class="topbar-title">Methodology</div>
+        <div class="topbar-sub">Peak-dBA model · measurement record &amp; methods</div>
       </div>
+      <span class="badge">METHODOLOGY</span>
     </div>
 
-    <div style="display:flex;">
-      <div class="content">
-
-        <div class="page-eyebrow">Methodology</div>
-        <h1 class="page-title">Methodology</h1>
-        <p class="page-intro">
-          Replacing averaged-Leq aircraft noise regulation — DNL, the FAA Part 150 framework,
-          AEDT modeling — with an event-based noise standard requires field-grade measurement
-          instrumentation that meets three criteria:
-        </p>
-        <ol style="margin:16px 0 20px;padding-left:1.6em;display:flex;flex-direction:column;
-                   gap:8px;font-size:14px;color:var(--text-muted);line-height:1.7;">
-          <li><strong style="color:var(--text);">Traceable to a primary acoustic reference</strong>
-              — so absolute SPL claims survive technical challenge.</li>
-          <li><strong style="color:var(--text);">Validated across aircraft categories and field conditions</strong>
-              — so generalization claims are empirical, not modeled.</li>
-          <li><strong style="color:var(--text);">Capable of per-event acoustic and psychoacoustic detail</strong>
-              — so the dataset captures what averaged-Leq metrics by design discard.</li>
-        </ol>
-        <p class="page-intro">
-          This page documents how the TrueNoise methodology delivers all three. It also documents —
-          transparently — a 2.9 dB drift we identified in our original reference meter on 1 June 2026,
-          the chain-of-custody steps we took to characterize and correct it, and how we treat
-          pre-correction observations in our analytics. We believe surfacing this kind of instrument
-          hygiene is what regulatory-grade measurement looks like, and we expect future critique of
-          the dataset will be measured against the rigor of this record rather than its absence.
-        </p>
-
-        <!-- SECTION NAV -->
-        <div style="background:var(--gray-50);border:1px solid var(--border);border-radius:8px;
-             padding:14px 18px;margin-bottom:32px;font-size:12px;">
-          <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.1em;
-               text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:8px;">
-               On this page</div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px 16px;line-height:2;">
-            <a href="#s1" style="color:var(--teal);">1. Hardware</a>
-            <a href="#s2" style="color:var(--teal);">2. Audio capture</a>
-            <a href="#s3" style="color:var(--teal);">3. A-weighting</a>
-            <a href="#s4" style="color:var(--teal);">4. FFT analysis</a>
-            <a href="#s5" style="color:var(--teal);">5. Psychoacoustics</a>
-            <a href="#s6" style="color:var(--teal);">6. Calibration</a>
-            <a href="#s6b" style="color:var(--teal);">6b. Measurement position</a>
-            <a href="#s6c" style="color:var(--teal);">6c. C-A delta / wind</a>
-            <a href="#s6d" style="color:var(--teal);">6d. Psychoacoustic evidence</a>
-            <a href="#s6e" style="color:var(--teal);">6e. Seasonal / atmospheric</a>
-            <a href="#s6f" style="color:var(--teal);">6f. Humidity / windshield</a>
-            <a href="#s7" style="color:var(--teal);">7. Validation</a>
-            <a href="#s7b" style="color:var(--teal);">7b. Calibration history</a>
-            <a href="#s8" style="color:var(--teal);">8. Limitations</a>
-            <a href="#s9" style="color:var(--teal);">9. Data availability</a>
-          </div>
-        </div>
-
-        <!-- SECTION 1: HARDWARE -->
-        <div class="method-section" id="s1">
-          <div class="method-section-num">Section 1</div>
-          <h2>Hardware</h2>
-
-          <p class="prose"><strong>Microphone</strong></p>
-          <ul class="spec-list">
-            <li><span class="spec-key">Model</span><span class="spec-val">PoP Voice Professional Lavalier omnidirectional condenser</span></li>
-            <li><span class="spec-key">Frequency range</span><span class="spec-val">20 Hz – 16 kHz</span></li>
-            <li><span class="spec-key">Signal-to-noise ratio</span><span class="spec-val">80 dB</span></li>
-            <li><span class="spec-key">Connection</span><span class="spec-val">Wired (no Bluetooth codec compression or variable latency)</span></li>
-            <li><span class="spec-key">Wind protection</span><span class="spec-val">Foam + fur windshield (per ISO 1996 guidance)</span></li>
-            <li><span class="spec-key">Polar pattern</span><span class="spec-val">Omnidirectional</span></li>
-          </ul>
-
-          <p class="prose">
-            The frequency range fully covers the A-weighted measurement band: A-weighting rolls
-            off by ~50 dB below 20 Hz and ~7 dB above 16 kHz, so this microphone captures
-            everything the A-weighting curve cares about. The omnidirectional pattern is deliberate —
-            aircraft can fly in from any bearing, and equal sensitivity in all directions avoids
-            the orientation bias a cardioid pattern would introduce.
-          </p>
-          <p class="prose">
-            This is a consumer-grade microphone, not an IEC 61672-certified measurement microphone.
-            We address that directly in <a href="#s6">§6 Calibration</a> and <a href="#s8">§8 Limitations</a>.
-          </p>
-
-          <p class="prose" style="margin-top:20px;"><strong>Phone</strong></p>
-          <ul class="spec-list">
-            <li><span class="spec-key">Device</span><span class="spec-val">Apple iPhone with A-series silicon</span></li>
-            <li><span class="spec-key">Audio session mode</span><span class="spec-val">.measurement (disables all processing — see §2)</span></li>
-            <li><span class="spec-key">Calibration</span><span class="spec-val">Per-device offset stored locally and applied to every measurement</span></li>
-          </ul>
-        </div>
-
-        <!-- SECTION 2: AUDIO CAPTURE -->
-        <div class="method-section" id="s2">
-          <div class="method-section-num">Section 2</div>
-          <h2>iOS audio capture</h2>
-          <p class="prose">
-            We use Apple's <code>AVAudioEngine</code> framework with the audio session category set
-            to <code>.playAndRecord</code> and mode set to <code>.measurement</code>.
-          </p>
-          <p class="prose">
-            <strong>This mode is the critical detail.</strong> By default, iOS aggressively processes
-            microphone input for voice calls and video — automatic gain control, noise suppression,
-            voice isolation, and echo cancellation are all applied. None of these are acceptable for
-            an instrument. <code>.measurement</code> mode disables all of them, exposing the raw
-            uncompressed PCM signal exactly as the microphone capsule delivers it.
-          </p>
-          <ul class="spec-list">
-            <li><span class="spec-key">Tap buffer size</span><span class="spec-val">1024 frames (~21 ms at 48 kHz)</span></li>
-            <li><span class="spec-key">Sample format</span><span class="spec-val">32-bit float</span></li>
-            <li><span class="spec-key">Sample rate</span><span class="spec-val">Hardware-native (typically 48 kHz)</span></li>
-          </ul>
-          <p class="prose">
-            Critics sometimes assume "phone" implies "consumer audio pipeline." With
-            <code>.measurement</code> mode, it does not.
-          </p>
-        </div>
-
-        <!-- SECTION 3: A-WEIGHTING -->
-        <div class="method-section" id="s3">
-          <div class="method-section-num">Section 3</div>
-          <h2>A-weighting filter</h2>
-          <p class="prose">
-            We implement A-weighting per IEC 61672, the international standard for sound level meters.
-          </p>
-          <p class="prose">
-            The filter is constructed as <strong>three cascaded biquad sections</strong> derived via
-            bilinear transform from the analog s-domain transfer function. The four canonical IEC
-            pole frequencies are used directly:
-          </p>
-          <ul class="spec-list">
-            <li><span class="spec-key">f₁</span><span class="spec-val">20.598997 Hz</span></li>
-            <li><span class="spec-key">f₂</span><span class="spec-val">107.65265 Hz</span></li>
-            <li><span class="spec-key">f₃</span><span class="spec-val">737.86223 Hz</span></li>
-            <li><span class="spec-key">f₄</span><span class="spec-val">12194.217 Hz</span></li>
-          </ul>
-          <p class="prose">
-            Section 1 is a 2nd-order high-pass at f₁. Section 2 is a 2nd-order high-pass
-            combining the f₂ and f₃ poles. Section 3 is a 2nd-order low-pass at f₄. The overall
-            response is normalized so the gain at 1 kHz is exactly 0 dB — the IEC reference point.
-          </p>
-          <p class="prose">
-            These are the same pole frequencies used in every certified sound level meter
-            manufactured. A-weighting compensates for the frequency response of the human ear,
-            which is roughly 30 dB less sensitive at 100 Hz than at 1 kHz. Measuring aircraft noise
-            without A-weighting would dramatically overstate low-frequency content that humans don't
-            perceive as loud.
-          </p>
-        </div>
-
-        <!-- SECTION 4: FFT -->
-        <div class="method-section" id="s4">
-          <div class="method-section-num">Section 4</div>
-          <h2>FFT and ⅓-octave band analysis</h2>
-          <p class="prose">
-            A-weighted SPL is the headline number, but it collapses the entire audible spectrum
-            into a single decibel value. For finer analysis, we compute a ⅓-octave spectrum on
-            every measurement window.
-          </p>
-          <ul class="spec-list">
-            <li><span class="spec-key">FFT engine</span><span class="spec-val">Apple Accelerate / vDSP — the same SIMD-optimized DSP library Apple uses in Logic Pro and that ships in every professional iOS audio plugin</span></li>
-            <li><span class="spec-key">FFT size</span><span class="spec-val">4096 samples (~85 ms window at 48 kHz)</span></li>
-            <li><span class="spec-key">Window function</span><span class="spec-val">Hann window with energy normalization — band levels are calibrated in absolute SPL, not arbitrary spectral units</span></li>
-            <li><span class="spec-key">Frequency resolution</span><span class="spec-val">~11.7 Hz per bin</span></li>
-            <li><span class="spec-key">Bands</span><span class="spec-val">28 standard ⅓-octave bands, 25 Hz – 12.5 kHz (ANSI S1.11 / IEC 61260 center frequencies)</span></li>
-            <li><span class="spec-key">Band power</span><span class="spec-val">Summed across all FFT bins within each band's bounds (edge factor 2^(1/6))</span></li>
-          </ul>
-          <p class="prose">
-            The A-series chip's vector and neural processing capabilities exceed what real-time
-            spectral analysis requires by orders of magnitude. A 4096-point FFT executes in well
-            under a millisecond. Doubts about "can a phone do FFT accurately" reflect assumptions
-            about pre-2010 phone hardware.
-          </p>
-        </div>
-
-        <!-- SECTION 5: PSYCHOACOUSTICS -->
-        <div class="method-section" id="s5">
-          <div class="method-section-num">Section 5</div>
-          <h2>Psychoacoustic analysis</h2>
-          <p class="prose">
-            A-weighted SPL is a 1936 model of how humans perceive loudness. It is the regulatory
-            standard worldwide, but it is known to be incomplete — particularly for impulsive sounds,
-            tonal components, and the spectral character that makes some noises feel sharper or more
-            annoying than their dBA value would suggest.
-            See <a href="measurement-gap.html">The measurement gap</a> for more information.
-          </p>
-          <p class="prose">
-            We compute, <em>on top of</em> A-weighting, three psychoacoustic metrics from the
-            acoustics literature:
-          </p>
-          <ul class="spec-list">
-            <li><span class="spec-key">Zwicker loudness (sone)</span><span class="spec-val">Simplified ISO 532 B. Computes specific loudness per Bark critical band, integrates across the Bark scale. Uses ISO 226 threshold-in-quiet values per band.</span></li>
-            <li><span class="spec-key">Loudness level (phon)</span><span class="spec-val">Derived from total loudness in sones. Numerically equals the dB SPL of a 1 kHz tone perceived as equally loud.</span></li>
-            <li><span class="spec-key">Sharpness (acum)</span><span class="spec-val">Per DIN 45692. Weights high-frequency specific loudness to capture the perceptual difference between a low rumble and a piercing whine at the same dBA.</span></li>
-            <li><span class="spec-key">Psychoacoustic annoyance</span><span class="spec-val">Zwicker's combined model synthesizing loudness and sharpness into a single annoyance index.</span></li>
-          </ul>
-          <p class="prose">
-            These metrics matter because two aircraft producing the same dBA can produce very
-            different real-world annoyance — and annoyance is the dose-response variable that WHO
-            uses for sleep disturbance and cardiovascular health endpoints. We provide psychoacoustic
-            analysis in addition to A-weighted SPL, not instead of it.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>Empirical finding — loudness/dBA inversion in aft-departure overflights</em></p>
-          <p class="prose">
-            The TrueNoise dataset contains a finding that directly demonstrates criterion 3
-            from the methodology intro — that per-event psychoacoustic detail captures what
-            averaged-Leq metrics by design discard. In the aft portion of a departure
-            overflight (aircraft receding, exhaust jet mixing noise dominant), <strong>dBA
-            continues to fall while Zwicker loudness in sone temporarily rises or plateaus.</strong>
-            The A-weighted level drops because A-weighting suppresses the low-frequency
-            exhaust mixing energy as the aircraft moves away. Perceived loudness rises because
-            the human auditory system — and the Zwicker model — gives more weight to that
-            low-frequency content than A-weighting does.
-          </p>
-          <p class="prose">
-            This is not a measurement artifact. It is a real psychoacoustic phenomenon: the
-            aft-departure sound is perceived as louder than dBA alone would predict. It is
-            also the strongest in-house empirical evidence that a standard relying on dBA
-            alone systematically undercounts the health-relevant acoustic load of jet
-            departures. The C-A delta and sone metrics together capture the inversion;
-            dBA alone cannot see it.
-          </p>
-        </div>
-
-        <!-- SECTION 6: CALIBRATION -->
-        <div class="method-section" id="s6">
-          <div class="method-section-num">Section 6</div>
-          <h2>Calibration</h2>
-          <p class="prose">
-            Every iPhone unit, microphone unit, and microphone connection has slightly different
-            acoustic gain. A measurement system that does not address this is not a measurement system.
-          </p>
-          <p class="prose">
-            We calibrate per device. The app stores a calibration offset (in dB) that converts the
-            device's raw signal level to absolute SPL. Two offset profiles are supported:
-          </p>
-          <ul class="spec-list">
-            <li><span class="spec-key">Internal mic offset</span><span class="spec-val">+108 dB. Averaged across multiple calibration sessions on the validation iPhone. NOT yet re-validated against the AZ8930-verified reference chain — internal microphone is not used for primary field measurement; external microphone is the reference for all field sessions.</span></li>
-            <li><span class="spec-key">External mic offset</span><span class="spec-val">+96 dB (PoP Voice lavalier) — corrected from +99 dB on 1 June 2026; see §7b</span></li>
-            <li><span class="spec-key">Session-to-session variability</span><span class="spec-val">±3 dB observed — offset is averaged across multiple calibration sessions</span></li>
-            <li><span class="spec-key">Reference instrument</span><span class="spec-val">Wintact SLM-30B IEC 61672 Class 2 sound level meter</span></li>
-          </ul>
-          <p class="prose">
-            The offset is determined by simultaneous measurement against a reference instrument and
-            is stored locally in the app. This is the same approach used by any professional sound
-            level meter: every unit is individually calibrated, and calibration is checked
-            periodically against a reference.
-          </p>
-
-          <p class="prose" style="margin-top:20px;"><strong>Windshield insertion loss characterization</strong></p>
-          <p class="prose">
-            Windshields attenuate real acoustic signal in addition to suppressing wind noise — more
-            material in the signal path means more signal loss, particularly at high frequencies where
-            wavelengths approach the windshield's structural dimensions. The fur windshield insertion
-            loss of 1.8 dBA was determined by a <em>delta measurement</em>: simultaneous bare-mic and
-            fur-mic readings of the same signal, with the TA657A as a co-located reference to anchor
-            the comparison.
-          </p>
-          <table class="val-table">
-            <thead>
-              <tr>
-                <th>Configuration</th>
-                <th>Measured insertion loss</th>
-                <th>Published industry range</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Bare mic (no windshield)</td>
-                <td>0.0 dBA</td>
-                <td>0 dB reference</td>
-                <td>Reference baseline for delta measurement</td>
-              </tr>
-              <tr>
-                <td>Foam windshield</td>
-                <td>0.6–0.8 dBA</td>
-                <td>0.5–1.0 dBA</td>
-                <td>Within published band (Rycote, Brüel &amp; Kjær)</td>
-              </tr>
-              <tr>
-                <td>Fur windshield (deadcat)</td>
-                <td>1.8 dBA</td>
-                <td>1.5–3.0 dBA</td>
-                <td>Used for all outdoor monitoring sessions</td>
-              </tr>
-            </tbody>
-          </table>
-          <p class="prose">
-            The 1.8 dBA fur correction is robust to the TA657A drift discovered on 1 June 2026.
-            Because insertion loss is a <em>difference</em> between bare and fur readings on the
-            same signal, any absolute error in the TA657A's reference level cancels in the subtraction.
-            Whatever the meter read high by, both bare and fur readings inherited the same error;
-            the delta between them is unaffected. The fur correction value does not need to be
-            re-derived following the calibration correction.
-          </p>
-          <p class="prose">
-            <strong>Methodological note — indoor bench characterization retired.</strong>
-            Early windshield testing was conducted indoors with a consumer audio source, with the
-            app mic and SLM-30B co-located near the speaker. Subsequent analysis identified that
-            this setup is subject to near-field positional variability (within approximately λ/2
-            of a finite source, sound pressure varies substantially with position), speaker
-            frequency response non-linearity, and room boundary reflections — all of which
-            contaminate absolute spectral characterization. The bench setup cannot support claims
-            of multi-spectrum characterization with the rigor implied by "broadband, tonal, impulsive"
-            testing against a reference meter. That framing has been retired from this page.
-            Future windshield characterization will use a co-located outdoor far-field protocol,
-            in which both microphones are placed at identical geometry relative to a distant source,
-            eliminating near-field and reflection artifacts. No date has been set for this work.
-            The 1.8 dBA insertion loss figure is retained as a reasonable historical estimate,
-            within the published industry range of 1.5–3.0 dBA for fur windshields, and robust
-            to the TA657A drift as described above.
-          </p>
-          <p class="prose">
-            All outdoor monitoring sessions are conducted with the fur windshield installed. Published
-            measurements therefore carry a known conservative correction of 1.8 dBA — actual noise
-            levels at the receptor are 1.8 dB higher than reported values. This correction is
-            applied automatically by the app based on the per-session windshield configuration.
-            Researchers requiring the corrected values may apply the 1.8 dBA offset to sessions
-            where windshield configuration is not yet logged.
-          </p>
-
-                              <p class="prose" style="margin-top:20px;"><strong>Multi-geometry validation</strong></p>
-          <p class="prose">
-            The calibrated system has been validated across three independent operating points,
-            spanning two measurement geometries and two signal types:
-          </p>
-
-          <table class="val-table">
-            <thead>
-              <tr>
-                <th>Scenario</th>
-                <th>Reference</th>
-                <th>Signal / geometry</th>
-                <th>Delta</th>
-                <th>What it validates</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="background:var(--teal-light);">
-                <td><strong>A — Calibrator</strong></td>
-                <td>AZ8930 (IEC 60942 Class 2) · 94.0 dBA · 1 kHz</td>
-                <td>Pure tone · bare mic · no windshield · no correction</td>
-                <td style="color:var(--teal);font-weight:600;">−0.3 dB</td>
-                <td>Microphone + +96 dB offset sub-chain only</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td><strong>B — Standardized Receptor</strong></td>
-                <td>Wintact SLM-30B (IEC 61672 Class 2, AZ8930-verified) · B767 overflight</td>
-                <td>Broadband aircraft · fur windshield · +1.8 dB correction · free-field</td>
-                <td style="color:var(--teal);font-weight:600;">−0.1 dB</td>
-                <td>Full field chain: mic + offset + windshield correction</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td><strong>C — Façade-Level</strong></td>
-                <td>Wintact SLM-30B (IEC 61672 Class 2, AZ8930-verified) · 8 aircraft</td>
-                <td>Broadband aircraft · fur windshield · +1.8 dB correction · façade geometry</td>
-                <td style="color:var(--teal);font-weight:600;">−0.78 dB mean<br><span style="font-size:11px;font-weight:400;">range −0.4 to −1.1 dB</span></td>
-                <td>Full field chain at façade geometry · 8/8 conservative</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <p class="prose">
-            The three scenarios are stronger together than any alone. Scenario A confirms the
-            microphone and offset are correctly calibrated against a primary acoustic reference.
-            Scenario B confirms the full field chain on a real aircraft at a standardized free-field
-            position. Scenario C confirms the full field chain at a façade boundary position across
-            eight aircraft spanning four aircraft types — with all eight deltas in the conservative
-            direction. The Façade-Level bias of −0.78 dB relative to Standardized Receptor (−0.1 dB)
-            is attributable to position-dependent reflection interference between non-co-located
-            capsules at the boundary layer, not a calibration offset. Altitude within the SR geometry
-            does not appear to drive the delta — the geometry effect (0.7 dB) and within-SR altitude
-            variation (0.6 dB range) are comparable in magnitude.
-          </p>
-          <p class="prose">
-            The system is calibrated within IEC 61672 Class 2 ±2 dB tolerance and shows agreement
-            substantially tighter than that tolerance across all validated operating points.
-            <strong>Post-correction validation spans 11 aircraft across 2 measurement geometries.</strong>
-          </p>
-
-          <div class="pull-quote" style="border-left:3px solid var(--teal);padding:14px 20px;
-               margin:16px 0 24px;background:var(--teal-light);border-radius:0 6px 6px 0;">
-            <p style="font-size:13px;color:var(--text);line-height:1.75;font-style:normal;">
-              <strong>Validation chain summary:</strong> AZ8930 calibrator (IEC 60942 Class 2,
-              primary reference) → Wintact SLM-30B (IEC 61672 Class 2, −0.0 dB against AZ8930)
-              → TrueNoise app + external mic + +96 dB offset + fur windshield + 1.8 dB correction
-              (−0.3 dB Scenario A · −0.1 dB Scenario B · −0.78 dB mean Scenario C).
-              11 post-correction aircraft · overall mean Δ ≈ −0.55 dB · range −1.1 to +0.2 dB.
-              The TA657A reference meter has been retired following identification of
-              frequency-dependent drift that could not be corrected by trimming.
-            </p>
-          </div>
-
-        </div>
-
-        <!-- SECTION 6b2: MEASUREMENT POSITION CLASSIFICATION -->
-        <div class="method-section" id="s6b">
-          <div class="method-section-num">Section 6b</div>
-          <h2>Measurement position classification</h2>
-
-          <p class="prose">
-            Where the microphone is placed relative to the acoustic environment determines what
-            the measurement represents. TrueNoise uses a five-category measurement type framework,
-            implemented in the iOS app and serialized in every CSV row. The categories distinguish
-            between measurements designed for policy comparability and measurements that characterize
-            real-world residential exposure as actually experienced.
-          </p>
-
-          <ul class="spec-list">
-            <li>
-              <span class="spec-key">Standardized Receptor</span>
-              <span class="spec-val">
-                1.2 m height above ground · 1.5 m from any reflective surface · open-field geometry.
-                This is the WHO/ISO 1996 receptor position used in European noise mapping and
-                epidemiological studies including HYENA and RANCH. Use for: regulatory comparison,
-                cross-location comparability, policy submissions. The TrueNoise calibration
-                validation comparisons against the Wintact SLM-30B were performed at this position.
-              </span>
-            </li>
-            <li>
-              <span class="spec-key">Community Receptor</span>
-              <span class="spec-val">
-                Any outdoor residential position that does not meet Standardized Receptor geometry —
-                a backyard, a front porch, a deck chair, a child's play area. Represents actual
-                residential exposure as experienced, not a regulated abstraction. Values at Community
-                Receptor positions may differ from Standardized Receptor values at the same location
-                due to reflective surfaces, terrain, and vegetation. Use for: community impact
-                documentation, lived-experience characterization.
-              </span>
-            </li>
-            <li>
-              <span class="spec-key">Façade-Level</span>
-              <span class="spec-val">
-                Microphone placed at or near an exterior building surface — a window frame, a wall
-                face, a balcony railing. Captures the sound level at the building envelope where
-                transmission into interior spaces begins. Façade measurements are typically 2–6 dB
-                higher than free-field measurements at the same location due to building reflection.
-                Use for: indoor noise intrusion estimation, building envelope characterization.
-              </span>
-            </li>
-            <li>
-              <span class="spec-key">Field Characterization</span>
-              <span class="spec-val">
-                Exploratory measurement at a non-residential location — a park, a school playground,
-                a community green space, a roadside. Used to characterize acoustic conditions at
-                locations not covered by residential receptor categories. Position documented
-                in the Position Description field.
-              </span>
-            </li>
-            <li>
-              <span class="spec-key">Hand-held</span>
-              <span class="spec-val">
-                Microphone held by the observer rather than mounted or positioned on a fixed support.
-                Introduces variability from hand position, body reflection, and movement. Results
-                are indicative rather than calibration-grade. Flagged in the dataset; not used for
-                threshold comparison or regulatory claims.
-              </span>
-            </li>
-          </ul>
-
-          <p class="prose">
-            The Measurement Type field is present in every downloaded CSV row. When interpreting
-            the dataset, filter to <strong>Standardized Receptor</strong> for policy-comparable
-            absolute SPL claims. Community Receptor and Façade-Level measurements document real
-            residential exposure and are appropriate for community impact characterization but
-            should not be directly compared to Standardized Receptor values without noting the
-            positional difference.
-          </p>
-
-          <div class="pull-quote" style="border-left:3px solid var(--teal);padding:14px 20px;
-               margin:20px 0;background:var(--teal-light);border-radius:0 6px 6px 0;">
-            <p style="font-size:13px;color:var(--text);line-height:1.75;font-style:normal;">
-              Most consumer noise measurement apps record a level without documenting where or
-              how the microphone was placed. The five-category Measurement Type framework — with
-              explicit Standardized vs Community Receptor distinction — is policy-grade measurement
-              discipline that treats geometry as a first-class variable rather than an afterthought.
-            </p>
-          </div>
-        </div>
-
-        <!-- SECTION 6b: MEASUREMENT POSITION -->
-        <div class="method-section" id="s6c">
-          <div class="method-section-num">Section 6c</div>
-          <h2>Wind contamination screening — C-A Delta</h2>
-
-          <p class="prose" style="margin-top:6px;"><em>A-weighting and C-weighting</em></p>
-          <p class="prose">
-            Sound level meters apply a frequency-weighting filter to raw acoustic measurements.
-            Two standardized weightings are relevant here, both defined in IEC 61672:
-          </p>
-          <ul class="spec-list">
-            <li><span class="spec-key">A-weighting (dBA)</span><span class="spec-val">Approximates how the human ear perceives loudness at typical environmental sound levels. Heavily attenuates frequencies below 500 Hz. Used in nearly all environmental noise regulation — FAA contours, WHO guidelines, EPA standards.</span></li>
-            <li><span class="spec-key">C-weighting (dBC)</span><span class="spec-val">Much closer to a flat frequency response — includes far more low-frequency content than A-weighting. Used as a diagnostic complement to A-weighting.</span></li>
-          </ul>
-
-          <p class="prose" style="margin-top:16px;"><em>Why the C-A delta detects wind</em></p>
-          <p class="prose">
-            Wind noise on a microphone is not acoustic — it is turbulent air pressure directly
-            on the diaphragm, overwhelmingly low-frequency. A-weighting heavily suppresses
-            energy below 200 Hz; C-weighting does not. A large C-A delta during a loud event
-            is therefore a strong indicator of wind contamination. Thresholds apply
-            <strong>only when dBA ≥ 55</strong> — during meaningful aircraft events:
-          </p>
-          <ul class="spec-list">
-            <li><span class="spec-key">C-A Delta &lt; 15 dB</span><span class="spec-val">Clean — measurement dominated by genuine acoustic content</span></li>
-            <li><span class="spec-key">C-A Delta 15–25 dB</span><span class="spec-val">Possible wind contamination — flag for review; see aft-aspect note below</span></li>
-            <li><span class="spec-key">C-A Delta ≥ 25 dB</span><span class="spec-val">Strong wind contamination — exclude from SPL analysis by default</span></li>
-          </ul>
-
-          <p class="prose" style="margin-top:16px;"><em>Four documented patterns beyond wind contamination</em></p>
-
-          <p class="prose"><strong>1. Aft-aspect aircraft noise.</strong>
-            When an aircraft is receding, jet exhaust mixing noise dominates — a deep,
-            low-frequency rumble. C-A delta naturally climbs to 15–20 dB in the aft tail.
-            This is real aircraft noise, not contamination. Distinguish from wind by timing
-            (elevated delta appears after dBA peak, while aircraft confirmed receding via ADS-B)
-            and by the presence of elevated sone at the same timestep.
-          </p>
-
-          <p class="prose"><strong>2. Quiet ambient background.</strong>
-            Below 55 dBA, the microphone captures the natural low-frequency character of the
-            environment — HVAC, distant traffic, building hum. Large C-A delta at low dBA
-            is ambient bass character, not contamination. The SPL floor prevents this from
-            triggering false exclusions.
-          </p>
-
-          <p class="prose"><strong>3. Atmospheric high-frequency absorption at distance.</strong>
-            A fourth cause identified empirically: as an aircraft moves away, the atmosphere
-            preferentially absorbs high-frequency content (ISO 9613-1). This produces a
-            gradually rising C-A delta in track-event rows as slant range increases and dBA
-            falls — a propagation effect, not a source or contamination effect. It should
-            not be treated as grounds for exclusion.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>Practical rules</em></p>
-          <ul class="spec-list">
-            <li><span class="spec-key">15–20 dB, receding aircraft, calm day</span><span class="spec-val">Do not exclude — real aft-aspect aircraft noise</span></li>
-            <li><span class="spec-key">15–20 dB, breezy day, no specific overflight</span><span class="spec-val">Probably wind contamination — exclude</span></li>
-            <li><span class="spec-key">≥ 25 dB during any loud event</span><span class="spec-val">Likely wind — exclude</span></li>
-            <li><span class="spec-key">Large delta, dBA &lt; 55</span><span class="spec-val">Ambient bass character — not contamination, not excluded</span></li>
-          </ul>
-
-          <p class="prose">
-            All outdoor sessions use a fur windshield (characterized insertion loss: 1.8 dBA),
-            which suppresses wind noise significantly. The iOS app's Review segment displays
-            C-A delta alongside ADS-B bearing and slant range, giving the observer the context
-            needed to apply these rules correctly. Observations marked excluded in the app are
-            filtered before upload and do not appear in the public dataset.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>Glossary</em></p>
-          <ul class="spec-list">
-            <li><span class="spec-key">A-weighting (dBA)</span><span class="spec-val">A frequency filter applied to measurements to match human hearing sensitivity; used in nearly all environmental noise regulations.</span></li>
-            <li><span class="spec-key">C-weighting (dBC)</span><span class="spec-val">A nearly-flat frequency filter that includes more low-frequency content; used as a diagnostic complement to A-weighting.</span></li>
-            <li><span class="spec-key">C-A Delta (dB)</span><span class="spec-val">The difference between a C-weighted and A-weighted measurement of the same signal; large values during loud measurements (≥55 dBA) indicate wind contamination — but context (ADS-B, weather, timing) is required to distinguish wind from aft-aspect aircraft noise.</span></li>
-            <li><span class="spec-key">Aft-aspect noise</span><span class="spec-val">Jet exhaust mixing noise heard when an aircraft is receding. Naturally low-frequency dominated, producing a large C-A delta that is real aircraft noise, not a measurement artifact.</span></li>
-          </ul>
-        </div>
-
-        <!-- SECTION 6c: PSYCHOACOUSTIC METRICS AND HEALTH EVIDENCE -->
-        <div class="method-section" id="s6d">
-          <div class="method-section-num">Section 6d</div>
-          <h2>Psychoacoustic metrics and health evidence</h2>
-
-          <p class="prose">
-            A natural question about the TrueNoise measurement approach is why it captures
-            psychoacoustic metrics — loudness in sone, sharpness in acum, annoyance index —
-            rather than relying solely on dBA. The answer is grounded in the health evidence.
-          </p>
-          <p class="prose">
-            The health effects of aircraft noise are primarily mediated through the annoyance
-            response — and annoyance is determined not by loudness alone, but by the spectral
-            and temporal character of the sound. A longitudinal study found that nearly
-            <strong>66% of the effect on self-reported health was mediated by annoyance</strong>,
-            not by the noise level directly (Cousson et al., 2024). The pathway from aircraft
-            noise to cardiovascular disease runs through the subjective experience of the sound —
-            which psychoacoustic metrics capture and dBA alone does not.
-          </p>
-          <p class="prose">
-            After controlling for loudness, <strong>sharpness and tonality independently
-            predict annoyance</strong> to aircraft noise (McKinley et al., 2023; Caillet et al.,
-            2016). Two sounds at identical dBA levels can produce substantially different
-            annoyance depending on their spectral character. dBA misses this distinction entirely.
-          </p>
-          <p class="prose">
-            The psychoacoustic metrics TrueNoise captures are therefore not merely
-            descriptive — they are the upstream acoustic drivers of the health outcomes
-            documented in the HYENA and RANCH epidemiological studies.
-          </p>
-
-          <p class="prose" style="margin-top:20px;"><strong>References</strong></p>
-          <ol style="padding-left:1.4em;display:flex;flex-direction:column;gap:12px;
-                     margin-top:12px;font-size:13px;color:var(--text-muted);line-height:1.75;">
-            <li><strong>Fastl, H. &amp; Zwicker, E. (2007).</strong> <em>Psychoacoustics: Facts and Models</em> (3rd ed.). Springer-Verlag.</li>
-            <li><strong>Cousson, P.Y. et al. (2024).</strong> Effects of aircraft noise exposure on self-reported health through aircraft noise annoyance. <em>Environmental Research</em>. PMC11349086</li>
-            <li><strong>McKinley, R. et al. (2023).</strong> Sound quality metric indicators of rotorcraft noise annoyance. <em>JASA</em>, 153(2), 867.</li>
-            <li><strong>Caillet, G. et al. (2016).</strong> Aircraft noise annoyance modelling. <em>Applied Acoustics</em>, 111, 253–263.</li>
-            <li><strong>Berglund, B. et al. (1995).</strong> <em>Community Noise.</em> WHO, Geneva.</li>
-            <li><strong>Munzel, T. et al. (2018).</strong> Adverse effects of environmental noise on oxidative stress and cardiovascular risk. <em>Antioxidants &amp; Redox Signaling</em>, 28(9), 873–908.</li>
-            <li><strong>Dratva, J. et al. (2016).</strong> Cardiovascular and stress responses to short-term noise exposures. <em>Environment International</em>, 97, 224–233.</li>
-          </ol>
-        </div>
-
-        <!-- SECTION 6e: SEASONAL / ATMOSPHERIC PROPAGATION -->
-        <div class="method-section" id="s6e">
-          <div class="method-section-num">Section 6e</div>
-          <h2>Seasonal and atmospheric propagation effects</h2>
-
-          <p class="prose" style="margin-top:6px;">
-            Ground-level aircraft noise measurements are not solely a function of aircraft
-            geometry and thrust. Atmospheric conditions between source and receiver modulate
-            sound propagation in ways that create a systematic seasonal pattern. Two distinct
-            mechanisms — one acoustic, one operational — push summer readings lower than
-            winter readings at otherwise identical geometry.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>Atmospheric refraction</em></p>
-          <p class="prose">
-            When ground-level air is warmer than the air aloft — the normal condition on hot
-            summer days — the gradient in sound speed causes acoustic rays to bend upward,
-            away from the ground. This reduces observed SPL at ground level. The same physics
-            explains why cold, still winter mornings carry aircraft sound further than hot
-            summer afternoons. At typical slant ranges of 0.5–1.0 miles, this effect can
-            account for an estimated 2–5 dBA of apparent quieting relative to cooler
-            conditions at equivalent geometry.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>Reduced thrust on hot-day departures</em></p>
-          <p class="prose">
-            Airlines routinely file a reduced assumed temperature (&ldquo;flex temp&rdquo;)
-            for takeoff thrust calculations. On hot days, engines are already density-limited,
-            and the commanded N1 for a given flex assumption is lower than on cooler days,
-            reducing both jet mixing and fan noise. This mechanism applies to departures only;
-            approach noise is largely independent of ambient temperature.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>Practical implication for this dataset</em></p>
-          <p class="prose">
-            These mechanisms predict that summer absolute SPL readings at equivalent geometry
-            will run several dBA lower than cooler-condition readings, and preliminary field
-            observation is consistent with this: an overflight informally observed at
-            approximately 5 dBA below expectation prompted a controlled re-test of the
-            measurement chain (1 July 2026), which found the microphone performing normally
-            against the calibrated reference in a point-source comparison and within
-            −0.7 to −1.1 dBA on live aircraft. With a hardware fault excluded, atmospheric
-            propagation and reduced-thrust departures remain the operative explanation for
-            transient warm-condition quieting. We treat the magnitude — plausibly on the order
-            of 3–6 dBA when refraction and reduced departure thrust combine — as provisional
-            pending measurement across a full annual cycle.
-          </p>
-          <p class="prose">
-            The essential point is that such quieting does <strong>not</strong> indicate
-            reduced aircraft operations or genuine noise mitigation; it reflects atmospheric
-            and operational state. Relative metrics — dBA above background, event frequency,
-            and the C-weighted-minus-A-weighted delta described in
-            <a href="#s6c">&sect;6c</a> — are unaffected by seasonal propagation and remain
-            valid across seasons. Trend charts presenting absolute SPL over time should be
-            interpreted with this seasonal caveat in mind.
-          </p>
-
-          <p class="prose" style="margin-top:16px;">
-            This is the same principle that motivates the event-based approach throughout this
-            project: absolute time-averaged sound levels are sensitive to conditions that have
-            nothing to do with how many aircraft pass overhead or how disruptive each one is,
-            whereas relative and event-count metrics remain stable across seasons.
-          </p>
-        </div>
-
-        <!-- SECTION 6f: HUMIDITY-ASSOCIATED OFFSET -->
-        <div class="method-section" id="s6f">
-          <div class="method-section-num">Section 6f</div>
-          <h2>A humidity-associated offset, and a mechanism that did not survive testing</h2>
-
-          <p class="prose" style="margin-top:6px;">
-            The external microphone is normally fitted with a fur windshield, for which the
-            platform applies a fixed correction of +1.8 dBA. Comparison against the reference
-            meter on 24 July 2026 found that platform-to-reference agreement differed
-            substantially between a humid morning and a drier afternoon. We report the
-            observation, the mechanism we proposed for it, and the test that failed to confirm
-            that mechanism, because the failure is as informative as the observation.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>The observation</em></p>
-          <p class="prose">
-            In the afternoon session at approximately 45% relative humidity, three overflights
-            at comparable geometry (slant ranges 0.6&ndash;0.7 mi, altitudes 2,218&ndash;2,511 ft)
-            gave a mean platform-minus-reference difference of &minus;0.67 dB, standard
-            deviation about 0.15 dB. In the morning session at approximately 76% relative
-            humidity, the mean difference was &minus;1.65 dB. The afternoon figure sits close to
-            two independent prior estimates of the platform&rsquo;s conservative offset:
-            &minus;0.95 dB from the 1 July controlled comparison and &minus;0.78 dB from the
-            fa&ccedil;ade-level series. The convergence of those three estimates is the firmest
-            part of this record.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>The proposed mechanism</em></p>
-          <p class="prose">
-            The obvious explanation is moisture. A fur windshield absorbs atmospheric water,
-            and a damp windshield attenuates high-frequency content more than a dry one,
-            increasing insertion loss beyond what a fixed correction accounts for. Atmospheric
-            absorption along the propagation path is separately humidity-dependent at high
-            frequencies and would act in the same direction. Either mechanism predicts the same
-            signature: the humid session should show <em>less high-frequency energy</em> in the
-            recorded signal.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>The test, and its result</em></p>
-          <p class="prose">
-            Because the platform computes psychoacoustic sharpness (in acum, a measure of
-            high-frequency proportion) at every sample, this prediction is directly testable
-            against the archive. If damp fur or humid air were removing high-frequency content,
-            the humid morning session should show <strong>lower</strong> sharpness than the
-            drier session at matched A-weighted level.
-          </p>
-          <p class="prose">
-            It does not. Comparing 24 July morning against afternoon in 2 dB bands from 50 to
-            74 dBA, the humid morning session shows <strong>higher</strong> sharpness in all
-            twelve bands, by a mean of +0.059 acum. Fleet composition differed between sessions
-            &mdash; the morning carried a higher proportion of 737 MAX aircraft, which are
-            independently sharper at matched level &mdash; but restricting to 737 NG and Classic
-            aircraft only leaves the result unchanged: higher morning sharpness in all twelve
-            bands, mean +0.053 acum. Measurement geometry does not explain it either; mean slant
-            range and altitude were near-identical between sessions (1.06 vs 1.07 mi;
-            2,499 vs 2,569 ft).
-          </p>
-          <p class="prose">
-            The proposed high-frequency-attenuation mechanism is therefore <strong>not
-            supported</strong> by the psychoacoustic record. Whatever produces the broadband
-            offset, it does not appear to act by removing high-frequency content.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>An unresolved anomaly</em></p>
-          <p class="prose">
-            A second result from the same comparison is currently unexplained. The
-            C-weighted-minus-A-weighted delta, an indicator of low-frequency content, is also
-            <em>higher</em> in the humid morning session (+0.85 dB overall). Sharpness and
-            C&minus;A delta are inversely related across the full archive (r = &minus;0.44), as
-            they should be: a sound cannot easily be proportionally richer in both high and low
-            frequency content at once. That both rise together in the morning session is either
-            a genuine spectral broadening under different atmospheric conditions, or an
-            indication that one of the two metrics behaves unexpectedly under some condition.
-            This is flagged as an open implementation question, and neither metric should carry
-            weight in published analysis until it is resolved.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><em>What we know, and what we do about it</em></p>
-          <p class="prose">
-            We know that platform-to-reference agreement was about 1 dB worse in a humid
-            morning session than in a drier afternoon session on the same day, and that the
-            afternoon figure agrees with two independent prior estimates. We do not know the
-            mechanism. Two sessions on one day cannot separate humidity from temperature, time
-            of day, windshield thermal state, background noise floor, or the refraction effects
-            described in <a href="#s6e">&sect;6e</a>, and the one mechanistic prediction we could
-            test was not confirmed. No calibration constant has been changed on the strength of
-            this observation, and the apparent slope of roughly 1 dB per 30 percentage points of
-            relative humidity should not be used as a correction factor.
-          </p>
-          <p class="prose">
-            The response is procedural and conservative. Above roughly 65% relative humidity,
-            either substitute the foam windshield or record the humidity condition and treat
-            displayed levels as potentially under-reporting by up to about 1 dBA. Because the
-            platform already reads low relative to the reference, this error is in the
-            conservative direction for any claim about exposure. Establishing whether the effect
-            is real, and what causes it, requires paired comparisons across a range of humidity
-            conditions with temperature, geometry, and fleet composition controlled. That work
-            is planned.
-          </p>
-        </div>
-        <div class="method-section" id="s7">
-          <div class="method-section-num">Section 7</div>
-          <h2>Validation and field calibration</h2>
-
-          <p class="prose" style="margin-bottom:6px;"><strong>Reference meter field calibration</strong></p>
-          <p class="prose">
-            The Wintact SLM-30B reference meter (IEC 61672 Class 2) is field-calibrated to
-            94.0 dBA at the start of each comparison session using an AZ8930 acoustic calibrator
-            (IEC 60942:2018 Class 2). A pre-session calibration log is maintained. The calibration
-            chain is independently traceable, verified per session, and documented for audit.
-          </p>
-
-          <p class="prose" style="margin-top:16px;"><strong>Overflight comparison validation — Standardized Receptor</strong></p>
-          <p class="prose">
-            Following the 1 June 2026 calibration correction, opportunistic simultaneous comparisons
-            against the AZ8930-verified Wintact SLM-30B have been conducted across multiple sessions.
-            The Standardized Receptor dataset now covers three aircraft across two altitudes and
-            three aircraft families:
-          </p>
-
-          <table class="val-table">
-            <thead>
-              <tr><th>Aircraft</th><th>Altitude</th><th>App (dBA)</th><th>SLM-30B (dBA)</th><th>Delta</th></tr>
-            </thead>
-            <tbody>
-              <tr style="background:var(--teal-light);">
-                <td>B767 takeoff</td><td>—</td><td>76.5</td><td>76.6</td>
-                <td style="color:var(--teal);font-weight:600;">−0.1 dB ✓</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>A321 takeoff</td><td>2,425 ft</td><td>78.2</td><td>78.6</td>
-                <td style="color:var(--teal);font-weight:600;">−0.4 dB ✓</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>757-200 takeoff</td><td>4,650 ft</td><td>69.3</td><td>69.1</td>
-                <td style="color:var(--teal);font-weight:600;">+0.2 dB ✓</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td><strong>SR mean (3 aircraft)</strong></td><td></td><td></td><td></td>
-                <td style="color:var(--teal);font-weight:600;">−0.1 dB · range 0.6 dB</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <p class="prose">
-            The 0.6 dB range across three aircraft families and two altitudes is notably tight.
-            The 757-200 at 4,650 ft is the first non-negative post-correction delta, suggesting
-            the mean is stable near zero rather than consistently biased in one direction at
-            Standardized Receptor. Whether the +0.2 dB reflects a spectral effect (the 757-200
-            has a different LF character), altitude-dependent geometry, or statistical variation
-            cannot be determined from three samples — the dataset will continue to grow.
-          </p>
-
-          <p class="prose" style="margin-top:20px;"><strong>Expanded validation — Façade-Level geometry (8 June 2026)</strong></p>
-          <p class="prose">
-            A simultaneous eight-aircraft comparison was performed at a Façade-Level measurement
-            position (0.5–2 m from a single building wall), yielding the following dataset:
-          </p>
-
-          <table class="val-table">
-            <thead>
-              <tr><th>Aircraft</th><th>App (dBA)</th><th>SLM-30B (dBA)</th><th>Delta</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>A321 takeoff</td><td>73.9</td><td>74.7</td><td style="color:var(--teal);font-weight:500;">−0.8</td></tr>
-              <tr><td>737 Max 8 takeoff</td><td>73.0</td><td>73.9</td><td style="color:var(--teal);font-weight:500;">−0.9</td></tr>
-              <tr><td>737 Max 8 takeoff</td><td>73.5</td><td>74.6</td><td style="color:var(--teal);font-weight:500;">−1.1</td></tr>
-              <tr><td>A321 takeoff</td><td>74.1</td><td>74.7</td><td style="color:var(--teal);font-weight:500;">−0.6</td></tr>
-              <tr><td>737 Max 8 takeoff</td><td>72.3</td><td>72.7</td><td style="color:var(--teal);font-weight:500;">−0.4</td></tr>
-              <tr><td>737-900 takeoff</td><td>77.6</td><td>78.3</td><td style="color:var(--teal);font-weight:500;">−0.7</td></tr>
-              <tr><td>737-800 takeoff</td><td>74.5</td><td>75.3</td><td style="color:var(--teal);font-weight:500;">−0.8</td></tr>
-              <tr><td>EMB 505 (Rwy 15L)</td><td>59.4</td><td>60.3</td><td style="color:var(--teal);font-weight:500;">−0.9</td></tr>
-              <tr style="background:var(--teal-light);">
-                <td><strong>Façade mean (8 aircraft)</strong></td><td></td><td></td>
-                <td style="color:var(--teal);font-weight:600;">−0.78 dB · range 0.7 dB</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <p class="prose">
-            All eight deltas are negative — the app reads consistently below the reference meter at
-            this geometry. The probability of 8/8 same-direction results from random variation alone
-            is approximately 0.8%, confirming a real systematic signal. The bias direction is
-            <strong>conservative</strong>: the app under-reports relative to the reference meter.
-            Any challenge to the dataset on grounds of inflation is contradicted by this result.
-          </p>
-
-          <p class="prose" style="margin-top:20px;"><strong>Geometry comparison — what the two datasets reveal</strong></p>
-
-          <table class="val-table">
-            <thead>
-              <tr><th>Geometry</th><th>N</th><th>Mean Δ</th><th>Range</th><th>Interpretation</th></tr>
-            </thead>
-            <tbody>
-              <tr style="background:var(--teal-light);">
-                <td>Standardized Receptor</td><td>3</td>
-                <td style="color:var(--teal);font-weight:600;">−0.1 dB</td>
-                <td>0.6 dB</td>
-                <td>Mic + offset chain, free-field — minimal boundary contribution</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>Façade-Level</td><td>8</td>
-                <td style="color:var(--teal);font-weight:600;">−0.78 dB</td>
-                <td>0.7 dB</td>
-                <td>Boundary interference field — capsule position in reflection pattern</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <p class="prose">
-            The geometry effect (SR vs Façade: 0.7 dB) and the within-SR altitude effect
-            (range 0.6 dB) are comparable in magnitude. This indicates that <strong>measurement
-            position in the local reflection pattern matters more than aircraft altitude</strong>
-            for the app-vs-meter delta. The +96 dB offset is validated for the isolated mic +
-            offset chain; the Façade-Level bias is an environmental boundary effect, not a
-            calibration offset.
-          </p>
-          <p class="prose">
-            Post-correction validation now spans <strong>11 aircraft across 2 measurement
-            geometries</strong> — B767, A321 (×3), 737-700, 737-800, 737-900, 737 Max 8 (×3),
-            757-200, EMB 505. Overall mean Δ ≈ −0.55 dB, range −1.1 to +0.2 dB. All within
-            IEC 61672 Class 2 ±2 dB tolerance. In any context where the dataset is challenged:
-            <em>across 11 post-correction measurements the app reads on average 0.55 dB below
-            a Class 2 reference meter.</em>
-          </p>
-
-          <p class="prose" style="font-size:12px;color:var(--text-dim);margin-top:8px;">
-            † The 9 May 2026 A320 comparison was made against the TA657A before its +2.9 dB drift
-            was identified. The reported agreement (−1.4 dB) was anchored to a drifted reference.
-            Corrected interpretation: app read +1.5 dB high relative to true SPL. This reading
-            does not support any calibration claim and is retained as a historical data point only.
-            See Section 7b for the full calibration correction record.
-          </p>
-        </div>
-
-        <!-- SECTION 7b: CALIBRATION HISTORY -->
-        <div class="method-section" id="s7b">
-          <div class="method-section-num">Section 7b</div>
-          <h2>Calibration history and the 2026-06-01 offset correction</h2>
-
-          <p class="prose">
-            On 1 June 2026, we verified our prior reference meter — a TA657A (IEC 61672 Class 2)
-            — against the AZ8930 calibrator with a tight coupler seal. The TA657A read
-            <strong>96.9 dBA</strong> against the calibrator's 94.0 dBA tone: a
-            <strong>+2.9 dB drift</strong>, outside its IEC 61672 Class 2 ±2 dB tolerance.
-            The drift had propagated into the application's external-microphone calibration offset.
-            After identifying the drift, we replaced the reference meter with the
-            calibrator-verified Wintact SLM-30B and corrected the offset from +99 dB to +96 dB.
-          </p>
-
-          <table class="val-table">
-            <thead>
-              <tr><th>Aircraft</th><th>App reading</th><th>Reference reading</th><th>Delta</th><th>Status / Geometry</th></tr>
-            </thead>
-            <tbody>
-              <tr style="background:var(--teal-light);">
-                <td>B767 takeoff</td><td>76.5 dBA</td><td>76.6 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.1 dB ✓</td>
-                <td>Post-correction · Standardized Receptor</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>A321 takeoff · 2,425 ft</td><td>78.2 dBA</td><td>78.6 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.4 dB ✓</td>
-                <td>Post-correction · Standardized Receptor</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>757-200 takeoff · 4,650 ft</td><td>69.3 dBA</td><td>69.1 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">+0.2 dB ✓</td>
-                <td>Post-correction · Standardized Receptor</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>A321 takeoff</td><td>73.9 dBA</td><td>74.7 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.8 dB ✓</td>
-                <td>Post-correction · Façade-Level</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>737 Max 8 takeoff</td><td>73.0 dBA</td><td>73.9 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.9 dB ✓</td>
-                <td>Post-correction · Façade-Level</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>737 Max 8 takeoff</td><td>73.5 dBA</td><td>74.6 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−1.1 dB ✓</td>
-                <td>Post-correction · Façade-Level</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>A321 takeoff</td><td>74.1 dBA</td><td>74.7 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.6 dB ✓</td>
-                <td>Post-correction · Façade-Level</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>737 Max 8 takeoff</td><td>72.3 dBA</td><td>72.7 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.4 dB ✓</td>
-                <td>Post-correction · Façade-Level</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>737-900 takeoff</td><td>77.6 dBA</td><td>78.3 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.7 dB ✓</td>
-                <td>Post-correction · Façade-Level</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>737-800 takeoff</td><td>74.5 dBA</td><td>75.3 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.8 dB ✓</td>
-                <td>Post-correction · Façade-Level</td>
-              </tr>
-              <tr style="background:var(--teal-light);">
-                <td>EMB 505 takeoff (Rwy 15L)</td><td>59.4 dBA</td><td>60.3 dBA</td>
-                <td style="color:var(--teal);font-weight:600;">−0.9 dB ✓</td>
-                <td>Post-correction · Façade-Level</td>
-              </tr>
-              <tr>
-                <td>A321 takeoff</td><td>79.4 dBA</td><td>76.3 dBA</td>
-                <td style="color:var(--amber);font-weight:500;">+3.1 dB</td>
-                <td>Pre-correction — confirmed offset magnitude</td>
-              </tr>
-              <tr>
-                <td>737-700 takeoff</td><td>78.4 dBA</td><td>75.6 dBA</td>
-                <td style="color:var(--amber);font-weight:500;">+2.8 dB</td>
-                <td>Pre-correction — confirmed offset magnitude</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div class="pull-quote" style="border-left:3px solid var(--teal);padding:14px 20px;
-               margin:24px 0;background:var(--teal-light);border-radius:0 6px 6px 0;">
-            <p style="font-size:14px;color:var(--text);line-height:1.75;">
-              <strong>This is a strength, not a weakness.</strong> Identifying and correcting a
-              2.9 dB drift by verifying against a primary acoustic reference is exactly the
-              chain-of-custody discipline regulatory-grade measurement requires. Most regulatory-grade
-              noise datasets never verify their reference meters against a primary calibrator.
-              The corrected dataset is now traceable to an IEC 60942:2018 Class 2 acoustic calibrator.
-            </p>
-          </div>
-
-          <p class="prose"><strong>Chronological calibration record:</strong></p>
-          <ul class="spec-list" style="margin-bottom:16px;">
-            <li><span class="spec-key">9 May 2026</span><span class="spec-val">A320 approach comparison against TA657A (internal mic, home patio). Reported delta −1.4 dB. Corrected interpretation: app +1.5 dB high relative to true SPL. Reference meter subsequently found drifted +2.9 dB. Retained as historical data point only — does not support any calibration claim.</span></li>
-            <li><span class="spec-key">May 2026</span><span class="spec-val">External microphone calibration offset anchored to TA657A via indoor bare-microphone match test. Offset set to +99 dB. Drift inherited unknowingly into all May 2026 measurements.</span></li>
-            <li><span class="spec-key">1 June 2026</span><span class="spec-val">TA657A verified against AZ8930 with tight coupler seal. Reading: 96.9 dBA against 94.0 dBA reference — +2.9 dB drift confirmed, outside Class 2 ±2 dB tolerance. TA657A retired as reference instrument.</span></li>
-            <li><span class="spec-key">1 June 2026</span><span class="spec-val">Wintact SLM-30B verified against AZ8930. Reading: 94.0 dBA — confirmed clean. SLM-30B adopted as primary reference meter.</span></li>
-            <li><span class="spec-key">1 June 2026</span><span class="spec-val">Application external-mic offset corrected from +99 dB to +96 dB. Three-aircraft validation performed at standardized receptor. B767 post-correction delta: −0.1 dB. ✓</span></li>
-            <li><span class="spec-key">2 June 2026</span><span class="spec-val">External microphone placed directly in AZ8930 calibrator with snug coupler fit; windshield setting changed to bare/None in app. App reading: 93.7 dBA against 94.0 dBA reference. Delta: −0.3 dB. Independent confirmation of the +96 dB offset at 1 kHz pure tone — validates the microphone + offset sub-chain in isolation from the windshield and aircraft signal characteristics.</span></li>
-            <li><span class="spec-key">8 June 2026</span><span class="spec-val">Eight-aircraft simultaneous comparison at Façade-Level position against AZ8930-verified Wintact SLM-30B. Aircraft: A321 (×2), 737 Max 8 (×3), 737-900, 737-800, EMB 505. All 8 deltas negative (app below meter). Mean delta: −0.78 dB. Range: −0.4 to −1.1 dB. App reads conservatively at façade geometry — consistent with position-dependent reflection interference between non-co-located capsules. All within IEC 61672 Class 2 ±2 dB tolerance. ✓</span></li>
-            <li><span class="spec-key">8 June 2026</span><span class="spec-val">Standardized Receptor dataset expanded to 3 aircraft: A321 at 2,425 ft (−0.4 dB) and 757-200 at 4,650 ft (+0.2 dB) added to B767 (−0.1 dB). SR mean Δ: −0.1 dB · range 0.6 dB. Geometry effect (SR vs Façade: 0.7 dB) comparable to altitude effect within SR (0.6 dB range) — position in local reflection pattern is the dominant variable. Post-correction validation dataset now spans 11 aircraft across 2 geometries. ✓</span></li>
-          </ul>
-
-          <p class="prose" style="margin-top:4px;"><strong>Affected data range:</strong>
-            Measurements taken before 1 June 2026 carry a known +3 dB systematic bias in
-            absolute SPL terms. Derived psychoacoustic metrics inherit a proportional bias.
-            See <a href="data.html#calibration">Data Treatment</a> for how pre-correction
-            data is handled in analytics.
-          </p>
-          <p class="prose"><strong>Pre-correction data is not invalid.</strong>
-            Relative patterns, spectral character, aft-aspect geometry, atmospheric HF absorption
-            signatures, and event-to-event comparisons within a single session are preserved.
-            What changes is the absolute calibration of peak SPL claims and health threshold
-            exceedance counts, which now use post-correction data only.
-          </p>
-        </div>
-
-        <!-- SECTION 8: LIMITATIONS -->
-        <div class="method-section" id="s8">
-          <div class="method-section-num">Section 8</div>
-          <h2>Limitations</h2>
-          <p class="prose">
-            Honest disclosure is part of credibility. The following are known limitations of the
-            current system:
-          </p>
-
-          <div class="limitation">
-            <div class="limitation-num">1</div>
-            <div class="limitation-body"><strong>The microphone is not IEC 61672 certified.</strong>
-            It is a consumer omnidirectional condenser with a manufacturer-published frequency range
-            but no individual calibration certificate. We rely on empirical validation against the
-            AZ8930-verified Wintact SLM-30B. Post-correction comparisons fall within the ±2 dB
-            IEC 61672 Class 2 unit-to-unit tolerance (B767 −0.1 dB). Pre-correction spectral
-            characterization against the TA657A is under re-characterization. Windshield insertion
-            loss has been confirmed by relative measurement, unaffected by the absolute calibration
-            correction. The system's empirical confidence rests on the AZ8930 → SLM-30B → app
-            chain of custody rather than manufacturer specification alone.</div>
-          </div>
-
-          <div class="limitation">
-            <div class="limitation-num">2</div>
-            <div class="limitation-body"><strong>Post-correction validation dataset is still small.</strong>
-            Current validation rests primarily on a single post-correction overflight (Boeing 767,
-            −0.1 dB agreement) plus the multi-aircraft pre-correction dataset that quantified the
-            calibration drift (A321 +3.1 dB, 737-700 +2.8 dB — both outside Class 2 tolerance,
-            confirming the offset magnitude). The methodology is sound regardless of sample size,
-            but the empirical confidence interval narrows as post-correction comparisons accumulate.
-            We will publish all future comparisons, including ones that disagree.</div>
-          </div>
-
-          <div class="limitation">
-            <div class="limitation-num">3</div>
-            <div class="limitation-body"><strong>Measurements are displayed as 2-second peak-hold dBA.</strong>
-            The reported value is the maximum A-weighted SPL observed during each 2-second window —
-            closest in character to LAFmax in IEC 61672 terms. We do not currently report continuous
-            LAeq integration over arbitrary periods.</div>
-          </div>
-
-          <div class="limitation">
-            <div class="limitation-num">4</div>
-            <div class="limitation-body"><strong>We measure at the receptor, not at a standardized distance from the source.</strong>
-            This is deliberate — receptor-based exposure is the variable health research uses — but
-            it means our absolute SPL values cannot be directly compared to source-emission
-            certifications like ICAO Annex 16 Chapter 14 noise levels.</div>
-          </div>
-
-          <div class="limitation">
-            <div class="limitation-num">5</div>
-            <div class="limitation-body"><strong>Wind affects readings.</strong>
-            The fur windshield reduces wind contamination substantially, and the C-A Delta provides
-            objective per-observation flagging. However, high-wind sessions (sustained winds above
-            approximately 15 mph) may produce residual contamination that the windshield cannot
-            fully suppress. All sessions note wind conditions; high-wind sessions are flagged in
-            the dataset.</div>
-          </div>
-
-          <div class="limitation">
-            <div class="limitation-num">6</div>
-            <div class="limitation-body"><strong>The internal microphone offset (+108 dB) has not yet been re-validated against the AZ8930-verified reference chain.</strong>
-            The internal microphone is not used for primary field measurement — the external
-            microphone is the reference for all field sessions. The internal mic is used only for
-            indoor characterization work. Re-validation against the SLM-30B is planned.</div>
-          </div>
-
-          <div class="limitation">
-            <div class="limitation-num">7</div>
-            <div class="limitation-body"><strong>Absolute SPL varies seasonally due to atmospheric propagation and hot-day thrust reduction.</strong>
-            Summer readings at equivalent geometry run several dBA lower than winter readings
-            because of upward acoustic refraction in warm surface air and reduced-thrust
-            (flex-temp) departures on hot days. This is an artifact of atmospheric and
-            operational state, not genuine noise mitigation, and it affects absolute SPL trend
-            charts but not relative or event-count metrics. Fully described in
-            <a href="#s6e">&sect;6e</a>.</div>
-          </div>
-
-          <div class="limitation">
-            <div class="limitation-num">8</div>
-            <div class="limitation-body"><strong>Platform-to-reference agreement varied by about 1 dB between a humid and a drier session, and the cause is not established.</strong>
-            Paired comparison on 24 July 2026 found a platform-minus-reference difference of
-            &minus;0.67 dB at approximately 45% relative humidity but &minus;1.65 dB at
-            approximately 76%. We proposed that a damp fur windshield attenuates high-frequency
-            content, but the psychoacoustic record does not support this: the humid session
-            shows <em>higher</em> sharpness at matched level, not lower, in all twelve level
-            bands tested and also within a single aircraft family. The mechanism is therefore
-            unknown, no calibration constant has been changed, and the apparent slope should
-            not be used as a correction. Mitigation is procedural &mdash; substitute foam above
-            roughly 65% RH, or treat readings as potentially under-reporting by up to about
-            1 dBA. Note this error is in the conservative direction. A related anomaly in the
-            C&minus;A delta is unresolved. Fully described in
-            <a href="#s6f">&sect;6f</a>.</div>
-          </div>
-        </div>
-
-        <!-- SECTION 9: DATA AVAILABILITY -->
-        <div class="method-section" id="s9">
-          <div class="method-section-num">Section 9</div>
-          <h2>Summary and data availability</h2>
-
-          <p class="prose">
-            TrueNoise measures community aircraft noise using a calibrated smartphone-based system
-            anchored to a primary acoustic reference (IEC 60942:2018 Class 2 calibrator), validated
-            against a Class 2 reference meter that is itself field-verified against that calibrator
-            before each comparison session, with the calibration validated empirically on multiple
-            aircraft overflights including a post-correction agreement of −0.1 dB on a Boeing 767.
-          </p>
-          <p class="prose">
-            The system is not a substitute for a laboratory-grade measurement microphone. It is a
-            measurement system whose empirical performance has been characterized against traceable
-            references, whose limitations are documented, and whose data is published openly for
-            independent evaluation.
-          </p>
-
-          <div class="bottom-line">
-            <div class="bottom-line-label">Data availability</div>
-            <p>All session data is available for download at
-            <a href="data.html">truenoise.org/data.html</a>. The dataset includes raw
-            observations, psychoacoustic metrics, ADS-B attribution, calibration epoch tags,
-            and windshield configuration for every recorded event. Pre-correction data is tagged
-            <code>pre_2026_06_01</code>; post-correction data is tagged
-            <code>post_2026_06_01</code>.</p>
-          </div>
-        </div>
-
-      </div><!-- end content -->
-    </div><!-- end main -->
-  </div><!-- end app -->
-
-</body>
-</html>
+<div class="wrap">
+
+<header>
+  <div class="brand">TrueNoise.org &middot; community aircraft-noise observatory</div>
+  <h1>Peak-dBA noise model &mdash; methodology &amp; measurement record</h1>
+  <div class="standfirst">The single-event peak-dBA model behind the sensitivity map, the measurements it rests on, and the technical points most often misread. Written so another analyst can reproduce every figure.</div>
+  <p class="module-note">Prepared 2026-10-08; revised 2026-10-19 &mdash; added the measurement basis, the 2,889-flight turn-altitude record, the five-flight calibrated cross-check, the receptor characterization, equipment notes, and a plain-language explanation of the law and of common misconceptions. The sensitivity-map figures are unchanged from the 2026-10-10 model.</p>
+</header>
+
+<section>
+  <div class="eyebrow">What this rests on</div>
+  <h2>A measurement record, not assumptions</h2>
+  <div class="mbasis">
+    <p class="lead"><b>TrueNoise is a continuous measurement record.</b> Between 1 May and 15 August 2026 the monitor logged roughly 30,000 departure samples across 153 days, grouped into about 3,185 departure passes. From that record:</p>
+    <ul>
+      <li><b>2,889 clean Runway&nbsp;15R departures</b> were analyzed for turn altitude &mdash; the result held steady every month (median 2,325&nbsp;ft in May, 2,375 in June, 2,292 in July, 2,196 in August), so it reflects a full season, not a snapshot.</li>
+      <li><b>249 isolated overflights</b> calibrated the loudness-vs-distance law, which then reproduced an independent calibration point (73.3&nbsp;dBA at 0.55&nbsp;mi) and the monitor's own measured level (70.5&nbsp;dBA) without being tuned to either.</li>
+      <li>A <b>five-flight blind test against a calibrated sound-level meter</b> put the model within about 0.8&nbsp;dB of ground truth &mdash; slightly better than a commercial noise-tracking device measured in the same window.</li>
+    </ul>
+    <div class="small">Each claim below is tied to its own sample: the altitude finding rests on ~2,889 flights, the loudness law on 249 measured overflights plus three validations, the geometry on the ADS-B track set. The large altitude sample and the smaller law sample reinforce each other &mdash; the altitude the model assumes is independently confirmed on nearly 3,000 flights.</div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">The metric</div>
+  <h2>What we measure &mdash; and why it is not DNL</h2>
+  <div class="cols">
+    <div>
+      <p><b>Single-event peak dBA</b> &mdash; what TrueNoise measures &mdash; is the loudest instant of one overflight: the spike you actually hear when a plane passes. It is an event, measured directly by the monitor.</p>
+      <p><b>DNL</b> (Day-Night average sound Level) is a 24-hour energy average of all noise, quiet hours included, with a 10-dB penalty on night events. It is a bookkeeping figure, not a sound anyone hears; the &ldquo;65&rdquo; in federal land-use guidance is a DNL contour.</p>
+    </div>
+    <div>
+      <p>These are different physical quantities on different scales. A corridor can sit far below DNL&nbsp;65 as a 24-hour average and still deliver single-event peaks in the low 70s dozens of times a day &mdash; which is the Severn situation.</p>
+      <p>So the figures here <b>must not be compared to, or converted into, a DNL&nbsp;65 figure</b>, and must not be fed into DNL-based annoyance or reading-score formulas. The model answers one question: <i>how loud is each pass, where.</i></p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Inputs</div>
+  <h2>What goes in (all measured or from public records)</h2>
+  <table>
+   <thead><tr><th>Input</th><th>Source</th><th>Description</th></tr></thead>
+   <tbody>
+    <tr><td>Departure tracks</td><td>ADS-B track database</td><td>90 clean 15R departures after filtering &mdash; the measured climb and west-turn geometry.</td></tr>
+    <tr><td>Turn-altitude record</td><td>153 daily noise logs</td><td>~30,000 departure samples &rarr; 2,889 clean 15R overflights with altitude at closest approach.</td></tr>
+    <tr><td>Corridor homes</td><td>Anne Arundel County address points</td><td>Residential addresses, swept to the 62&nbsp;dBA peak corridor of either track &rarr; 33,206 homes.</td></tr>
+    <tr><td>Noise event logs</td><td>IEC&nbsp;61672 Class&nbsp;2 monitor</td><td>Per-event dBA, slant range, altitude &mdash; used to fit and validate the law.</td></tr>
+   </tbody>
+  </table>
+  <p>No modeled manufacturer noise tables (ANP/AEDT) are used; the law is fit directly from the TrueNoise measurements.</p>
+</section>
+
+<section>
+  <div class="eyebrow">The core calculation</div>
+  <h2>The loudness-vs-distance law &mdash; in plain terms, then exactly</h2>
+  <p><b>In plain terms.</b> Sound gets quieter with distance in a regular way, measured directly: <b>every halving of the distance to the aircraft adds about 7&nbsp;dB, and every doubling subtracts about 7&nbsp;dB.</b> Anchor that to one measured point &mdash; about <b>73&nbsp;dBA when the plane's closest approach is 0.55&nbsp;mi away</b> &mdash; and the loudness at any distance follows:</p>
+  <table>
+   <thead><tr><th>Closest approach (straight-line)</th><th>Modeled peak</th><th>Everyday comparison</th></tr></thead>
+   <tbody>
+    <tr><td>0.25 mi</td><td>~81 dBA</td><td>Garbage disposal; diesel truck passing close</td></tr>
+    <tr><td>0.55 mi</td><td>~73 dBA</td><td>The project calibration point (measured 73.3)</td></tr>
+    <tr><td>1.0 mi</td><td>~66.5 dBA</td><td>Busy traffic from the sidewalk</td></tr>
+    <tr><td>2.0 mi</td><td>~59 dBA</td><td>Normal conversation</td></tr>
+    <tr><td>4.0 mi</td><td>~52 dBA</td><td>Light rain; a quiet street</td></tr>
+   </tbody>
+  </table>
+  <p><b>Exactly.</b> Peak falls with slant range (the 3-D straight-line distance from home to aircraft at closest approach &mdash; horizontal offset and altitude combined):</p>
+  <pre><code>peak_dBA = A + B &times; log10(slant_range_mi)
+A = 66.54   B = -24.37</code></pre>
+  <p><b>A (66.54)</b> is the intercept &mdash; the modeled peak at exactly one mile, where the log term is zero. It is the anchor of the curve, not a threshold. <b>B (&minus;24.37)</b> is the slope &mdash; how fast loudness falls with distance (the &ldquo;~7&nbsp;dB per halving&rdquo; above). Slant range is floored at 0.10&nbsp;mi so the log stays finite directly beneath the path. The law was fit by regressing the single loudest sample of each of <b>249 overflights</b> against log-distance.</p>
+  <h3>Validation &mdash; three independent checks</h3>
+  <p><b>(1) An untouched calibration point.</b> The fitted law lands at 72.9&nbsp;dBA at 0.55&nbsp;mi against the project's measured 73.3 &mdash; 0.4&nbsp;dB, not tuned.</p>
+  <p><b>(2) End-to-end, against the monitor's own exposure.</b> With the measured climb in place, the full model reproduces the receptor's level: <b>70.6&nbsp;dBA modeled vs 70.5 measured</b> (median of 249 logged overflights there). The climb and geometry were not tuned to this &mdash; it validates the climb curve and the law jointly, and it is what exposed and fixed an earlier contaminated climb.</p>
+  <p><b>(3) A live, blind test against a calibrated meter</b> &mdash; next.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Validation &middot; 5 flights &middot; blind</div>
+  <h2>Live cross-check against a calibrated meter</h2>
+  <p>On 15 October 2026, five consecutive 15R departures over a home ~130&nbsp;ft from the monitor were measured three ways at once: the <b>model</b> (from the ADS-B slant range, computed before the logs were opened), a commercial <b>airnoise.io</b> device, and the <b>calibrated IEC&nbsp;61672 Class&nbsp;2 meter</b> (ground truth).</p>
+  <table>
+   <thead><tr><th>#</th><th>Aircraft</th><th>Slant (mi)</th><th>Model</th><th>airnoise</th><th>Calibrated</th><th>Model&minus;cal</th></tr></thead>
+   <tbody>
+    <tr><td>1</td><td>737-800</td><td>0.58</td><td>72.3</td><td>71.3</td><td>72.8</td><td>&minus;0.5</td></tr>
+    <tr><td>2</td><td>A320</td><td>0.85</td><td>68.2</td><td>66.5</td><td>67.4</td><td>+0.8</td></tr>
+    <tr><td>3</td><td>737-800</td><td>0.83</td><td>68.5</td><td>67.0</td><td>67.3</td><td>+1.2</td></tr>
+    <tr><td>4</td><td>737-800</td><td>0.66</td><td>71.0</td><td>68.9</td><td>70.2</td><td>+0.8</td></tr>
+    <tr><td>5</td><td>A300F</td><td>0.97</td><td>66.8</td><td>66.7</td><td>66.6</td><td>+0.2</td></tr>
+   </tbody>
+  </table>
+  <p>Against the meter the <b>model ran +0.50&nbsp;dB mean, 0.76&nbsp;dB RMS, 1.2&nbsp;dB worst case</b>; the commercial device &minus;0.78&nbsp;dB mean, 0.98&nbsp;dB RMS. Both landed well inside the &plusmn;7&nbsp;dB screening band, the model slightly ahead. <i>Caveat:</i> n&nbsp;=&nbsp;5, one 10-minute window, one weather state, no near-overhead pass &mdash; a confirmation, not a second calibration.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Measured altitude &middot; 2,889 flights</div>
+  <h2>How high the aircraft actually are</h2>
+  <p>The most-contested point in community discussion is how high aircraft are when they turn. It has a measured answer on a large sample, and the answer is that <b>there is no single turn altitude</b> &mdash; the turn is a process, not a point.</p>
+  <div class="cols">
+   <div>
+    <p>Across <b>2,889 clean 15R departures</b>, altitude at closest approach has a <b>median of 2,325&nbsp;ft</b> (middle half 2,141&ndash;2,617; only 7.8% below 2,000&nbsp;ft). Closest approach falls a median 3.46&nbsp;nm out &mdash; the turn-completion zone.</p>
+    <p>Putting the geometry together: departures <b>begin the turn around 1,800&nbsp;ft</b> (near 2&nbsp;nm), <b>complete it around 2,300&nbsp;ft</b> (2.5&ndash;3&nbsp;nm out, over the community), and keep climbing west. They are <b>lowest over the close-in neighborhoods and schools</b> nearest the runway and higher by the western end. Quoting any one height for &ldquo;the turn&rdquo; is what fuels the confusion.</p>
+   </div>
+   <div>
+    <table>
+     <thead><tr><th>Month (2026)</th><th>Median completion altitude</th></tr></thead>
+     <tbody>
+      <tr><td>May</td><td>2,325 ft</td></tr>
+      <tr><td>June</td><td>2,375 ft</td></tr>
+      <tr><td>July</td><td>2,292 ft</td></tr>
+      <tr><td>August</td><td>2,196 ft</td></tr>
+     </tbody>
+    </table>
+    <p class="module-note">This also sets the stakes for proposals that turn aircraft lower: on the measured falloff, dropping the turn from ~2,300&nbsp;ft to ~1,000&nbsp;ft adds on the order of 6&nbsp;dB to the peak directly beneath it.</p>
+   </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Modeling choices</div>
+  <h2>The decisions that define the model</h2>
+  <ul class="keypts">
+   <li><b>Metric = single-event peak dBA.</b> DNL and L<sub>Aeq,16h</sub> are deliberately excluded.</li>
+   <li><b>Both procedures as idealized single lines.</b> WARYN-BRGHT is notional, so it has no measured spread; for a fair comparison today's 15R is also its median centerline, not its cloud.</li>
+   <li><b>Today's line = the ~79% west-curve majority</b>, built along-track and extended to the published BOBYJ leg.</li>
+   <li><b>WARYN-BRGHT line</b> shares the runway segment (so near-in differences are ~0), then runs WARYN &rarr; BRGHT.</li>
+   <li><b>Altitude = the measured 15R climb</b>, draped by along-track distance &mdash; the piece independently confirmed by the 2,889-flight record and the receptor check.</li>
+   <li><b>Peak = the law at the 3-D minimum slant range</b> between each home and the line.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow">Uncertainty</div>
+  <h2>How precise the numbers are</h2>
+  <p><b>Error band = &plusmn;7&nbsp;dB (95%).</b> The residual standard deviation of the 249-point fit is 3.7&nbsp;dB, reflecting real variation across aircraft type, weight and weather. <b>Differences smaller than this band are not individually distinguishable per home.</b> The defensible reading is the <i>spatial pattern</i> of where exposure shifts, not any single home's exact value &mdash; except the receptor's own level, which is anchored to measurement. (Modeling aircraft type explicitly tightens the band to about &plusmn;6.3&nbsp;dB; that refinement is in progress and is not used in the map figures.)</p>
+</section>
+
+<section>
+  <div class="eyebrow">Results</div>
+  <h2>What the model finds</h2>
+  <p><b>Corridor (33,206 homes), single-event peak dBA</b> &mdash; counts by band (&lt;55 / 55&ndash;60 / 60&ndash;65 / 65&ndash;70 / &ge;70):</p>
+  <table>
+   <thead><tr><th>Scenario</th><th>&lt;55</th><th>55&ndash;60</th><th>60&ndash;65</th><th>65&ndash;70</th><th>&ge;70</th></tr></thead>
+   <tbody>
+    <tr><td>Today's 15R</td><td>879</td><td>3,492</td><td>10,019</td><td>14,512</td><td>4,304</td></tr>
+    <tr><td>WARYN-BRGHT</td><td>4,501</td><td>5,317</td><td>11,627</td><td>7,210</td><td>4,551</td></tr>
+   </tbody>
+  </table>
+  <p>By per-home change: quieter by &ge;1.5&nbsp;dB <b>16,772</b>, within &plusmn;1.5&nbsp;dB <b>7,256</b>, louder by &ge;1.5&nbsp;dB <b>9,178</b>; <b>median change &minus;1.75&nbsp;dB</b> &mdash; net relief by roughly two-to-one, at the cost of a real increase on the southeast side.</p>
+  <p><b>Schools (peak dBA, &plusmn;7&nbsp;dB), most-exposed-today first:</b></p>
+  <table>
+   <thead><tr><th>School</th><th>Today</th><th>WARYN-BRGHT</th><th>&Delta;</th></tr></thead>
+   <tbody>
+    <tr><td>Quarterfield Elem.</td><td>74.5</td><td>70.9</td><td>&minus;3.6</td></tr>
+    <tr><td>Glen Burnie Park Elem.</td><td>70.2</td><td>71.3</td><td>+1.2</td></tr>
+    <tr><td>Rippling Woods Elem.</td><td>64.3</td><td>68.8</td><td>+4.5</td></tr>
+    <tr><td>Severn Elem.</td><td>62.1</td><td>58.3</td><td>&minus;3.7</td></tr>
+    <tr><td>Southgate Elem.</td><td>59.9</td><td>63.1</td><td>+3.2</td></tr>
+   </tbody>
+  </table>
+  <p>The most-exposed school today, Quarterfield, is among those helped most; two schools (Rippling Woods, Southgate) see real increases, stated plainly. The robust, cross-option fact is about altitude over children: <b>WARYN-BRGHT is the only option studied that never sends a pass below ~2,000&nbsp;ft over any school, while a low turn drops a ~1,800-ft overflight onto the schools nearest the runway.</b></p>
+</section>
+
+<section>
+  <div class="eyebrow">Clearing it up</div>
+  <h2>Common misconceptions</h2>
+  <div class="miscon">
+   <h3>&ldquo;TrueNoise's numbers are above the FAA's 65 limit.&rdquo;</h3>
+   <p>No &mdash; these are single-event peaks (the loudest instant of one flyover); 65 is a DNL 24-hour-average land-use contour. Different quantities, different scales. Our numbers cannot be compared to, or converted into, a DNL&nbsp;65 figure.</p>
+  </div>
+  <div class="miscon">
+   <h3>&ldquo;What altitude do they turn at?&rdquo; &mdash; there isn't one number.</h3>
+   <p>On 2,889 measured flights, the turn begins around 1,800&nbsp;ft and completes around 2,300&nbsp;ft over the community, climbing west. Aircraft are lowest over the close-in neighborhoods and schools. Quoting one height &mdash; high or low &mdash; is what fuels the confusion.</p>
+  </div>
+  <div class="miscon">
+   <h3>&ldquo;The monitor's readings are the worst case.&rdquo;</h3>
+   <p>The opposite. The fixed monitor sits ~3.4&nbsp;nm out, in the turn-completion zone, where its measured median peak is 70.5&nbsp;dBA. Homes closer to the turn, where aircraft are lower, hear louder passes. The published receptor figures are a conservative, low-end anchor, not a maximum.</p>
+  </div>
+  <div class="miscon">
+   <h3>&ldquo;Spreading the flights out will fix it.&rdquo;</h3>
+   <p>Spreading moves noise; it does not lower it. Loudness is set by altitude, not by how tightly the tracks bunch. Fanning a low turn across more streets spreads a louder-per-event overflight onto more homes &mdash; and if the turn is forced lower to do it, every home under the wider band is louder. Only raising the turn makes each pass quieter for everyone beneath it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Instruments</div>
+  <h2>Equipment and its limits</h2>
+  <p>Measurements come from an <b>IEC&nbsp;61672 Class&nbsp;2</b> monitor and a co-located airnoise.io device. Class&nbsp;2 is the right grade here for two reasons. First, the analysis is <b>comparative</b> &mdash; today's procedure against a proposed one at the same homes &mdash; so any fixed instrument offset applies to both and cancels in the difference. Second, the instrument has been checked against a <b>calibrated meter</b> and found within ~0.8&nbsp;dB, well inside the &plusmn;7&nbsp;dB screening band. This is a measured community screening, <b>not a certified Class&nbsp;1 network and not an FAA AEDT model</b>; where a regulatory-grade number is required, these figures show <i>where</i> to look, not the final certified value.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Carry these with any use</div>
+  <h2>Scope limits and honest caveats</h2>
+  <ul class="keypts">
+   <li><b>Metric:</b> peak dBA only &mdash; not DNL, not L<sub>Aeq,16h</sub>. Do not convert to either.</li>
+   <li><b>The west-curve share is load-bearing.</b> The whole west-relief / southeast-increase split rests on ~79% of today's departures curving west; that share is measured but not yet ground-truthed against a full operations record.</li>
+   <li><b>The single line is weakest where flights fan out</b> &mdash; between the turn and BOBYJ the measured tracks diverge.</li>
+   <li><b>The climb is a median;</b> individual departures run higher or lower (part of the &plusmn;7&nbsp;dB band).</li>
+   <li><b>Idealized single lines</b> understate how many receptors real dispersed operations affect; precise dispersion is for FAA AEDT modeling.</li>
+   <li><b>WARYN-BRGHT is unflown</b> &mdash; projection, not observation.</li>
+  </ul>
+</section>
+
+<footer>
+  This is independent community research &mdash; a measured screening, not an official FAA (AEDT) noise model &mdash; and is not affiliated with or endorsed by the FAA. Every figure is reproducible from the inputs and parameters above. &copy; TrueNoise.org &middot; methodology revised 2026-10-19.
+</footer>
+
+</div>
+
+</main>
+</div><!-- /.app -->
+<script>
+function openMenu(){document.getElementById('mobileMenu').classList.add('open');}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+function closeMenuOutside(e){if(e.target.id==='mobileMenu')closeMenu();}
+</script>
+</body></html>
