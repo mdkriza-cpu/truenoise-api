@@ -200,18 +200,22 @@
 <div class="mobile-menu" id="mobileMenu" onclick="closeMenuOutside(event)">
   <div class="mobile-menu-panel">
     <button class="mobile-menu-close" onclick="closeMenu()">✕</button>
-    <div style="font-size:16px; font-weight:600; color:var(--text); margin-bottom:20px;">True<span style="color:var(--teal)">Noise</span></div>
-    <div style="font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px;">Data</div>
-    <a href="dashboard.html" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Health dashboard</a>
-    <a href="dashboard.html#aircraft" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Aircraft analysis</a>
-    <a href="dashboard.html#time" class="nav-item" onclick="closeMenu()" style="display:flex; margin-bottom:2px;">Time patterns</a>
-    <div style="font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin:16px 0 8px;">Research</div>
-    <a href="briefing.html" class="nav-item" style="display:flex; margin-bottom:2px; background:var(--teal-light); color:var(--teal-dark); font-weight:500;">❤ Health briefing</a>
-    <a href="flightpath.html" class="nav-item" style="display:flex; margin-bottom:2px;">🗺 Flight path analysis</a>
-    <a href="sensitivity.html" class="nav-item" style="display:flex; margin-bottom:2px;">🎚 Altitude sensitivity</a>
-    <a href="methodology.html" class="nav-item" style="display:flex; margin-bottom:2px;">Methodology</a>
-    <a href="data.html" class="nav-item" style="display:flex; margin-bottom:2px;">Download data</a>
-    <a href="about.html" class="nav-item active" style="display:flex;">About &amp; Contact</a>
+    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:20px;">True<span style="color:var(--teal)">Noise</span></div>
+    <a href="index.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Home</a>
+    <div style="font-size:10px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin:12px 0 4px;">The evidence</div>
+    <a href="dashboard.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Health dashboard</a>
+    <a href="briefing.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Health briefing</a>
+    <a href="measurement-gap.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">The measurement gap</a>
+    <a href="causal-chain.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Causal chain</a>
+    <div style="font-size:10px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin:12px 0 4px;">How we measure</div>
+    <a href="methodology.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Methodology</a>
+    <a href="aircraft_noise_tracker_brief.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Aircraft Noise Tracker</a>
+    <a href="data.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Download data</a>
+    <div style="font-size:10px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin:12px 0 4px;">Proposals</div>
+    <a href="proposals.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">A fairer balance</a>
+    <a href="waryn-brght.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">WARYN-BRGHT</a>
+    <a href="flightpath.html" class="nav-item" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">Flight path analysis</a>
+    <a href="about.html" class="nav-item active" onclick="closeMenu()" style="display:flex;margin-bottom:2px;">About &amp; Contact</a>
   </div>
 </div>
 
@@ -231,21 +235,27 @@
       </a>
     </div>
     <nav class="nav">
+      <a href="index.html" class="nav-item"><span class="nav-icon">🏠</span> Home</a>
       <div class="nav-group">
-        <div class="nav-group-label">Data</div>
+        <div class="nav-group-label">The evidence</div>
         <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Health dashboard</a>
-        <a href="dashboard.html#aircraft" class="nav-item"><span class="nav-icon">✈</span> Aircraft analysis</a>
-        <a href="dashboard.html#time" class="nav-item"><span class="nav-icon">🕐</span> Time patterns</a>
+        <a href="briefing.html" class="nav-item"><span class="nav-icon">❤</span> Health briefing</a>
+        <a href="measurement-gap.html" class="nav-item"><span class="nav-icon">📉</span> The measurement gap</a>
+        <a href="causal-chain.html" class="nav-item"><span class="nav-icon">🔗</span> Causal chain</a>
       </div>
       <div class="nav-group">
-        <div class="nav-group-label">Research</div>
-                <a href="flightpath.html" class="nav-item"><span class="nav-icon">🗺</span> Flight path analysis</a>
-        <a href="sensitivity.html" class="nav-item"><span class="nav-icon">🎚</span> Altitude sensitivity</a>
-        <a href="measurement-gap.html" class="nav-item"><span class="nav-icon">📐</span> The measurement gap</a>
+        <div class="nav-group-label">How we measure</div>
         <a href="methodology.html" class="nav-item"><span class="nav-icon">🔬</span> Methodology</a>
+        <a href="aircraft_noise_tracker_brief.html" class="nav-item"><span class="nav-icon">📱</span> Aircraft Noise Tracker</a>
         <a href="data.html" class="nav-item"><span class="nav-icon">⬇</span> Download data</a>
-        <a href="about.html" class="nav-item active"><span class="nav-icon">ℹ</span> About &amp; Contact</a>
       </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Proposals</div>
+        <a href="proposals.html" class="nav-item"><span class="nav-icon">⚖</span> A fairer balance</a>
+        <a href="waryn-brght.html" class="nav-item"><span class="nav-icon">🛫</span> WARYN-BRGHT</a>
+        <a href="flightpath.html" class="nav-item"><span class="nav-icon">🗺</span> Flight path analysis</a>
+      </div>
+      <a href="about.html" class="nav-item active"><span class="nav-icon">ℹ</span> About &amp; Contact</a>
     </nav>
     <div class="sidebar-footer">
       Independent community monitoring.<br>
