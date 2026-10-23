@@ -194,6 +194,8 @@
     gap: 5px;
   }
   .path-link::before { content: '→'; }
+  a.path-link { text-decoration: none; }
+  a.path-link:hover { text-decoration: underline; }
 
   /* DIVIDER */
   .divider { height: 1px; background: var(--border); margin: 0 48px; }
@@ -382,7 +384,7 @@
 
   <div class="paths">
 
-    <a href="dashboard.html" class="path-card green">
+    <div class="path-card green">
       <div class="path-icon">📊</div>
       <div class="path-if">If you're a</div>
       <div class="path-who">Neighbor or community member</div>
@@ -392,12 +394,12 @@
         health research — in plain language.
       </p>
       <div class="path-links">
-        <span class="path-link">View the health dashboard</span>
-        <span class="path-link">See aircraft by noise impact</span>
+        <a class="path-link" href="dashboard.html">View the health dashboard</a>
+        <a class="path-link" href="dashboard.html#aircraft">See aircraft by noise impact</a>
       </div>
-    </a>
+    </div>
 
-    <a href="methodology.html" class="path-card blue">
+    <div class="path-card blue">
       <div class="path-icon">🔬</div>
       <div class="path-if">If you're a</div>
       <div class="path-who">Researcher, journalist, or analyst</div>
@@ -407,12 +409,12 @@
         Start with the methodology, then download the raw observations.
       </p>
       <div class="path-links">
-        <span class="path-link">Read the methodology</span>
-        <span class="path-link">Download raw data</span>
+        <a class="path-link" href="methodology.html">Read the methodology</a>
+        <a class="path-link" href="data.html">Download raw data</a>
       </div>
-    </a>
+    </div>
 
-    <a href="proposals.html" class="path-card amber">
+    <div class="path-card amber">
       <div class="path-icon">⚖</div>
       <div class="path-if">If you want</div>
       <div class="path-who">A fairer balance</div>
@@ -422,10 +424,10 @@
         BWI Runway&nbsp;15R corridor.
       </p>
       <div class="path-links">
-        <span class="path-link">See the proposals</span>
-        <span class="path-link">WARYN-BRGHT (15R)</span>
+        <a class="path-link" href="proposals.html">See the proposals</a>
+        <a class="path-link" href="waryn-brght.html">WARYN-BRGHT (15R)</a>
       </div>
-    </a>
+    </div>
 
   </div>
 </div>
